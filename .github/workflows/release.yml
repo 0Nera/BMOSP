@@ -39,4 +39,4 @@ jobs:
           new_branch: binary
           pathspec_error_handling: ignore
           push: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
