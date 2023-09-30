@@ -1,0 +1,5 @@
+kernel.elf
+mseos.hdd
+bin/
+limine/
+ovmf/
