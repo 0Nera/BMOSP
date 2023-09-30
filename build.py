@@ -74,7 +74,7 @@ def check_tools():
 def create_iso(IMAGE_NAME):
     subprocess.run(["rm", "-rf", "iso_root"])
     subprocess.run(["mkdir", "-p", "iso_root"])
-    subprocess.run(["cp", "-v", "boot/CYRILL2.F16", "iso_root/"])
+    subprocess.run(["cp", "-v", "iso_root/"])
     subprocess.run(["cp", "-v", "kernel.elf", 
                     "configs/limine.cfg", "limine/limine-bios.sys", 
                     "limine/limine-bios-cd.bin", "limine/limine-uefi-cd.bin", 
@@ -98,7 +98,7 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
     subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/EFI", "::/EFI/BOOT"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "kernel.elf", "configs/limine.cfg",  "boot/CYRILL2.F16", "limine/limine-bios.sys", "::/"])
+                    "kernel.elf", "configs/limine.cfg",, "limine/limine-bios.sys", "::/"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
 
