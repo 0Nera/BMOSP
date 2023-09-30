@@ -98,7 +98,7 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
     subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/EFI", "::/EFI/BOOT"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "kernel.elf", "configs/limine.cfg",, "limine/limine-bios.sys", "::/"])
+                    "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
 
