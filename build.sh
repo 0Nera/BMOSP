@@ -102,5 +102,5 @@ create_hdd() {
 check_limine
 check_tools
 compile_all
-create_iso "IMAGE_NAME"
-create_hdd "IMAGE_NAME"
+create_iso "MSEOS"
+create_hdd "MSEOS"
