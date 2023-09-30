@@ -61,7 +61,7 @@
 
 - `-1 ошибка при создании потока`.
 
-## sys::delite_thread(uid_t thread_id)
+## sys::delete_thread(uid_t thread_id)
 
 Удаляет указанный поток выполнения `thread_id`. Возвращает 0 в случае успеха или -1 в случае ошибки.
 
