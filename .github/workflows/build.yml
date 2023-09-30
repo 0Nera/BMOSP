@@ -1,0 +1,21 @@
+name: CI BUILD
+
+on:
+  push:
+    branches-ignore: [ "pages" ]
+  pull_request:
+    branches-ignore: [ "pages" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: install Python3
+      run: sudo apt install python3 
+    - name: build
+      run: python3 build.py
+    - name: check
+      run: ls -la

@@ -1,5 +1,8 @@
-kernel.elf
-mseos.hdd
+*.elf
+*.hdd
+*.iso
+*.0
+
 bin/
 limine/
 ovmf/

@@ -118,4 +118,4 @@ if __name__ == "__main__":
     compile_all()
     create_hdd("mseos")
 
-    os.system("qemu-system-x86_64 -M q35 -m 8G -smp 8 -bios ovmf/OVMF.fd -hda mseos.hdd")
+    print("qemu-system-x86_64 -M q35 -m 8G -smp 8 -bios ovmf/OVMF.fd -hda mseos.hdd")
