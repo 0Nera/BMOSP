@@ -24,6 +24,7 @@ jobs:
       - name: Build
         run: |
           python3 build.py
+          git config advice.addIgnoredFile false
 
       - name: Add and commit files
         uses: EndBug/add-and-commit@v9
@@ -36,4 +37,4 @@ jobs:
           new_branch: binary
           pathspec_error_handling: ignore
           push: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
