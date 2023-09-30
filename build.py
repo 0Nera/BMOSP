@@ -11,7 +11,7 @@ WARN_FLAGS = "-Wall -Wextra"
 STANDART_FLAGS = "-std=gnu11"
 PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"
-LIBS_FLAGS = "-Ilimine"
+LIBS_FLAGS = "-Ilimine -Iinclude"
 
 
 def find_files(directory, extensions):

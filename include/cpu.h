@@ -1,0 +1,3 @@
+namespace cpu {
+    void init();
+}

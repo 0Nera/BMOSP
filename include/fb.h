@@ -1,0 +1,3 @@
+namespace fb {
+    void init();
+}

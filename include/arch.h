@@ -1,0 +1,3 @@
+namespace arch {
+    void init();
+}
