@@ -19,8 +19,8 @@ jobs:
       - name: Build
         run: |
           python3 build.py
-          git add kernel.elf
-          git add mseos.hdd
-          git add mseos.iso
+          git add -f kernel.elf
+          git add -f mseos.hdd
+          git add -f mseos.iso
           git commit -m "Update"
           git push origin HEAD:refs/heads/binary
