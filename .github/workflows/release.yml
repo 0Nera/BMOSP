@@ -16,11 +16,24 @@ jobs:
         with:
           python-version: 3.x
 
+      - name: Configure Git user
+        run: |
+          git config --global user.email "github@github.com"
+          git config --global user.name "Build bot"
+
       - name: Build
         run: |
           python3 build.py
-          git add -f kernel.elf
-          git add -f mseos.hdd
-          git add -f mseos.iso
-          git commit -m "Update"
-          git push origin HEAD:refs/heads/binary
+
+      - name: Add and commit files
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'kernel.elf mseos.hdd mseos.iso'
+          author_name: Bot
+          author_email: bot@example.com
+          commit: --signoff
+          message: Update
+          new_branch: binary
+          pathspec_error_handling: ignore
+          push: true
+          token: ${{ secrets.GITHUB_TOKEN }}
