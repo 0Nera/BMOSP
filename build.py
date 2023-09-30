@@ -117,5 +117,6 @@ if __name__ == "__main__":
     check_tools()
     compile_all()
     create_hdd("mseos")
+    create_iso("mseos")
 
     print("qemu-system-x86_64 -M q35 -m 8G -smp 8 -bios ovmf/OVMF.fd -hda mseos.hdd")
