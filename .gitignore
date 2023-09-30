@@ -1,6 +1,6 @@
-*.elf
-*.hdd
-*.iso
+kernel.elf
+mseos.hdd
+mseos.iso
 *.0
 
 bin/

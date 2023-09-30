@@ -24,12 +24,14 @@ jobs:
       - name: Build
         run: |
           python3 build.py
-          git config advice.addIgnoredFile false
+          cp kernel.elf x86_64-kernel.elf
+          cp mseos.hdd x86_64-mseos.hdd
+          cp mseos.iso x86_64-mseos.iso
 
       - name: Add and commit files
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'kernel.elf mseos.hdd mseos.iso'
+          add: 'x86_64-kernel.elf x86_64-mseos.hdd x86_64-mseos.iso'
           author_name: Bot
           author_email: bot@example.com
           commit: --signoff
