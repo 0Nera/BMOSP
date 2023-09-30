@@ -1,5 +1,8 @@
 # MSEOS: минимальная студенческая обучающая операционная система
 
+[![CI BUILD](https://github.com/0Nera/MSEOS/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/MSEOS/actions/workflows/build.yml)
+[![Github pages](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment)
+
 MSEOS - минимальная студенческая обучающая операционная система с открытым исходным кодом для платформы x86_64(BIOS/UEFI). Это отечественная операционная система.
 
 Система:
