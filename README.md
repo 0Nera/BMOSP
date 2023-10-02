@@ -35,12 +35,12 @@ MSEOS - минимальная студенческая обучающая оп�
 ## Ресурсы
 
 - <https://vk.com/mseos> Страница вконтакте
-- <https://0nera.github.io/MSEOS/> Вебсайт
+- <https://mseos.ru> Вебсайт
 - <https://wiki.synapseos.ru/index.php?title=MSEOS> Страница на вики
 
 ### Зеркала
 
 - <https://git.synapseos.ru/Aren/MSEOS> - доверенный сервер(главный репозиторий)
-- <https://github.com/0Nera/MSEOS> - основной репозиторий
+- <https://github.com/0Nera/MSEOS> - зеркало
 - <https://tvoygit.ru/0Nera/mseos> - зеркало
 - <https://hub.mos.ru/synapseos/mseos> - неактивное зеркало
