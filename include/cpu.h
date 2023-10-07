@@ -1,3 +1,3 @@
 namespace cpu {
-    void init();
+void init( );
 }

@@ -1,0 +1,3 @@
+namespace mod {
+void init( );
+}

@@ -1,3 +1,3 @@
 namespace arch {
-    void init();
+void init( );
 }

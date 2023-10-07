@@ -6,3 +6,5 @@ mseos.iso
 bin/
 limine/
 ovmf/
+modules/helloworld/helloworld.elf
+modules/com/com.elf

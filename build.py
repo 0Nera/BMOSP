@@ -7,7 +7,7 @@ from multiprocessing import Pool
 
 CC = "g++"
 ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-80387 -mno-red-zone -mcmodel=kernel -MMD -MP"
-WARN_FLAGS = "-Wall -Wextra"
+WARN_FLAGS = "-w -Wall -Wextra"
 STANDART_FLAGS = "-std=gnu11"
 PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"
@@ -71,7 +71,23 @@ def check_tools():
         subprocess.run(["sudo", "apt", "install"] + missing_tools)
 
 
+def create_hdd(IMAGE_NAME):
+    subprocess.run(["rm", "-f", IMAGE_NAME+".hdd"])
+    subprocess.run(["dd", "if=/dev/zero", "bs=1M", "count=0", "seek=64", "of="+IMAGE_NAME+".hdd"])
+    subprocess.run(["sgdisk", IMAGE_NAME+".hdd", "-n", "1:2048", "-t", "1:ef00"])
+    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
+    subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
+    subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/mod", "::/EFI", "::/EFI/BOOT"])
+    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
+                    "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
+    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
+                    "modules/com/com.elf", "modules/helloworld/helloworld.elf", "::/mod"])
+    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
+                    "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
+
+
 def create_iso(IMAGE_NAME):
+    subprocess.run(["rm", "-f", IMAGE_NAME+".iso"])
     subprocess.run(["rm", "-rf", "iso_root"])
     subprocess.run(["mkdir", "-p", "iso_root"])
     subprocess.run(["cp", "-v", "iso_root/"])
@@ -80,6 +96,9 @@ def create_iso(IMAGE_NAME):
                     "limine/limine-bios-cd.bin", "limine/limine-uefi-cd.bin", 
                     "iso_root/"])
     subprocess.run(["mkdir", "-p", "iso_root/EFI/BOOT"])
+    subprocess.run(["mkdir", "-p", "iso_root/mod/"])
+    subprocess.run(["cp", "-v", "modules/helloworld/helloworld.elf", "iso_root/mod/"])
+    subprocess.run(["cp", "-v", "modules/com/com.elf", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "limine/BOOTX64.EFI", "iso_root/EFI/BOOT/"])
     subprocess.run(["cp", "-v", "limine/BOOTIA32.EFI", "iso_root/EFI/BOOT/"])
     subprocess.run(["xorriso", "-as", "mkisofs", "-b", "limine-bios-cd.bin",
@@ -90,20 +109,8 @@ def create_iso(IMAGE_NAME):
     subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".iso"])
     subprocess.run(["rm", "-rf", "iso_root"])
 
-def create_hdd(IMAGE_NAME):
-    subprocess.run(["rm", "-f", IMAGE_NAME+".hdd"])
-    subprocess.run(["dd", "if=/dev/zero", "bs=1M", "count=0", "seek=64", "of="+IMAGE_NAME+".hdd"])
-    subprocess.run(["sgdisk", IMAGE_NAME+".hdd", "-n", "1:2048", "-t", "1:ef00"])
-    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
-    subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
-    subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/EFI", "::/EFI/BOOT"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
-                    "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
-
-
 if __name__ == "__main__":
+    os.system("""find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file""")
     subprocess.run(["rm", "-rf", "bin"])
     subprocess.run(["mkdir", "-p", "bin"])
 
@@ -116,7 +123,7 @@ if __name__ == "__main__":
     check_limine()
     check_tools()
     compile_all()
-    create_hdd("mseos")
     create_iso("mseos")
+    create_hdd("mseos")
 
     print("qemu-system-x86_64 -M q35 -m 8G -smp 8 -bios ovmf/OVMF.fd -hda mseos.hdd")
