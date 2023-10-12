@@ -90,7 +90,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 						if (rem < 10) {
 							buffer[i++] = '0' + rem;
 						} else {
-							buffer[i++] = 'a' + (rem - 10);
+							buffer[i++] = 'A' + (rem - 10);
 						}
 						arg /= 16;
 					}

@@ -5,14 +5,46 @@ import time
 from multiprocessing import Pool
 
 
-CC = "g++"
-ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-80387 -mno-red-zone -mcmodel=kernel -MMD -MP"
-WARN_FLAGS = "-w -Wall -Wextra"
+ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-red-zone -mcmodel=kernel -MMD -MP"
+WARN_FLAGS = "-w -Wall -Wextra -nostdlib"
 STANDART_FLAGS = "-std=gnu11"
 PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"
 LIBS_FLAGS = "-Ilimine -Iinclude"
 
+def version_build():
+    with open("include/version.h", "r") as file:
+        lines = file.readlines()
+
+    major = 0
+    minor = 0
+    build = 0
+
+    with open("include/version.h", "w") as file:
+        for line in lines:
+            if line.startswith("#define VERSION_BUILD"):
+                parts = line.split()
+                build = int(parts[2]) + 1
+                if build > 255:
+                    build = 0
+                    minor += 1
+                    file.write(f"#define VERSION_MINOR {minor}\n")
+                file.write(f"#define VERSION_BUILD {build}\n")
+            elif line.startswith("#define VERSION_MAJOR"):
+                parts = line.split()
+                major = int(parts[2])
+                file.write(line)
+            elif line.startswith("#define VERSION_MINOR"):
+                parts = line.split()
+                minor = int(parts[2])
+                file.write(line)
+            else:
+                file.write(line)
+
+    return [major, minor, build]
+
+def sort_strings(strings):
+    return sorted(strings, key=lambda x: not x.endswith('.s.o'))
 
 def find_files(directory, extensions):
     file_list = []
@@ -24,6 +56,7 @@ def find_files(directory, extensions):
 
 
 def compile(file: str):
+    CC = "g++" if file.endswith('cpp') else "gcc"
     output_file = file.replace('/', '_')
     obj_file = f"bin/{output_file}.o"
     cmd = f"{CC} {WARN_FLAGS} {PROTECT_FLAGS} {ARCH_FLAGS} {CHARSET_FLAGS} {LIBS_FLAGS} -c {file} -o {obj_file}"
@@ -33,7 +66,8 @@ def compile(file: str):
 
 
 def compile_all():
-    file_list = find_files("kernel/", [".c", ".cpp", ".s"])
+    file_list = find_files("kernel/", [".s", ".cpp", ".c"])
+    file_list += find_files("kernel/*/*", [".s", ".cpp", ".c"])
 
     with Pool() as pool:
         results = pool.map(compile, file_list)
@@ -42,7 +76,7 @@ def compile_all():
         print(results)
         time.sleep(1)
     print(results)
-    cmd = f"ld -nostdlib -static -m elf_x86_64 -z max-page-size=0x1000 -T configs/linker.ld -o kernel.elf {' '.join(results)}"
+    cmd = f"ld -nostdlib -static -m elf_x86_64 -z max-page-size=0x1000 -T configs/linker.ld -o kernel.elf {' '.join(sort_strings(results))}"
     print(cmd)
     os.system(cmd)
 
@@ -77,13 +111,16 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["sgdisk", IMAGE_NAME+".hdd", "-n", "1:2048", "-t", "1:ef00"])
     subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
     subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
-    subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/mod", "::/EFI", "::/EFI/BOOT"])
+    subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/mod", "::/EFI", "::/EFI/BOOT", "::/user"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
                     "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
                     "modules/com/com.elf", "modules/helloworld/helloworld.elf", "::/mod"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
+    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
+                    "boot.png", "::/"])
+    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
 
 
 def create_iso(IMAGE_NAME):
@@ -91,12 +128,12 @@ def create_iso(IMAGE_NAME):
     subprocess.run(["rm", "-rf", "iso_root"])
     subprocess.run(["mkdir", "-p", "iso_root"])
     subprocess.run(["cp", "-v", "iso_root/"])
-    subprocess.run(["cp", "-v", "kernel.elf", 
+    subprocess.run(["cp", "-v", "kernel.elf", "boot.png",
                     "configs/limine.cfg", "limine/limine-bios.sys", 
                     "limine/limine-bios-cd.bin", "limine/limine-uefi-cd.bin", 
                     "iso_root/"])
     subprocess.run(["mkdir", "-p", "iso_root/EFI/BOOT"])
-    subprocess.run(["mkdir", "-p", "iso_root/mod/"])
+    subprocess.run(["mkdir", "-p", "iso_root/mod"])
     subprocess.run(["cp", "-v", "modules/helloworld/helloworld.elf", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "modules/com/com.elf", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "limine/BOOTX64.EFI", "iso_root/EFI/BOOT/"])
@@ -107,7 +144,6 @@ def create_iso(IMAGE_NAME):
                     "-efi-boot-part", "--efi-boot-image", "--protective-msdos-label",
                     "iso_root", "-o", IMAGE_NAME+".iso"])
     subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".iso"])
-    subprocess.run(["rm", "-rf", "iso_root"])
 
 if __name__ == "__main__":
     os.system("""find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file""")
@@ -123,7 +159,8 @@ if __name__ == "__main__":
     check_limine()
     check_tools()
     compile_all()
-    create_iso("mseos")
-    create_hdd("mseos")
+    create_iso("bmosp")
+    create_hdd("bmosp")
 
-    print("qemu-system-x86_64 -M q35 -m 8G -smp 8 -bios ovmf/OVMF.fd -hda mseos.hdd")
+    major, minor, build = version_build()
+    print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}, {build}")

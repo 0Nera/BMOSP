@@ -1,9 +1,9 @@
-# MSEOS: минимальная студенческая обучающая операционная система
+# БМПОС: Базовая Модульная Платформа Операционных Систем
 
-[![CI BUILD](https://github.com/0Nera/MSEOS/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/MSEOS/actions/workflows/build.yml)
-[![Github pages](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment)
+[![CI сборка](https://github.com/0Nera/BMOSP/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/MSEOS/actions/workflows/build.yml)
+[![Github pages сайт](https://github.com/0Nera/BMOSP/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment)
 
-MSEOS - минимальная студенческая обучающая операционная система с открытым исходным кодом для платформы x86_64(BIOS/UEFI). Это отечественная операционная система.
+БМПОС - Базовая Модульная Платформа Операционных Систем для платформы x86_64 (BIOS/UEFI). Это отечественное программное обеспечение, созданное при поддержке Синапс ОС на языке программирования C++.
 
 Система:
 - [ ] Менеджер памяти
@@ -41,11 +41,20 @@ MSEOS - минимальная студенческая обучающая оп�
 
 - <https://vk.com/mseos> Страница вконтакте
 - <https://mseos.ru> Вебсайт
-- <https://wiki.synapseos.ru/index.php?title=MSEOS> Страница на вики
+- <https://wiki.synapseos.ru/index.php?title=БМПОС> Страница на вики
 
 ### Зеркала
 
-- <https://git.synapseos.ru/Aren/MSEOS> - доверенный сервер(главный репозиторий)
-- <https://github.com/0Nera/MSEOS> - зеркало
-- <https://tvoygit.ru/0Nera/mseos> - зеркало
-- <https://hub.mos.ru/synapseos/mseos> - неактивное зеркало
+- <https://git.synapseos.ru/Aren/BMOSP> - доверенный сервер(главный репозиторий)
+- <https://github.com/0Nera/BMOSP> - зеркало
+- <https://tvoygit.ru/0Nera/BMOSP> - зеркало
+- <https://hub.mos.ru/synapseos/BMOSP> - неактивное зеркало
+
+### Использованные ресурсы
+
+- https://github.com/limine-bootloader/limine (BSD 2-Clause)
+- https://github.com/nothings/stb (MIT, Общественное достояние)
+- https://en.wikipedia.org/wiki/CPUID
+- https://github.com/klange/toaruos (NCSA)
+- https://wiki.osdev.org/Model_Specific_Registers
+- https://sandpile.org/x86/msr.htm
