@@ -1,10 +1,11 @@
 kernel.elf
-mseos.hdd
-mseos.iso
+bmosp.hdd
+bmosp.iso
 *.0
 
 bin/
 limine/
 ovmf/
+iso_root/
 modules/helloworld/helloworld.elf
 modules/com/com.elf
