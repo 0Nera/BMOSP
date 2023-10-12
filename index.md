@@ -1,9 +1,11 @@
-# MSEOS: минимальная студенческая обучающая операционная система
+# BMOSP: Базовая Модульная Платформа Операционных Систем
 
-[![CI BUILD](https://github.com/0Nera/MSEOS/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/MSEOS/actions/workflows/build.yml)
-[![Github pages](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/MSEOS/actions/workflows/pages/pages-build-deployment)
+БМПОС(BMOSP) - Базовая Модульная Платформа Операционных Систем (Basic Modular Operating System Platform)
 
-MSEOS - минимальная студенческая обучающая операционная система с открытым исходным кодом для платформы x86_64(BIOS/UEFI).
+[![CI BUILD](https://github.com/0Nera/BMOSP/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/BMOSP/actions/workflows/build.yml)
+[![Github pages](https://github.com/0Nera/BMOSP/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/BMOSP/actions/workflows/pages/pages-build-deployment)
+
+BMOSP - минимальная студенческая обучающая операционная система с открытым исходным кодом для платформы x86_64(BIOS/UEFI).
 
 - [Системные вызовы](/API.md)
 - [Стандартная библиотека](/STD.md)
@@ -39,13 +41,13 @@ MSEOS - минимальная студенческая обучающая оп�
 
 ## Ресурсы
 
-- <https://vk.com/mseos> Страница вконтакте
-- <https://0nera.github.io/MSEOS/> Вебсайт
-- <https://wiki.synapseos.ru/index.php?title=MSEOS> Страница на вики
+- <https://vk.com/BMOSP> Страница вконтакте
+- <https://mseos.ru> Вебсайт
+- <https://wiki.synapseos.ru/index.php?title=BMOSP> Страница на вики
 
 ### Зеркала
 
-- <https://git.synapseos.ru/Aren/MSEOS> - доверенный сервер(главный репозиторий)
-- <https://github.com/0Nera/MSEOS> - основной репозиторий
-- <https://tvoygit.ru/0Nera/mseos> - зеркало
-- <https://hub.mos.ru/synapseos/mseos> - неактивное зеркало
+- <https://git.synapseos.ru/Aren/BMOSP> - доверенный сервер(главный репозиторий)
+- <https://github.com/0Nera/BMOSP> - основной репозиторий
+- <https://tvoygit.ru/0Nera/BMOSP> - зеркало
+- <https://hub.mos.ru/synapseos/BMOSP> - неактивное зеркало
