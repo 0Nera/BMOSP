@@ -159,9 +159,9 @@ if __name__ == "__main__":
     check_limine()
     check_tools()
     major, minor, build = version_build()
+    os.system("cd modules/helloworld/ && ./build.sh")
     compile_all()
     create_iso("bmosp")
     create_hdd("bmosp")
-    os.system("cd modules/helloworld/ && ./build.sh")
 
     print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}, {build}")

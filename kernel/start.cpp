@@ -31,7 +31,5 @@ extern "C" void _start( ) {
 	fb::printf("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	mod::init( );
 
-	asm volatile("int $0");
-
 	for (;;) { asm volatile("hlt"); }
 }

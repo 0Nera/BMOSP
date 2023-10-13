@@ -20,39 +20,42 @@ typedef struct {
 	uint16_t e_shstrndx;
 } elf64_header_t;
 
-void *elf_entry(void *module, uint64_t size) {
-	// Приводим заголовок ELF файла к типу elf64_header_t
-	elf64_header_t *elf_header = (elf64_header_t *)module;
+typedef struct {
+	void (*fb_printf)(char *str, ...);
+} env_t;
 
-	// Выводим данные о заголовке ELF файла
-	fb::printf("ELF Header:\n");
-	fb::printf("  Magic number: ");
-	for (int i = 0; i < 16; i++) {
-		fb::printf("0x%x ", elf_header->e_ident[i]);
-	}
-	fb::printf("\n");
-	fb::printf("  Class:       ELF64\n");
-	fb::printf("  Version:     %u\n", elf_header->e_ident[6]);
-	fb::printf("  OS/ABI:      %u\n", elf_header->e_ident[7]);
-	fb::printf("  Type:        %u\n", elf_header->e_type);
-	fb::printf("  Machine:     %u\n", elf_header->e_machine);
-	fb::printf("  Version:     %u\n", elf_header->e_version);
-	fb::printf("  Entry point: 0x%x\n", elf_header->e_entry);
-	fb::printf("  Program header offset:      %u\n", elf_header->e_phoff);
-	fb::printf("  Section header offset:      %u\n", elf_header->e_shoff);
-	fb::printf("  Flags:       %u\n", elf_header->e_flags);
-	fb::printf("  ELF header size:           %u (bytes)\n",
+env_t main_env;
+
+void *elf_entry(void *module_bin, uint64_t size) {
+	// Приводим заголовок ELF файла к типу elf64_header_t
+	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
+
+	fb::printf("  Класс:       ELF64\n");
+	fb::printf("  Версия:      %u\n", elf_header->e_ident[6]);
+	fb::printf("  ОС/ABI:      %u\n", elf_header->e_ident[7]);
+	fb::printf("  Тип:         %u\n", elf_header->e_type);
+	fb::printf("  Машина:      %u\n", elf_header->e_machine);
+	fb::printf("  Версия:      %u\n", elf_header->e_version);
+	fb::printf("  Точка входа: 0x%x\n", elf_header->e_entry);
+#if 0
+	fb::printf("  Смещение таблицы программ:      %u\n", elf_header->e_phoff);
+	fb::printf("  Смещение таблицы секций:        %u\n", elf_header->e_shoff);
+	fb::printf("  Флаги:       %u\n", elf_header->e_flags);
+	fb::printf("  Размер заголовка ELF файла:      %u (байт)\n",
 	           elf_header->e_ehsize);
-	fb::printf("  Program header entry size:  %u (bytes)\n",
+	fb::printf("  Размер записи таблицы программ:  %u (байт)\n",
 	           elf_header->e_phentsize);
-	fb::printf("  Program header count:      %u\n", elf_header->e_phnum);
-	fb::printf("  Section header entry size:  %u (bytes)\n",
+	fb::printf("  Количество записей таблицы программ:      %u\n",
+	           elf_header->e_phnum);
+	fb::printf("  Размер записи таблицы секций:  %u (байт)\n",
 	           elf_header->e_shentsize);
-	fb::printf("  Section header count:      %u\n", elf_header->e_shnum);
-	fb::printf("  Section header string index: %u\n", elf_header->e_shstrndx);
+	fb::printf("  Количество записей таблицы секций:      %u\n",
+	           elf_header->e_shnum);
+	fb::printf("  Индекс строки таблицы секций: %u\n", elf_header->e_shstrndx);
+#endif
 
 	// Возвращаем указатель на точку входа
-	return (void *)elf_header->e_entry;
+	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
 }
 
 namespace mod {
@@ -66,6 +69,7 @@ struct limine_module_response *module_response;
 static uint64_t module_count = 0;
 
 void init( ) {
+	main_env.fb_printf = &fb::printf;
 	module_response = module_request.response;
 	module_count = module_response->module_count;
 	struct limine_file *module_ptr = (struct limine_file *)0;
@@ -74,15 +78,23 @@ void init( ) {
 		module_ptr = module_response->modules[i];
 		fb::printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
 		           module_ptr->cmdline, module_ptr->address);
-		fb::printf("->Size: %u, media_type: %u, partition_index: %u\n",
+		fb::printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
 		           module_ptr->size, module_ptr->media_type,
 		           module_ptr->partition_index);
-		fb::printf("->mbr_disk_id: %u, tftp_ip: %u, tftp_port: %u\n",
-		           module_ptr->mbr_disk_id, module_ptr->tftp_ip,
-		           module_ptr->tftp_port);
+		fb::printf(
+		    "->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
+		    module_ptr->mbr_disk_id, module_ptr->tftp_ip,
+		    module_ptr->tftp_port);
 
-		fb::printf("\t->Entry point: 0x%x\n\n",
-		           elf_entry(module_ptr->address, module_ptr->size));
+		long long (*module_init)(env_t * env) = (long long (*)(env_t * env))
+		    elf_entry(module_ptr->address, module_ptr->size);
+
+		fb::printf("\t->Точка входа: 0x%x\n", module_init);
+
+		int ret = module_init(&main_env);
+
+		fb::printf("Инициализированно с кодом: %x\n", ret);
+		fb::printf("Сообщение из модуля: %s\n\n", (char *)ret);
 	}
 }
 } // namespace mod
