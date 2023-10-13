@@ -115,7 +115,7 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
                     "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "modules/com/com.elf", "modules/helloworld/helloworld.elf", "::/mod"])
+                    "modules/com/com.elf", "modules/helloworld/hello.so", "::/mod"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
@@ -134,7 +134,7 @@ def create_iso(IMAGE_NAME):
                     "iso_root/"])
     subprocess.run(["mkdir", "-p", "iso_root/EFI/BOOT"])
     subprocess.run(["mkdir", "-p", "iso_root/mod"])
-    subprocess.run(["cp", "-v", "modules/helloworld/helloworld.elf", "iso_root/mod/"])
+    subprocess.run(["cp", "-v", "modules/helloworld/hello.so", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "modules/com/com.elf", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "limine/BOOTX64.EFI", "iso_root/EFI/BOOT/"])
     subprocess.run(["cp", "-v", "limine/BOOTIA32.EFI", "iso_root/EFI/BOOT/"])
@@ -162,5 +162,6 @@ if __name__ == "__main__":
     compile_all()
     create_iso("bmosp")
     create_hdd("bmosp")
+    os.system("cd modules/helloworld/ && ./build.sh")
 
     print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}, {build}")
