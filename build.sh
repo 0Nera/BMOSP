@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 build.py
+python3 pbuild.py
