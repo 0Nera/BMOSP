@@ -94,7 +94,7 @@ def check_limine():
 
 
 def check_tools():
-    required_tools = ["g++", "xorriso", "make", "mtools"]
+    required_tools = ["gcc", "g++", "xorriso", "make", "mtools", "curl"]
     missing_tools = []
 
     for tool in required_tools:

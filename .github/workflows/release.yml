@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         run: |
-          python3 build.py
+          ./build.sh
           cp kernel.elf x86_64-kernel.elf
           cp mseos.hdd x86_64-mseos.hdd
 
