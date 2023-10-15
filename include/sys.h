@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+extern "C" {
 typedef struct {
 	void (*fb_printf)(char *str, ...);
 } env_t;
@@ -22,7 +23,6 @@ typedef struct {
 	char *message;
 	int err_code;
 	uint64_t func_count;
-	module_func_t *func[];
 } module_info_t;
 
 typedef struct {
@@ -42,3 +42,4 @@ typedef struct {
 	uint8_t day;
 	uint8_t second;
 } time_t;
+}

@@ -26,7 +26,6 @@ typedef struct {
 	char *message;
 	int err_code;
 	uint64_t func_count;
-	module_func_t *func[];
 } module_info_t;
 
 typedef struct {

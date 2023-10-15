@@ -21,10 +21,6 @@ typedef struct {
 	uint16_t e_shstrndx;
 } elf64_header_t;
 
-typedef struct {
-	void (*fb_printf)(char *str, ...);
-} env_t;
-
 env_t main_env;
 
 void *elf_entry(void *module_bin, uint64_t size) {
