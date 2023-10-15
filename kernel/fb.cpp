@@ -48,6 +48,8 @@ void init( ) {
 	bpp = boot_framebuffer->bpp;
 
 	for (uint64_t i = 0; i < width * height; i++) { fb_addr[i] = background; }
+
+	fb::printf("0x%x %ux%u\n", fb_addr, width, height);
 }
 
 static inline void print_bits(size_t x, size_t y, uint8_t num) {

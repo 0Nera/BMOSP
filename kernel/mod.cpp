@@ -1,6 +1,7 @@
 #include <fb.h>
 #include <limine.h>
 #include <mod.h>
+#include <sys.h>
 
 // Структуры соответствующие ELF заголовкам
 typedef struct {
@@ -86,15 +87,16 @@ void init( ) {
 		    module_ptr->mbr_disk_id, module_ptr->tftp_ip,
 		    module_ptr->tftp_port);
 
-		long long (*module_init)(env_t * env) = (long long (*)(env_t * env))
-		    elf_entry(module_ptr->address, module_ptr->size);
+		module_info_t *(*module_init)(env_t * env) =
+		    (module_info_t * (*)(env_t * env))
+		        elf_entry(module_ptr->address, module_ptr->size);
 
 		fb::printf("\t->Точка входа: 0x%x\n", module_init);
 
-		int ret = module_init(&main_env);
+		module_info_t *ret = module_init(&main_env);
 
-		fb::printf("Инициализированно с кодом: %x\n", ret);
-		fb::printf("Сообщение из модуля: %s\n\n", (char *)ret);
+		fb::printf("Инициализированно с кодом: %u\n", ret->err_code);
+		fb::printf("Сообщение из модуля: %s\n\n", ret->message);
 	}
 }
 } // namespace mod

@@ -1,34 +1,5 @@
 #include <stdint.h>
-
-typedef struct {
-	int reserved;
-} framebuffer_t;
-
-typedef struct {
-	int reserved;
-} sys_info_t;
-
-typedef struct {
-	int reserved;
-} module_info_t;
-
-typedef struct {
-	int reserved;
-} func_t;
-
-typedef struct {
-	uint8_t a[4];
-	uint8_t b[4];
-	uint8_t c[4];
-	uint8_t d[4];
-} uid_t;
-
-typedef struct {
-	uint16_t year;
-	uint8_t month;
-	uint8_t day;
-	uint8_t second;
-} time_t;
+#include <sys.h>
 
 namespace sys {
 void init( ) {}
