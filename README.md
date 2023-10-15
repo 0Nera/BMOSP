@@ -59,7 +59,7 @@
 
 ## Ресурсы
 
-- <https://vk.com/mseos> Страница вконтакте
+- <https://vk.com/BMOSP> Страница вконтакте
 - <https://mseos.ru> Вебсайт
 - <https://wiki.synapseos.ru/index.php?title=БМПОС> Страница на вики
 
