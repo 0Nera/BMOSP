@@ -1,5 +1,7 @@
 #include <stdarg.h>
 
+#define abs(x) ((x) < 0 ? -(x) : (x))
+
 #define assert(check)                                                          \
 	({                                                                         \
 		if (!(check)) {                                                        \
@@ -18,8 +20,18 @@
 #define BIT_CLEAR(BIT) (bitmap[(BIT) / 8] &= ~(1 << ((BIT) % 8)))
 #define BIT_GET(BIT) ((bitmap[(BIT) / 8] >> ((BIT) % 8)) & 1)
 
+static inline void pause( ) {
+	for (uint64_t i = 0; i < 1024; i++) {
+		for (uint64_t j = 0; j < 1024; j++) {
+			for (uint64_t q = 0; q < 4; q++) { asm volatile("pause"); }
+		}
+	}
+}
+
 namespace tool {
 void memcpy(void *dest, void *src, uint64_t n);
 void *memset(void *ptr, uint8_t n, uint64_t size);
+uint64_t strlen(const char *str);
+uint64_t starts_with(const char *str, const char *prefix);
 void format(void (*putc)(char c), const char *format_string, va_list args);
 } // namespace tool

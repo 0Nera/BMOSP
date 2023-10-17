@@ -2,6 +2,7 @@
 #include <limine.h>
 #include <mod.h>
 #include <sys.h>
+#include <tool.h>
 
 // Структуры соответствующие ELF заголовкам
 typedef struct {
@@ -23,6 +24,10 @@ typedef struct {
 
 env_t main_env;
 
+extern "C" {
+void *bootpng_ptr;
+uint64_t bootpng_size;
+}
 void *elf_entry(void *module_bin, uint64_t size) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
@@ -83,16 +88,24 @@ void init( ) {
 		    module_ptr->mbr_disk_id, module_ptr->tftp_ip,
 		    module_ptr->tftp_port);
 
+		if (tool::starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
+			fb::printf("\t\t[BOOTIMG]\n");
+			bootpng_ptr = module_ptr->address;
+			bootpng_size = module_ptr->size;
+			continue;
+		}
+		if (!tool::starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
+
 		module_info_t *(*module_init)(env_t * env) =
 		    (module_info_t * (*)(env_t * env))
 		        elf_entry(module_ptr->address, module_ptr->size);
 
 		fb::printf("\t->Точка входа: 0x%x\n", module_init);
 
-		module_info_t *ret = module_init(&main_env);
+		// module_info_t *ret = module_init(&main_env);
 
-		fb::printf("Инициализированно с кодом: %u\n", ret->err_code);
-		fb::printf("Сообщение из модуля: %s\n\n", ret->message);
+		// fb::printf("Инициализированно с кодом: %u\n", ret->err_code);
+		// fb::printf("Сообщение из модуля: %s\n\n", ret->message);
 	}
 }
 } // namespace mod

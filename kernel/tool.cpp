@@ -17,6 +17,28 @@ void *memset(void *ptr, uint8_t n, uint64_t size) {
 	return ptr;
 }
 
+uint64_t strlen(const char *str) {
+	uint64_t length = 0;
+	while (*str) {
+		length++;
+		str++;
+	}
+	return length;
+}
+
+uint64_t starts_with(const char *str, const char *prefix) {
+	uint64_t str_len = strlen(str);
+	uint64_t prefix_len = strlen(prefix);
+
+	if (prefix_len > str_len) { return 0; }
+
+	for (uint64_t i = 0; i < prefix_len; i++) {
+		if (str[i] != prefix[i]) { return 0; }
+	}
+
+	return 1;
+}
+
 // Функция для форматированного вывода
 void format(void (*putc)(char c), const char *format_string, va_list args) {
 	while (*format_string != '\0') {
@@ -28,7 +50,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 			if (*format_string == '%') {
 				putc('%'); // Вывод одного символа '%'
 			} else if (*format_string == 'd') {
-				int arg = va_arg(args, int);
+				int64_t arg = va_arg(args, int64_t);
 				// Преобразование целочисленного аргумента в строку и вывод
 				// каждого символа
 				if (arg < 0) {
@@ -40,7 +62,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 				} else {
 					char buffer[10]; // Предполагаем, что максимальное число из
 					                 // 10 цифр
-					int i = 0;
+					int64_t i = 0;
 
 					while (arg > 0) {
 						buffer[i++] = '0' + (arg % 10);
@@ -57,15 +79,15 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 					arg++;
 				}
 			} else if (*format_string == 'u') {
-				unsigned int arg = va_arg(args, unsigned int);
+				uint64_t arg = va_arg(args, uint64_t);
 				// Преобразование беззнакового целочисленного аргумента в строку
 				// и вывод каждого символа
 				if (arg == 0) {
 					putc('0');
 				} else {
-					char buffer[10]; // Предполагаем, что максимальное число из
+					char buffer[32]; // Предполагаем, что максимальное число из
 					                 // 10 цифр
-					int i = 0;
+					int64_t i = 0;
 
 					while (arg > 0) {
 						buffer[i++] = '0' + (arg % 10);
@@ -75,18 +97,18 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 					while (i > 0) { putc(buffer[--i]); }
 				}
 			} else if (*format_string == 'x') {
-				unsigned int arg = va_arg(args, unsigned int);
+				uint64_t arg = va_arg(args, uint64_t);
 				// Преобразование беззнакового целочисленного аргумента в
 				// шестнадцатеричную строку и вывод каждого символа
 				if (arg == 0) {
 					putc('0');
 				} else {
-					char buffer[9]; // Предполагаем, что максимальное число из 8
-					                // символов
-					int i = 0;
+					char buffer[32]; // Предполагаем, что максимальное число из
+					                 // 8 символов
+					int64_t i = 0;
 
 					while (arg > 0) {
-						int rem = arg % 16;
+						int64_t rem = arg % 16;
 						if (rem < 10) {
 							buffer[i++] = '0' + rem;
 						} else {
@@ -102,7 +124,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 				// Вывод символа
 				putc(arg);
 			} else if (*format_string == 'o') {
-				unsigned int arg = va_arg(args, unsigned int);
+				uint64_t arg = va_arg(args, uint64_t);
 				// Преобразование беззнакового целочисленного аргумента в
 				// восьмеричную строку и вывод каждого символа
 				if (arg == 0) {
@@ -110,7 +132,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 				} else {
 					char buffer[12]; // Предполагаем, что максимальное число из
 					                 // 11 символов
-					int i = 0;
+					int64_t i = 0;
 
 					while (arg > 0) {
 						buffer[i++] = '0' + (arg % 8);
@@ -120,7 +142,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 					while (i > 0) { putc(buffer[--i]); }
 				}
 			} else if (*format_string == 'b') {
-				unsigned int arg = va_arg(args, unsigned int);
+				uint64_t arg = va_arg(args, uint64_t);
 				// Преобразование беззнакового целочисленного аргумента в
 				// двоичную строку и вывод каждого символа
 				if (arg == 0) {
@@ -128,7 +150,7 @@ void format(void (*putc)(char c), const char *format_string, va_list args) {
 				} else {
 					char buffer[33]; // Предполагаем, что максимальное число из
 					                 // 32 символа
-					int i = 0;
+					int64_t i = 0;
 
 					while (arg > 0) {
 						buffer[i++] = '0' + (arg % 2);

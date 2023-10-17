@@ -9,14 +9,6 @@
 
 extern "C" void main( );
 
-static inline void pause( ) {
-	for (uint64_t i = 0; i < 1024; i++) {
-		for (uint64_t j = 0; j < 1024; j++) {
-			for (uint64_t q = 0; q < 1; q++) { asm volatile("pause"); }
-		}
-	}
-}
-
 // Точка входа
 extern "C" void _start( ) {
 	asm volatile("cli");
@@ -30,6 +22,8 @@ extern "C" void _start( ) {
 	           VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
 	fb::printf("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	mod::init( );
-
+	fb::printf("Пауза...\n");
+	pause( );
+	main( );
 	for (;;) { asm volatile("hlt"); }
 }
