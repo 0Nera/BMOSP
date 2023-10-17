@@ -26,7 +26,7 @@ extern "C" void _start( ) {
 	cpu::init( );
 	mem::init( );
 	fb::printf("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
-	           "версии %u.%u, %u ***\n",
+	           "версии %u.%u.%u ***\n",
 	           VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
 	fb::printf("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	mod::init( );

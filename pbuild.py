@@ -25,7 +25,7 @@ def version_build():
             if line.startswith("#define VERSION_BUILD"):
                 parts = line.split()
                 build = int(parts[2]) + 1
-                if build > 255:
+                if build > 999:
                     build = 0
                     minor += 1
                     file.write(f"#define VERSION_MINOR {minor}\n")
@@ -164,4 +164,4 @@ if __name__ == "__main__":
     create_iso("bmosp")
     create_hdd("bmosp")
 
-    print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}, {build}")
+    print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}.{build}")
