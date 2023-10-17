@@ -72,9 +72,9 @@
 
 ### Использованные ресурсы
 
-- https://github.com/limine-bootloader/limine (BSD 2-Clause)
-- https://github.com/nothings/stb (MIT, Общественное достояние)
-- https://en.wikipedia.org/wiki/CPUID
-- https://github.com/klange/toaruos (NCSA)
-- https://wiki.osdev.org/Model_Specific_Registers
-- https://sandpile.org/x86/msr.htm
+- <https://github.com/limine-bootloader/limine> (BSD 2-Clause)
+- <https://github.com/nothings/stb> (MIT, Общественное достояние)
+- <https://en.wikipedia.org/wiki/CPUID>
+- <https://github.com/klange/toaruos> (NCSA)
+- <https://wiki.osdev.org/Model_Specific_Registers>
+- <https://sandpile.org/x86/msr.htm>
