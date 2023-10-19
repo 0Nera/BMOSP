@@ -27,7 +27,9 @@ env_t main_env;
 extern "C" {
 void *bootpng_ptr;
 uint64_t bootpng_size;
+void main( );
 }
+
 void *elf_entry(void *module_bin, uint64_t size) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
@@ -92,6 +94,7 @@ void init( ) {
 			fb::printf("\t\t[BOOTIMG]\n");
 			bootpng_ptr = module_ptr->address;
 			bootpng_size = module_ptr->size;
+			main( );
 			continue;
 		}
 		if (!tool::starts_with(module_ptr->cmdline, "[MOD]")) { continue; }

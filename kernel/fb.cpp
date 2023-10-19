@@ -24,7 +24,7 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 
 struct limine_framebuffer_response *framebuffer_response;
 struct limine_framebuffer *boot_framebuffer;
-uint32_t *fb_addr;
+
 uint32_t text_color = GREEN;
 uint32_t background = DARK_GREEN;
 uint64_t width;
@@ -46,10 +46,20 @@ void init( ) {
 	width = boot_framebuffer->width;
 	height = boot_framebuffer->height;
 	bpp = boot_framebuffer->bpp;
+	pitch = boot_framebuffer->pitch;
 
 	for (uint64_t i = 0; i < width * height; i++) { fb_addr[i] = background; }
 
 	fb::printf("0x%x %ux%u\n", fb_addr, width, height);
+}
+
+void print_buf(size_t x, size_t y, size_t h, size_t w, uint32_t *buf) {
+	for (size_t j = 0; j < h; j++) {
+		for (size_t i = 0; i < w; i++) {
+			uint64_t where = (i + x) + (j + y) * width;
+			SCREEN_BUFFER[where] = buf[i + j * w];
+		}
+	}
 }
 
 static inline void print_bits(size_t x, size_t y, uint8_t num) {

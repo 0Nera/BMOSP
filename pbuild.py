@@ -119,7 +119,7 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "boot.png", "::/"])
+                    "boot.tga", "::/"])
     subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
 
 
@@ -128,7 +128,7 @@ def create_iso(IMAGE_NAME):
     subprocess.run(["rm", "-rf", "iso_root"])
     subprocess.run(["mkdir", "-p", "iso_root"])
     subprocess.run(["cp", "-v", "iso_root/"])
-    subprocess.run(["cp", "-v", "kernel.elf", "boot.png",
+    subprocess.run(["cp", "-v", "kernel.elf", "boot.tga",
                     "configs/limine.cfg", "limine/limine-bios.sys", 
                     "limine/limine-bios-cd.bin", "limine/limine-uefi-cd.bin", 
                     "iso_root/"])

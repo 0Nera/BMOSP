@@ -3,6 +3,21 @@
 #include <stdint.h>
 #include <tool.h>
 
+extern "C" {
+void sse_init( ) {
+	uint64_t _cr0 = 0;
+	asm volatile("mov %0, %%cr0" : "=r"(_cr0) : : "memory");
+	_cr0 &= ~(1 << 2);
+	_cr0 |= (1 << 1);
+	asm volatile("mov %%cr0, %0" : : "r"(_cr0) : "memory");
+
+	uint64_t _cr4 = 0;
+	asm volatile("mov %0, %%cr4" : "=r"(_cr4) : : "memory");
+	_cr4 |= (3 << 9);
+	asm volatile("mov %%cr4, %0" : : "r"(_cr4) : "memory");
+}
+}
+
 namespace cpu {
 static bool acpi_msrs_support = false;
 static bool mmx_support = false;
@@ -102,28 +117,6 @@ void brandname( ) {
 	if (manufacturer[0] == 0x68747541) { do_amd( ); }
 }
 
-void sse_init( ) {
-	asm volatile("clts\n"
-	             "mov %%cr0, %%rax\n"
-	             "and $0xFFFD, %%ax\n"
-	             "or $0x10, %%ax\n"
-	             "mov %%rax, %%cr0\n"
-	             "fninit\n"
-	             "mov %%cr0, %%rax\n"
-	             "and $0xfffb, %%ax\n"
-	             "or  $0x0002, %%ax\n"
-	             "mov %%rax, %%cr0\n"
-	             "mov %%cr4, %%rax\n"
-	             "or $0x600, %%rax\n"
-	             "mov %%rax, %%cr4\n"
-	             "push $0x1F80\n"
-	             "ldmxcsr (%%rsp)\n"
-	             "addq $8, %%rsp\n"
-	             :
-	             :
-	             : "rax");
-}
-
 void init( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
@@ -132,8 +125,8 @@ void init( ) {
 
 	if ((edx >> 22) & 1) {
 		acpi_msrs_support = true;
-		fb::printf("Температура: %u\n", get_cpu_temperature( ));
 		fb::printf("Встроенный терморегулятор MSRS для ACPI\n");
+		fb::printf("Температура: %u\n", get_cpu_temperature( ));
 	}
 
 	if ((edx >> 23) & 1) {
@@ -144,7 +137,7 @@ void init( ) {
 	if ((edx >> 25) & 1) {
 		sse2_support = true;
 		fb::printf("SSE2 подерживается!\n");
-		sse_init( );
+		// sse_init( );
 	}
 
 	cpuid(1, &eax, &ebx, &ecx, &edx);
@@ -164,7 +157,12 @@ void init( ) {
 		fb::printf("RDRND подерживается!\n");
 	}
 
+	cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+
+	if ((edx >> 11) & 1) { fb::printf("SYSCALL подерживается!\n"); }
+	if ((edx >> 29) & 1) { fb::printf("AMD64 подерживается!\n"); }
+
 	brandname( );
-	l2_cache( );
+	// l2_cache( );
 }
 } // namespace cpu

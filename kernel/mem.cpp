@@ -54,6 +54,16 @@ static mem_entry_t *first_node;
 
 namespace mem {
 
+void dump_memory( ) {
+	mem_entry_t *curr = first_node;
+
+	while (curr) {
+		fb::printf("->0x%x | %u kb | %u | 0x%x\n", &curr->data,
+		           curr->size / 1024, curr->free, curr->next);
+		curr = curr->next;
+	}
+}
+
 void frame_free(void *addr, uint64_t frames) {
 	// Проход по фреймам памяти и очистка битов в битовой карте
 	uint64_t frame = (uint64_t)addr / BLOCK_SIZE;
@@ -92,6 +102,15 @@ void *frame_calloc(uint64_t frames) {
 	return addr;
 }
 
+void merge_blocks(mem_entry_t *start) {
+	if (!start->free) return;
+	mem_entry_t *block = start;
+	while (block->next && block->next->free) {
+		block->size += block->next->size + sizeof(mem_entry_t);
+		block->next = block->next->next;
+	}
+}
+
 void add_block(void *addr, size_t size) {
 	mem_entry_t *new_entry = (mem_entry_t *)addr;
 
@@ -108,6 +127,7 @@ void add_block(void *addr, size_t size) {
 		curr->next = new_entry;
 		new_entry->next = NULL;
 	}
+	merge_blocks(first_node);
 }
 
 void alloc_init(void *address, size_t length) {
@@ -116,15 +136,6 @@ void alloc_init(void *address, size_t length) {
 	first_node->size = length - sizeof(mem_entry_t);
 	first_node->free = true;
 	first_node->next = NULL;
-}
-
-void merge_blocks(mem_entry_t *start) {
-	if (!start->free) return;
-	mem_entry_t *block = start;
-	while (block->next && block->next->free) {
-		block->size += block->next->size + sizeof(mem_entry_t);
-		block->next = block->next->next;
-	}
 }
 
 void *alloc_align(size_t size, size_t alignment) {
@@ -158,7 +169,6 @@ void *alloc_align(size_t size, size_t alignment) {
 
 		curr = curr->next;
 	}
-
 	return NULL;
 }
 
@@ -257,16 +267,21 @@ void init( ) {
 
 	fb::printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 	fb::printf("Размер битовой карты: %u\n", bitmap_size);
-	for (uint64_t i = 0; i < 256; i++) {
-		alloc_init(frame_alloc(100), 100 * BLOCK_SIZE);
+	alloc_init(frame_alloc(100), 1000 * BLOCK_SIZE);
+	for (uint64_t i = 0; i < 255; i++) {
+		add_block(frame_alloc(100), 1000 * BLOCK_SIZE);
 	}
+	mem::dump_memory( );
+	merge_blocks(first_node);
+	mem::dump_memory( );
 	fb::printf("%u мегабайт выделено в динамичную память\n",
-	           (256 * 100 * BLOCK_SIZE) / 1024 / 1024);
+	           (256 * 1000 * BLOCK_SIZE) / 1024 / 1024);
 	fb::printf("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
 	           (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
 	           available / 1024 / 1024);
 
 	fb::printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
+	fb::printf("Проверка менеджера памяти\n");
 }
 
 } // namespace mem
