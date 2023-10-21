@@ -3,9 +3,9 @@
 [![CI сборка](https://github.com/0Nera/BMOSP/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/0Nera/BMOSP/actions/workflows/build.yml)
 [![Github pages сайт](https://github.com/0Nera/BMOSP/actions/workflows/pages/pages-build-deployment/badge.svg?branch=pages)](https://github.com/0Nera/BMOSP/actions/workflows/pages/pages-build-deployment)
 
-БМПОС - Базовая Модульная Платформа Операционных Систем для платформы x86_64 (BIOS/UEFI). Это отечественное программное обеспечение, созданное при поддержке Синапс ОС на языке программирования C++.
+БМПОС - Базовая Модульная Платформа Операционных Систем для платформы x86_64 (BIOS/UEFI). Это отечественное программное обеспечение, созданное при поддержке Синапс ОС на языке программирования C.
 
-![Скриншот вывода ядра в эмуляторе Qemu](https://0nera.github.io/BMOSP/assets/0_0.1.231.png
+![Скриншот вывода ядра в эмуляторе Qemu](https://0nera.github.io/BMOSP/assets/0_0.1.231.png)
 
 ## Реализовано
 
@@ -22,7 +22,6 @@
 
 Драйвера:
 
-- [ ] COM
 - [ ] PS/2 (Клавиатура)
 - [ ] SATA (ACHI) (Чтение)
 - [ ] EXT2
@@ -60,7 +59,7 @@
 
 ## Сборка из исходного кода
 
-### Ubuntu 18+
+### Ubuntu 18.04+
 
 ```bash
 sudo apt install clang-format python3 git qemu-system-x86

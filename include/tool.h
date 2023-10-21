@@ -15,19 +15,17 @@
 
 #define abs(x) ((x) < 0 ? -(x) : (x))
 
-#define assert(check)                                                          \
-	do {                                                                       \
-		if (!(check)) {                                                        \
-			fb_printf("\nassert() failed in %s() (%s:%d)\n", __func__,         \
-			          __FILE__, __LINE__);                                     \
-			for (;;) asm volatile("hlt");                                      \
-		}                                                                      \
+#define assert(check)                                                                              \
+	do {                                                                                           \
+		if (!(check)) {                                                                            \
+			fb_printf("\nassert() failed in %s() (%s:%d)\n", __func__, __FILE__, __LINE__);        \
+			for (;;) asm volatile("hlt");                                                          \
+		}                                                                                          \
 	} while (0)
 
 #define ALIGN_UP(NUM, ALIGN) (((NUM) + ALIGN - 1) & ~(ALIGN - 1))
 #define ALIGN_DOWN(NUM, ALIGN) ((NUM) & ~(ALIGN - 1))
-#define CONTAINER_OF(PTR, TYPE, MEMBER)                                        \
-	((TYPE *)((void *)PTR - offsetof(TYPE, MEMBER)))
+#define CONTAINER_OF(PTR, TYPE, MEMBER) ((TYPE *)((void *)PTR - offsetof(TYPE, MEMBER)))
 
 #define BIT_SET(BIT) (bitmap[(BIT) / 8] |= (1 << ((BIT) % 8)))
 #define BIT_CLEAR(BIT) (bitmap[(BIT) / 8] &= ~(1 << ((BIT) % 8)))

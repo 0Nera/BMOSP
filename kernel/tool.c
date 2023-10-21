@@ -1,4 +1,11 @@
-#include <limine.h>
+/**
+ * tool.c
+ * Функции для упрощения разработки
+ *
+ * Данный файл содержит реализацию функций для упрощения написания кода
+ *
+ */
+
 #include <stdarg.h>
 #include <stdint.h>
 
@@ -38,8 +45,7 @@ uint64_t tool_starts_with(const char *str, const char *prefix) {
 }
 
 // Функция для форматированного вывода
-void tool_format(void (*putc)(char c), const char *format_string,
-                 va_list args) {
+void tool_format(void (*putc)(char c), const char *format_string, va_list args) {
 	while (*format_string != '\0') {
 		if (*format_string == '%') {
 			format_string++;

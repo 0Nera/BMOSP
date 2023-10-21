@@ -1,3 +1,12 @@
+/**
+ * cpu.c
+ * Информация о процессоре
+ *
+ * Функционал получения дополнительной информации о процессоре и доступных
+ * процессорных инструкциях
+ *
+ */
+
 #include <fb.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -22,11 +31,8 @@ static void sse_init( ) {
 	asm volatile("mov %%cr4, %0" : : "r"(_cr4) : "memory");
 }
 
-static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
-                  uint32_t *edx) {
-	asm volatile("cpuid"
-	             : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx)
-	             : "a"(leaf));
+static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
+	asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "a"(leaf));
 }
 
 static void msr_get(uint32_t msr, uint32_t *lo, uint32_t *hi) {
@@ -60,8 +66,7 @@ static void l2_cache( ) {
 	assoc = (ecx >> 12) & 0x07;
 	cache = (ecx >> 16) & 0xFFFF;
 
-	fb_printf("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
-	          lsize, assoc, cache);
+	fb_printf("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", lsize, assoc, cache);
 }
 
 static void do_amd( ) {
@@ -90,8 +95,7 @@ static void brandname( ) {
 	uint32_t manufacturer[4];
 	char manufacturer_string[13];
 
-	cpuid(0, &manufacturer[3], &manufacturer[0], &manufacturer[2],
-	      &manufacturer[1]);
+	cpuid(0, &manufacturer[3], &manufacturer[0], &manufacturer[2], &manufacturer[1]);
 	tool_memcpy(manufacturer_string, manufacturer, 12);
 
 	brand_string[48] = 0;
@@ -135,9 +139,7 @@ void cpu_init( ) {
 	}
 
 	cpuid(1, &eax, &ebx, &ecx, &edx);
-	if ((edx >> 29) & 1) {
-		fb_printf("Термоконтроллер автоматически ограничивает температуру\n");
-	}
+	if ((edx >> 29) & 1) { fb_printf("Термоконтроллер автоматически ограничивает температуру\n"); }
 
 	if ((ecx >> 28) & 1) {
 		avx_support = true;
@@ -158,22 +160,17 @@ void cpu_init( ) {
 
 	if ((edx >> 5) & 1) { fb_printf("Регистры MSR подерживаются!\n"); }
 
-	if ((edx >> 6) & 1) {
-		fb_printf("Расширение физического адреса подерживается!\n");
-	}
+	if ((edx >> 6) & 1) { fb_printf("Расширение физического адреса подерживается!\n"); }
 
-	if ((edx >> 7) & 1) {
-		fb_printf("Исключение проверки компьютера (MCE) подерживается!\n");
-	}
+	if ((edx >> 7) & 1) { fb_printf("Исключение проверки компьютера (MCE) подерживается!\n"); }
 
 	if ((edx >> 9) & 1) {
 		fb_printf("Усовершенствованный программируемый контроллер прерываний "
-		          "подерживаются!\n");
+		          "подерживается!\n");
 	}
 
 	if ((edx >> 10) & 1) {
-		fb_printf(
-		    "SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n");
+		fb_printf("SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n");
 	}
 	if ((edx >> 11) & 1) { fb_printf("SYSCALL/SYSRET подерживаются!\n"); }
 
@@ -186,31 +183,21 @@ void cpu_init( ) {
 	if ((ecx >> 7) & 1) { fb_printf("Смещенный режим SSE подерживается!\n"); }
 
 	cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
-	if ((ebx >> 0) & 1) {
-		fb_printf("Восстановление после переполнения MCA подерживается!\n");
-	}
+	if ((ebx >> 0) & 1) { fb_printf("Восстановление после переполнения MCA подерживается!\n"); }
 	if ((ebx >> 1) & 1) {
 		fb_printf("Возможность локализации и восстановления неисправимых "
 		          "программных ошибок подерживается!\n");
 	}
 	if ((edx >> 0) & 1) { fb_printf("Датчик температуры подерживается!\n"); }
 	if ((edx >> 3) & 1) { fb_printf("Терморегулятор подерживается!\n"); }
-	if ((edx >> 4) & 1) {
-		fb_printf("Аппаратный терморегулятор (HTC) подерживается!\n");
-	}
-	if ((edx >> 5) & 1) {
-		fb_printf("Программный терморегулятор (STC) подерживается!\n");
-	}
-	if ((edx >> 6) & 1) {
-		fb_printf("Управление множителем 100 МГц подерживается!\n");
-	}
+	if ((edx >> 4) & 1) { fb_printf("Аппаратный терморегулятор (HTC) подерживается!\n"); }
+	if ((edx >> 5) & 1) { fb_printf("Программный терморегулятор (STC) подерживается!\n"); }
+	if ((edx >> 6) & 1) { fb_printf("Управление множителем 100 МГц подерживается!\n"); }
 
 	fb_printf("0x80000007[ECX] = 0x%x (%u)\n", ecx, ecx);
 
 	cpuid(0xC0000000, &eax, &ebx, &ecx, &edx);
-	if (eax > 0xC0000000) {
-		fb_printf("0xC0000000 [EAX] = 0x%x (%u)\n", eax, eax);
-	}
+	if (eax > 0xC0000000) { fb_printf("0xC0000000 [EAX] = 0x%x (%u)\n", eax, eax); }
 
 	brandname( );
 	l2_cache( );

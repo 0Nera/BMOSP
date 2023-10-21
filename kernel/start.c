@@ -1,3 +1,12 @@
+/**
+ * start.c
+ * Файл с точкой входа
+ *
+ *
+ * Файл с функцией для инициализации системы
+ *
+ */
+
 #include <arch.h>
 #include <fb.h>
 #include <limine.h>
@@ -12,9 +21,9 @@ void _start( ) {
 
 	fb_init( );
 	arch_init( );
-	cpu_init( );
 	mem_init( );
 	mod_init( );
+
 	fb_printf("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
 	          "версии %u.%u.%u ***\n",
 	          VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);

@@ -1,3 +1,11 @@
+/**
+ * idt.c
+ * Инициализация обработчика прерываний
+ *
+ * Настройка обработчика прерываний и системных исключений
+ *
+ */
+
 #include <arch.h>
 #include <fb.h>
 #include <stdbool.h>
@@ -113,10 +121,9 @@ static void exception_handler(struct frame state) {
 	          "  RIP=%x  RFLAGS=%x\n"
 	          "  CS=%x SS=%x\n"
 	          "  ERR=%x  INT=%u",
-	          state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi,
-	          state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
-	          state.r12, state.r13, state.r14, state.r15, state.rip,
-	          state.rflags, state.cs, state.ss, state.err, state.int_number);
+	          state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi, state.rbp,
+	          state.rsp, state.r8, state.r9, state.r10, state.r11, state.r12, state.r13, state.r14,
+	          state.r15, state.rip, state.rflags, state.cs, state.ss, state.err, state.int_number);
 
 	asm volatile("cli; hlt");
 }

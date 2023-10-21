@@ -8,6 +8,9 @@
         "complex": "cpp",
         "string": "cpp",
         "limine.h": "c",
-        "tool.h": "c"
+        "tool.h": "c",
+        "sys.h": "c",
+        "arch.h": "c",
+        "fb.h": "c"
     }
 }

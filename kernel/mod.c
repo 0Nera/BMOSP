@@ -1,3 +1,12 @@
+/**
+ * mod.c
+ * Функции загрузки модулей
+ *
+ * Файл с функциями для загрузки модулей в формате ELF файлов полученных от
+ * загрузчика
+ *
+ */
+
 #include <fb.h>
 #include <limine.h>
 #include <mod.h>
@@ -45,9 +54,7 @@ static void *elf_entry(void *module_bin, uint64_t size) {
 }
 
 static volatile struct limine_module_request module_request = {
-	.id = LIMINE_MODULE_REQUEST,
-	.revision = 0,
-	.response = (struct limine_module_response *)0
+	.id = LIMINE_MODULE_REQUEST, .revision = 0, .response = (struct limine_module_response *)0
 };
 
 static struct limine_module_response *module_response;
@@ -61,14 +68,12 @@ void mod_init( ) {
 
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
-		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
-		          module_ptr->cmdline, module_ptr->address);
-		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
-		          module_ptr->size, module_ptr->media_type,
-		          module_ptr->partition_index);
+		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path, module_ptr->cmdline,
+		          module_ptr->address);
+		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n", module_ptr->size,
+		          module_ptr->media_type, module_ptr->partition_index);
 		fb_printf("->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
-		          module_ptr->mbr_disk_id, module_ptr->tftp_ip,
-		          module_ptr->tftp_port);
+		          module_ptr->mbr_disk_id, module_ptr->tftp_ip, module_ptr->tftp_port);
 
 		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
 			fb_printf("\t\t[BOOTIMG]\n");
@@ -79,8 +84,7 @@ void mod_init( ) {
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
 		modules_count++;
 		module_info_t *(*module_init)(env_t * env) =
-		    (module_info_t * (*)(env_t * env))
-		        elf_entry(module_ptr->address, module_ptr->size);
+		    (module_info_t * (*)(env_t * env)) elf_entry(module_ptr->address, module_ptr->size);
 
 		fb_printf("\t->Точка входа: 0x%x\n", module_init);
 

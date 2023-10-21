@@ -1,3 +1,12 @@
+/**
+ * fb.c
+ * Функции управления фреймбуффером
+ *
+ * Функционал управления выводом на экранный буффер (фреймбуффер) текста и
+ * изображений
+ *
+ */
+
 #include <6x8_slim_font.h>
 #include <fb.h>
 #include <limine.h>
@@ -64,9 +73,7 @@ void fb_print_buf(size_t x, size_t y, size_t h, size_t w, uint32_t *buf) {
 
 static inline void print_bits(size_t x, size_t y, uint8_t num) {
 	for (size_t i = 0; i <= 7; i++) {
-		if ((num >> i) & 1) {
-			SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color;
-		}
+		if ((num >> i) & 1) { SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color; }
 	}
 }
 
@@ -81,14 +88,12 @@ static void print_char(int x, int y, char glyth) {
 }
 
 void scroll_fb( ) {
-	size_t last_line_index =
-	    (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
+	size_t last_line_index = (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
 
 	for (size_t y = 0; y < SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT); y++) {
 		for (size_t x = 0; x < SCREEN_WIDTH; x++) {
 			SCREEN_BUFFER[x + y * SCREEN_WIDTH] =
-			    SCREEN_BUFFER[x +
-			                  (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
+			    SCREEN_BUFFER[x + (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
 		}
 	}
 
