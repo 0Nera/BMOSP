@@ -70,12 +70,12 @@ static volatile struct limine_module_request module_request = {
 };
 
 struct limine_module_response *module_response;
-static uint64_t module_count = 0;
+static uint64_t modules_count = 0;
 
 void init( ) {
 	main_env.fb_printf = &fb::printf;
 	module_response = module_request.response;
-	module_count = module_response->module_count;
+	uint64_t module_count = module_response->module_count;
 	struct limine_file *module_ptr = (struct limine_file *)0;
 
 	for (uint64_t i = 0; i < module_count; i++) {
@@ -94,11 +94,10 @@ void init( ) {
 			fb::printf("\t\t[BOOTIMG]\n");
 			bootpng_ptr = module_ptr->address;
 			bootpng_size = module_ptr->size;
-			main( );
 			continue;
 		}
 		if (!tool::starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
-
+		modules_count++;
 		module_info_t *(*module_init)(env_t * env) =
 		    (module_info_t * (*)(env_t * env))
 		        elf_entry(module_ptr->address, module_ptr->size);
@@ -110,5 +109,6 @@ void init( ) {
 		// fb::printf("Инициализированно с кодом: %u\n", ret->err_code);
 		// fb::printf("Сообщение из модуля: %s\n\n", ret->message);
 	}
+	fb::printf("Модулей обработано: %u\n", modules_count);
 }
 } // namespace mod
