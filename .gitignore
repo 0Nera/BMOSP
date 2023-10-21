@@ -1,0 +1,10 @@
+
+limine/
+*.elf
+*.o
+*.fd
+*.so
+iso_root/*
+bin/*
+*.hdd
+*.iso
