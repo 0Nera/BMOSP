@@ -1,6 +1,17 @@
+/**
+ * sys.h
+ * Заголовок содержащий определения для работы системного API
+ *
+ * Данный заголовочный файл содержит определения которые используются для
+ * объявления структур и системных функций
+ *
+ */
+
+#ifndef SYS_H
+#define SYS_H
+
 #include <stdint.h>
 
-extern "C" {
 typedef struct {
 	void (*fb_printf)(char *str, ...);
 } env_t;
@@ -42,4 +53,5 @@ typedef struct {
 	uint8_t day;
 	uint8_t second;
 } time_t;
-}
+
+#endif // sys.h

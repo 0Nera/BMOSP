@@ -1,12 +1,6 @@
+#include <arch.h>
 #include <limine.h>
 
-extern "C" {
-void gdt_init( );
-
-void idt_init( );
-}
-
-namespace arch {
 static volatile struct limine_kernel_address_request kernel_address_request = {
 	.id = LIMINE_KERNEL_ADDRESS_REQUEST,
 	.revision = 0,
@@ -15,9 +9,8 @@ static volatile struct limine_kernel_address_request kernel_address_request = {
 
 struct limine_kernel_address_response *kernel_address_response;
 
-void init( ) {
+void arch_init( ) {
 	kernel_address_response = kernel_address_request.response;
 	gdt_init( );
 	idt_init( );
 }
-} // namespace arch

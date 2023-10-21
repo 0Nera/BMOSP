@@ -1,10 +1,9 @@
 #include <fb.h>
 #include <limine.h>
 #include <lock.h>
+#include <mem.h>
+#include <stdbool.h>
 #include <tool.h>
-
-#define BLOCK_SIZE 4096
-#define HHDM_OFFSET (hhdm_request.response->offset)
 
 static volatile struct limine_memmap_request memmap_request = {
 	.id = LIMINE_MEMMAP_REQUEST,
@@ -23,49 +22,48 @@ struct mem_entry {
 	size_t size;
 	uint8_t data[0];
 };
+
 typedef struct mem_entry mem_entry_t;
 
 // Битовая карта для отслеживания занятых и свободных фреймов памяти
-uint8_t *bitmap;
+static uint8_t *bitmap;
 // Объем доступных блоков
-uint64_t bitmap_available = 0;
+static uint64_t bitmap_available = 0;
 // Объем блоков
-uint64_t bitmap_limit = 0;
+static uint64_t bitmap_limit = 0;
 // Верхняя граница доступной памяти
-uint64_t limit;
+static uint64_t limit;
 // Объем всего доступного физического адресного пространства
-uint64_t usable = 0;
+static uint64_t usable = 0;
 // Объем доступной виртуальной памяти
-uint64_t available = 0;
+static uint64_t available = 0;
 // Наивысший адрес в available space
-uint64_t highest = 0;
+static uint64_t highest = 0;
 // Количество записей в карте памяти
-uint64_t mmmap_count = 0;
+static uint64_t mmmap_count = 0;
 
-const char memory_types[8][82] = {
+static const char memory_types[8][82] = {
 	"Доступно",      "Зарезервировано", "ACPI, можно освободить",
 	"ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
 	"Ядро и модули", "Буфер кадра"
 };
 
-struct limine_memmap_response *memmap_response;
+static struct limine_memmap_response *memmap_response;
 
 static mem_entry_t *first_node;
 
-namespace mem {
-
-void dump_memory( ) {
+void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		fb::printf("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data,
-		           (curr->size) / 1024, (curr->size) % 1024, curr->free,
-		           curr->next);
+		fb_printf("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data,
+		          (curr->size) / 1024, (curr->size) % 1024, curr->free,
+		          curr->next);
 		curr = curr->next;
 	}
 }
 
-void frame_free(void *addr, uint64_t frames) {
+void mem_frame_free(void *addr, uint64_t frames) {
 	// Проход по фреймам памяти и очистка битов в битовой карте
 	uint64_t frame = (uint64_t)addr / BLOCK_SIZE;
 	for (uint64_t i = frame; i < frames + frame; i++) { BIT_CLEAR(i); }
@@ -73,7 +71,7 @@ void frame_free(void *addr, uint64_t frames) {
 }
 
 // Функция выделения памяти
-void *frame_alloc(uint64_t wanted_frames) {
+void *mem_frame_alloc(uint64_t wanted_frames) {
 	void *addr;
 
 	uint64_t available_frames = 0;
@@ -97,13 +95,13 @@ void *frame_alloc(uint64_t wanted_frames) {
 	return NULL;
 }
 
-void *frame_calloc(uint64_t frames) {
-	void *addr = frame_alloc(frames);
-	tool::memset(addr + HHDM_OFFSET, 0, frames * BLOCK_SIZE);
+void *mem_frame_calloc(uint64_t frames) {
+	void *addr = mem_frame_alloc(frames);
+	tool_memset(addr + HHDM_OFFSET, 0, frames * BLOCK_SIZE);
 	return addr;
 }
 
-void merge_blocks(mem_entry_t *start) {
+static void merge_blocks(mem_entry_t *start) {
 	if (!start->free) return;
 	mem_entry_t *block = start;
 	while (block->next && block->next->free) {
@@ -112,7 +110,7 @@ void merge_blocks(mem_entry_t *start) {
 	}
 }
 
-void merge_all_blocks( ) {
+void mem_merge_all_blocks( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
@@ -121,7 +119,7 @@ void merge_all_blocks( ) {
 	}
 }
 
-void add_block(void *addr, size_t size) {
+static void add_block(void *addr, size_t size) {
 	mem_entry_t *new_entry = (mem_entry_t *)addr;
 
 	new_entry->size = size - sizeof(mem_entry_t);
@@ -139,7 +137,7 @@ void add_block(void *addr, size_t size) {
 	}
 }
 
-void alloc_init(void *address, size_t length) {
+static void alloc_init(void *address, size_t length) {
 	first_node = (mem_entry_t *)address;
 
 	first_node->size = length - sizeof(mem_entry_t);
@@ -147,7 +145,7 @@ void alloc_init(void *address, size_t length) {
 	first_node->next = NULL;
 }
 
-void *alloc_align(size_t size, size_t alignment) {
+static void *alloc_align(size_t size, size_t alignment) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
@@ -181,11 +179,11 @@ void *alloc_align(size_t size, size_t alignment) {
 	return NULL;
 }
 
-void *alloc(size_t size) {
+void *mem_alloc(size_t size) {
 	return alloc_align(size, 1);
 }
 
-void free(void *addr) {
+void mem_free(void *addr) {
 	mem_entry_t *curr = first_node, *prev = NULL;
 	while (curr != NULL) {
 		if (curr->data == addr) {
@@ -198,44 +196,44 @@ void free(void *addr) {
 	}
 }
 
-void *realloc(void *addr, size_t size) {
+void *mem_realloc(void *addr, size_t size) {
 	if (size == 0) {
-		free(addr);
+		mem_free(addr);
 		return NULL;
 	}
 
-	if (addr == NULL) { return alloc(size); }
+	if (addr == NULL) { return mem_alloc(size); }
 
-	void *new_addr = alloc(size);
+	void *new_addr = mem_alloc(size);
 
 	if (new_addr == NULL) { return NULL; }
 
-	tool::memcpy(new_addr, addr, size);
-	free(addr);
+	tool_memcpy(new_addr, addr, size);
+	mem_free(addr);
 
 	return new_addr;
 }
 
 // Инициализация менеджера памяти
-void init( ) {
+void mem_init( ) {
 	// Получение информации о доступной памяти из Limine bootloader
 	memmap_response = memmap_request.response;
 	mmmap_count = memmap_response->entry_count;
 	struct limine_memmap_entry **mmaps = memmap_response->entries;
 
-	fb::printf("Записей в карте памяти: %u\n", memmap_response->entry_count);
+	fb_printf("Записей в карте памяти: %u\n", memmap_response->entry_count);
 
 	// Обработка каждой записи в карте памяти
 	for (int i = 0; i < mmmap_count; i++) {
 		available += mmaps[i]->length;
 
-		// fb::printf("\t%d: 0x%x\tдлина: 0x%x\tтип: %s\n", i + 1,
+		// fb_printf("\t%d: 0x%x\tдлина: 0x%x\tтип: %s\n", i + 1,
 		// mmaps[i]->base, mmaps[i]->length, memory_types[mmaps[i]->type]);
 		if (mmaps[i]->type == LIMINE_MEMMAP_FRAMEBUFFER) {
-			fb::printf("На видеопамять BIOS/UEFI выделено: %u мегабайт + %u "
-			           "килобайт\n",
-			           mmaps[i]->length / 1024 / 1024,
-			           (mmaps[i]->length / 1024) % 1024);
+			fb_printf("На видеопамять BIOS/UEFI выделено: %u мегабайт + %u "
+			          "килобайт\n",
+			          mmaps[i]->length / 1024 / 1024,
+			          (mmaps[i]->length / 1024) % 1024);
 		}
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
@@ -253,7 +251,7 @@ void init( ) {
 
 		if (mmaps[i]->length >= bitmap_size) {
 			bitmap = (uint8_t *)mmaps[i]->base;
-			tool::memset(bitmap, 0xFF, bitmap_size);
+			tool_memset(bitmap, 0xFF, bitmap_size);
 			mmaps[i]->length -= bitmap_size;
 			mmaps[i]->base += bitmap_size;
 			available -= bitmap_size;
@@ -270,26 +268,24 @@ void init( ) {
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
 		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) {
-			frame_free((void *)mmaps[i]->base + t, 1);
+			mem_frame_free((void *)mmaps[i]->base + t, 1);
 		}
 	}
 
-	fb::printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
-	fb::printf("Размер битовой карты: %u\n", bitmap_size);
-	alloc_init(frame_alloc(1), BLOCK_SIZE);
+	fb_printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
+	fb_printf("Размер битовой карты: %u\n", bitmap_size);
+	alloc_init(mem_frame_alloc(1), BLOCK_SIZE);
 	for (uint64_t i = 256 * 1024; i > 0; i -= BLOCK_SIZE) {
-		add_block(frame_alloc(1024), 1024 * BLOCK_SIZE);
+		add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE);
 	}
-	merge_all_blocks( );
-	mem::dump_memory( );
-	fb::printf("%u мегабайт выделено в динамичную память\n",
-	           (256 * 1024 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
-	fb::printf("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
-	           (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
-	           available / 1024 / 1024);
+	mem_merge_all_blocks( );
+	mem_dump_memory( );
+	fb_printf("%u мегабайт выделено в динамичную память\n",
+	          (256 * 1024 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
+	fb_printf("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
+	          (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
+	          available / 1024 / 1024);
 
-	fb::printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
-	fb::printf("Проверка менеджера памяти\n");
+	fb_printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
+	fb_printf("Проверка менеджера памяти\n");
 }
-
-} // namespace mem

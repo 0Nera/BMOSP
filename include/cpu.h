@@ -1,3 +1,0 @@
-namespace cpu {
-void init( );
-}

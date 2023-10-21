@@ -56,7 +56,7 @@ def find_files(directory, extensions):
 
 
 def compile(file: str):
-    CC = "g++" if file.endswith('cpp') else "gcc"
+    CC = "gcc"
     output_file = file.replace('/', '_')
     obj_file = f"bin/{output_file}.o"
     cmd = f"{CC} {WARN_FLAGS} {PROTECT_FLAGS} {ARCH_FLAGS} {CHARSET_FLAGS} {LIBS_FLAGS} -c {file} -o {obj_file}"
@@ -107,7 +107,7 @@ def check_tools():
 
 def create_hdd(IMAGE_NAME):
     subprocess.run(["rm", "-f", IMAGE_NAME+".hdd"])
-    subprocess.run(["dd", "if=/dev/zero", "bs=1M", "count=0", "seek=64", "of="+IMAGE_NAME+".hdd"])
+    subprocess.run(["dd", "if=/dev/zero", "bs=1M", "count=0", "seek=4", "of="+IMAGE_NAME+".hdd"])
     subprocess.run(["sgdisk", IMAGE_NAME+".hdd", "-n", "1:2048", "-t", "1:ef00"])
     subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
     subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])

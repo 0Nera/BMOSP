@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <tool.h>
 
-extern "C" {
-
 typedef struct __attribute__((packed)) {
 	uint16_t limit;
 	uint16_t base_16;
@@ -56,6 +54,5 @@ void gdt_init( ) {
 	set_gdt_entry(&gdt[10], 0, 0, 0, 0);
 
 	gdt_load( );
-	fb::printf("GDT инициализирован\n");
-}
+	fb_printf("GDT инициализирован\n");
 }

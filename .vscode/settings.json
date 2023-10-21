@@ -6,6 +6,8 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "complex": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "limine.h": "c",
+        "tool.h": "c"
     }
 }
