@@ -7,10 +7,12 @@
 
 ![Скриншот вывода ядра в эмуляторе Qemu](https://0nera.github.io/BMOSP/assets/0_0.1.231.png)
 
-* [API.md](/API)
-* [HOMEWORK.md](/HOMEWORK)
-* [KERNEL.md](/KERNEL)
-* [STD.md](/STD)
+* [Системные вызовы](/API)
+* [Домашняя работа](/HOMEWORK)
+* [Ядро](/KERNEL)
+* [Стандартная библиотека](/STD)
+* [Авторы](/AUTHORS)
+* [История](/HISTORY)
 
 ## Реализовано
 
