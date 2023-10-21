@@ -103,6 +103,7 @@ def check_tools():
 
     if len(missing_tools) > 0:
         subprocess.run(["sudo", "apt", "install"] + missing_tools)
+        subprocess.run(["sudo", "pacman", "-S"] + missing_tools)
 
 
 def create_hdd(IMAGE_NAME):
