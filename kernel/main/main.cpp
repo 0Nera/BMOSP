@@ -159,6 +159,7 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 	return data;
 }
 void main( ) {
+	for (uint64_t i = 512; i > 1; i--) { pause( ); }
 	fb::printf("Загрузка завершена! 1\n");
 	unsigned int *res = tga_parse((uint8_t *)bootpng_ptr, bootpng_size);
 	fb::printf("Загрузка завершена! 2 %x\n", res);

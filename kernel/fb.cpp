@@ -25,6 +25,7 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 struct limine_framebuffer_response *framebuffer_response;
 struct limine_framebuffer *boot_framebuffer;
 
+uint32_t *fb_addr;
 uint32_t text_color = GREEN;
 uint32_t background = DARK_GREEN;
 uint64_t width;

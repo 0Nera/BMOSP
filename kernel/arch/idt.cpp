@@ -145,7 +145,7 @@ void idt_init( ) {
 	}
 
 	idt_load( );
-	fb::printf("IDT инициализирован.\n");
+	fb::printf("IDT инициализирован\n");
 }
 
 void idt_set_ist(uint8_t vector, uint8_t ist) {

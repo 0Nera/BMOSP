@@ -58,8 +58,9 @@ void dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		fb::printf("->0x%x | %u kb | %u | 0x%x\n", &curr->data,
-		           curr->size / 1024, curr->free, curr->next);
+		fb::printf("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data,
+		           (curr->size) / 1024, (curr->size) % 1024, curr->free,
+		           curr->next);
 		curr = curr->next;
 	}
 }
@@ -111,6 +112,15 @@ void merge_blocks(mem_entry_t *start) {
 	}
 }
 
+void merge_all_blocks( ) {
+	mem_entry_t *curr = first_node;
+
+	while (curr) {
+		merge_blocks(curr);
+		curr = curr->next;
+	}
+}
+
 void add_block(void *addr, size_t size) {
 	mem_entry_t *new_entry = (mem_entry_t *)addr;
 
@@ -127,7 +137,6 @@ void add_block(void *addr, size_t size) {
 		curr->next = new_entry;
 		new_entry->next = NULL;
 	}
-	merge_blocks(first_node);
 }
 
 void alloc_init(void *address, size_t length) {
@@ -214,7 +223,7 @@ void init( ) {
 	mmmap_count = memmap_response->entry_count;
 	struct limine_memmap_entry **mmaps = memmap_response->entries;
 
-	fb::printf("В карте памяти: %u записей.\n", memmap_response->entry_count);
+	fb::printf("Записей в карте памяти: %u\n", memmap_response->entry_count);
 
 	// Обработка каждой записи в карте памяти
 	for (int i = 0; i < mmmap_count; i++) {
@@ -267,15 +276,14 @@ void init( ) {
 
 	fb::printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 	fb::printf("Размер битовой карты: %u\n", bitmap_size);
-	alloc_init(frame_alloc(100), 1000 * BLOCK_SIZE);
-	for (uint64_t i = 0; i < 255; i++) {
-		add_block(frame_alloc(100), 1000 * BLOCK_SIZE);
+	alloc_init(frame_alloc(1), BLOCK_SIZE);
+	for (uint64_t i = 256 * 1024; i > 0; i -= BLOCK_SIZE) {
+		add_block(frame_alloc(1024), 1024 * BLOCK_SIZE);
 	}
-	mem::dump_memory( );
-	merge_blocks(first_node);
+	merge_all_blocks( );
 	mem::dump_memory( );
 	fb::printf("%u мегабайт выделено в динамичную память\n",
-	           (256 * 1000 * BLOCK_SIZE) / 1024 / 1024);
+	           (256 * 1024 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
 	fb::printf("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
 	           (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
 	           available / 1024 / 1024);

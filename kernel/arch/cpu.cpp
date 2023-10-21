@@ -58,16 +58,13 @@ void l2_cache( ) {
 	unsigned int eax, ebx, ecx, edx;
 	unsigned int lsize, assoc, cache;
 
-	cpuid(0x80000005, &eax, &ebx, &ecx, &edx);
-	lsize = ecx & 0xFF;
-	fb::printf("Кэш L1: %d KB\n", lsize);
-
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	lsize = ecx & 0xFF;
-	assoc = (ecx >> 12) & 0x0F;
-	cache = (ecx >> 16) & 0xFF;
+	assoc = (ecx >> 12) & 0x07;
+	cache = (ecx >> 16) & 0xFFFF;
 
-	fb::printf("Кэш L2: %d KB\n", lsize);
+	fb::printf("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
+	           lsize, assoc, cache);
 }
 
 void do_amd( ) {
@@ -157,12 +154,70 @@ void init( ) {
 		fb::printf("RDRND подерживается!\n");
 	}
 
+	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
+	fb::printf("0x80000000 [EAX] = 0x%x (%u)\n", eax, eax);
+
 	cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 
-	if ((edx >> 11) & 1) { fb::printf("SYSCALL подерживается!\n"); }
+	if ((edx >> 5) & 1) { fb::printf("Регистры MSR подерживаются!\n"); }
+
+	if ((edx >> 6) & 1) {
+		fb::printf("Расширение физического адреса подерживается!\n");
+	}
+
+	if ((edx >> 7) & 1) {
+		fb::printf("Исключение проверки компьютера (MCE) подерживается!\n");
+	}
+
+	if ((edx >> 9) & 1) {
+		fb::printf("Усовершенствованный программируемый контроллер прерываний "
+		           "подерживаются!\n");
+	}
+
+	if ((edx >> 10) & 1) {
+		fb::printf(
+		    "SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n");
+	}
+	if ((edx >> 11) & 1) { fb::printf("SYSCALL/SYSRET подерживаются!\n"); }
+
+	if ((edx >> 26) & 1) {
+		fb::printf("Гигабайтные страницы подерживаются!\n");
+	}
+
 	if ((edx >> 29) & 1) { fb::printf("AMD64 подерживается!\n"); }
+	if ((edx >> 30) & 1) { fb::printf("\"3DNow!\" подерживается!\n"); }
+	if ((edx >> 31) & 1) { fb::printf("\"Extended 3DNow!\" подерживается!\n"); }
+	if ((ecx >> 6) & 1) { fb::printf("SSE4a подерживается!\n"); }
+	if ((ecx >> 7) & 1) { fb::printf("Смещенный режим SSE подерживается!\n"); }
+
+	cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
+	if ((ebx >> 0) & 1) {
+		fb::printf("Восстановление после переполнения MCA подерживается!\n");
+	}
+	if ((ebx >> 1) & 1) {
+		fb::printf("Возможность локализации и восстановления неисправимых "
+		           "программных ошибок подерживается!\n");
+	}
+	if ((edx >> 0) & 1) { fb::printf("Датчик температуры подерживается!\n"); }
+	if ((edx >> 3) & 1) { fb::printf("Терморегулятор подерживается!\n"); }
+	if ((edx >> 4) & 1) {
+		fb::printf("Аппаратный терморегулятор (HTC) подерживается!\n");
+	}
+	if ((edx >> 5) & 1) {
+		fb::printf("Программный терморегулятор (STC) подерживается!\n");
+	}
+	if ((edx >> 6) & 1) {
+		fb::printf("Управление множителем 100 МГц подерживается!\n");
+	}
+
+	fb::printf("0x80000007[ECX] = 0x%x (%u)\n", ecx, ecx);
+
+	cpuid(0xC0000000, &eax, &ebx, &ecx, &edx);
+	if (eax > 0xC0000000) {
+		fb::printf("0xC0000000 [EAX] = 0x%x (%u)\n", eax, eax);
+	}
 
 	brandname( );
-	// l2_cache( );
+	l2_cache( );
 }
 } // namespace cpu
