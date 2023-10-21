@@ -69,6 +69,17 @@ chmod +x build.sh
 ./build.sh
 ```
 
+### ArchLinux
+
+```bash
+yay -S clang-format
+sudo pacman -S python3 git qemu-system-x86
+git clone https://git.synapseos.ru/Aren/BMOSP.git
+cd BMOSP/
+chmod +x build.sh
+./build.sh
+```
+
 ## Запук
 
 ### Qemu
