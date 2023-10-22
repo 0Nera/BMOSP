@@ -93,6 +93,23 @@ def check_limine():
     os.chdir("..")
 
 
+
+def check_os():
+    import platform
+    using_distro = False
+    try:
+        import distro
+        using_distro = True
+    except ImportError:
+        pass
+    if using_distro:
+        linux_distro = distro.like()
+    else:
+        linux_distro = platform.linux_distribution()[0]
+    if linux_distro.lower() in ['debian', 'ubuntu']:
+        return 1
+    return 0
+
 def check_tools():
     required_tools = ["gcc", "g++", "xorriso", "make", "mtools", "curl"]
     missing_tools = []
@@ -102,7 +119,10 @@ def check_tools():
             missing_tools.append(tool)
 
     if len(missing_tools) > 0:
-        subprocess.run(["sudo", "apt", "install"] + missing_tools)
+        if check_os():
+            subprocess.run(["sudo", "apt", "install"] + missing_tools)
+            return
+        subprocess.run(["sudo", "pacman", "-S"] + missing_tools)
 
 
 def create_hdd(IMAGE_NAME):
