@@ -14,8 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: install Python3
-      run: sudo apt install python3 
+    - name: install depends
+      run: sudo apt install clang-format python3 git qemu-system-x86 gdisk gcc g++ xorriso make mtools curl
+    
+    - name: install limine
+      run: |
+        git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
 
     - name: build
       run: ./build.sh
