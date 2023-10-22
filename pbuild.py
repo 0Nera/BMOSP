@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import time
+import platform
 from multiprocessing import Pool
 
 
@@ -93,6 +94,17 @@ def check_limine():
     os.chdir("..")
 
 
+
+def check_os():
+    current_os = platform.system().lower()
+
+    if current_os == 'linux':
+        dist = platform.linux_distribution()[0].lower()
+
+        if dist == 'ubuntu' or dist == 'debian':
+            return 1
+    return 0
+
 def check_tools():
     required_tools = ["gcc", "g++", "xorriso", "make", "mtools", "curl"]
     missing_tools = []
@@ -102,7 +114,9 @@ def check_tools():
             missing_tools.append(tool)
 
     if len(missing_tools) > 0:
-        subprocess.run(["sudo", "apt", "install"] + missing_tools)
+        if check_os():
+            subprocess.run(["sudo", "apt", "install"] + missing_tools)
+            return
         subprocess.run(["sudo", "pacman", "-S"] + missing_tools)
 
 
