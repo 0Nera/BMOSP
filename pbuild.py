@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 import time
-import platform
 from multiprocessing import Pool
 
 
@@ -96,13 +95,19 @@ def check_limine():
 
 
 def check_os():
-    current_os = platform.system().lower()
-
-    if current_os == 'linux':
-        dist = platform.linux_distribution()[0].lower()
-
-        if dist == 'ubuntu' or dist == 'debian':
-            return 1
+    import platform
+    using_distro = False
+    try:
+        import distro
+        using_distro = True
+    except ImportError:
+        pass
+    if using_distro:
+        linux_distro = distro.like()
+    else:
+        linux_distro = platform.linux_distribution()[0]
+    if linux_distro.lower( in ['debian', 'ubuntu']:
+        return 1
     return 0
 
 def check_tools():
