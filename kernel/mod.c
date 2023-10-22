@@ -83,7 +83,7 @@ void mod_init( ) {
 		}
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
 		modules_count++;
-		module_info_t *(*module_init)(env_t * env) =
+		module_info_t *(*module_init)(env_t *env) =
 		    (module_info_t * (*)(env_t * env)) elf_entry(module_ptr->address, module_ptr->size);
 
 		fb_printf("\t->Точка входа: 0x%x\n", module_init);
