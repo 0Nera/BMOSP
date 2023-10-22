@@ -106,7 +106,7 @@ def check_os():
         linux_distro = distro.like()
     else:
         linux_distro = platform.linux_distribution()[0]
-    if linux_distro.lower( in ['debian', 'ubuntu']:
+    if linux_distro.lower() in ['debian', 'ubuntu']:
         return 1
     return 0
 
