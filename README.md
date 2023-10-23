@@ -105,7 +105,8 @@ chmod +x run.sh
 ## Ресурсы
 
 - <https://vk.com/BMOSP> Страница вконтакте
-- <https://mseos.ru> Вебсайт
+- <https://t.me/bmosp> Телеграм
+- <https://bmosp.ru> Вебсайт
 - <https://wiki.synapseos.ru/index.php?title=БМПОС> Страница на вики
 
 ### Зеркала
