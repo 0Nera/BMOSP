@@ -14,13 +14,13 @@ static inline void usleep(uint64_t ticks) {
 	for (uint64_t i = 0; i < ticks * 100; i++) { asm volatile("pause"); }
 }
 
-
-static inline void play_sound(unsigned int frequency) {
-}
+static inline void play_sound(unsigned int frequency) {}
 
 int init(env_t *env) {
+
+
 	// Массив с нотами
-	unsigned int tetris_notes[] = {0};
+	unsigned int tetris_notes[] = { 0 };
 
 	// Расчет количества нот в мелодии
 	int num_notes = sizeof(tetris_notes) / sizeof(tetris_notes[0]);
