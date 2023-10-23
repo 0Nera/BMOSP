@@ -135,7 +135,7 @@ def create_hdd(IMAGE_NAME):
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
                     "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "modules/com/com.elf", "modules/helloworld/hello.so", "::/mod"])
+                    "modules/music/music.so", "modules/helloworld/hello.so", "::/mod"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
                     "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
     subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
@@ -155,7 +155,7 @@ def create_iso(IMAGE_NAME):
     subprocess.run(["mkdir", "-p", "iso_root/EFI/BOOT"])
     subprocess.run(["mkdir", "-p", "iso_root/mod"])
     subprocess.run(["cp", "-v", "modules/helloworld/hello.so", "iso_root/mod/"])
-    subprocess.run(["cp", "-v", "modules/com/com.elf", "iso_root/mod/"])
+    subprocess.run(["cp", "-v", "modules/music/music.so", "iso_root/mod/"])
     subprocess.run(["cp", "-v", "limine/BOOTX64.EFI", "iso_root/EFI/BOOT/"])
     subprocess.run(["cp", "-v", "limine/BOOTIA32.EFI", "iso_root/EFI/BOOT/"])
     subprocess.run(["xorriso", "-as", "mkisofs", "-b", "limine-bios-cd.bin",
@@ -179,7 +179,6 @@ if __name__ == "__main__":
     check_limine()
     check_tools()
     major, minor, build = version_build()
-    os.system("cd modules/helloworld/ && ./build.sh")
     compile_all()
     create_iso("bmosp")
     create_hdd("bmosp")

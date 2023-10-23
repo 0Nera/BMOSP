@@ -6,6 +6,8 @@
  *
  */
 
+void task_init( ) {}
+
 void task_new_thread( ) {
 	return;
 }

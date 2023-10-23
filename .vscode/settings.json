@@ -11,6 +11,7 @@
         "tool.h": "c",
         "sys.h": "c",
         "arch.h": "c",
-        "fb.h": "c"
+        "fb.h": "c",
+        "system.h": "c"
     }
 }

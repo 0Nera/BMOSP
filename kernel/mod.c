@@ -83,13 +83,14 @@ void mod_init( ) {
 		}
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
 		modules_count++;
-		module_info_t *(*module_init)(env_t *env) =
+		uint64_t (*module_init)(env_t * env) =
 		    (module_info_t * (*)(env_t * env)) elf_entry(module_ptr->address, module_ptr->size);
 
 		fb_printf("\t->Точка входа: 0x%x\n", module_init);
 
-		// module_info_t *ret = module_init(&main_env);
+		uint64_t ret = module_init(&main_env);
 
+		fb_printf("Инициализированно с кодом: %u\n", ret);
 		// fb_printf("Инициализированно с кодом: %u\n", ret->err_code);
 		// fb_printf("Сообщение из модуля: %s\n\n", ret->message);
 	}
