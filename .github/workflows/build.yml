@@ -22,7 +22,7 @@ jobs:
         git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
 
     - name: build
-      run: ./build.sh
+      run: chmod +x build.sh && ./build.sh
 
     - name: check root dir
       run: ls -la
