@@ -80,7 +80,7 @@ chmod +x build.sh
 ./build.sh
 ```
 
-## Запук
+## Запуск
 
 ### Qemu
 
