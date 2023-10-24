@@ -13,10 +13,6 @@
 #include <stdint.h>
 
 typedef struct {
-	void (*fb_printf)(char *str, ...);
-} env_t;
-
-typedef struct {
 	int reserved;
 } framebuffer_t;
 
@@ -53,5 +49,11 @@ typedef struct {
 	uint8_t day;
 	uint8_t second;
 } time_t;
+
+typedef struct {
+	uint64_t offset;
+	module_info_t *info;
+	void (*fb_printf)(char *str, ...);
+} env_t;
 
 #endif // sys.h

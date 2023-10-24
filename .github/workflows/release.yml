@@ -21,19 +21,18 @@ jobs:
           git config --global user.email "github@github.com"
           git config --global user.name "Build bot"
 
-          
     - name: install depends
-      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl
+      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
     
     - name: install limine
       run: |
         git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
 
-      - name: Build
-        run: |
-          ./build.sh
-          cp kernel.elf x86_64-kernel.elf
-          cp mseos.hdd x86_64-mseos.hdd
+    - name: build
+      run: |
+        dos2unix *.sh
+        chmod +x build.sh
+        ./build.sh
 
       - name: Add and commit files
         uses: EndBug/add-and-commit@v9

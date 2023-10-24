@@ -15,14 +15,17 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: install depends
-      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl
+      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
     
     - name: install limine
       run: |
         git clone https://github.com/limine-bootloader/limine.git --branch=v5.x-branch-binary --depth=1
 
     - name: build
-      run: chmod +x build.sh && ./build.sh
+      run: |
+        dos2unix *.sh
+        chmod +x build.sh
+        ./build.sh
 
     - name: check root dir
       run: ls -la

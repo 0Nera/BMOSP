@@ -63,7 +63,6 @@ static struct limine_module_response *module_response;
 static uint64_t modules_count = 0;
 
 void mod_init( ) {
-	main_env.fb_printf = &fb_printf;
 	module_response = module_request.response;
 	uint64_t module_count = module_response->module_count;
 	struct limine_file *module_ptr = (struct limine_file *)0;
@@ -92,6 +91,9 @@ void mod_init( ) {
 
 		fb_printf("\t->Точка входа: 0x%x\n", module_init);
 
+		main_env.offset = module_ptr->address;
+		main_env.info = (module_info_t *)0;
+		main_env.fb_printf = &fb_printf;
 		uint64_t ret = module_init(&main_env);
 
 		fb_printf("Инициализированно с кодом: %u\n", ret);

@@ -8,5 +8,6 @@ module_info_t static_info = {
 
 uint64_t init(env_t *env) {
 	init_env(env);
+	env->fb_printf("Модуль \"Привет мир!\" инициализирован!\n");
 	return 0;
 }

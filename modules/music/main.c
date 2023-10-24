@@ -18,6 +18,7 @@ static inline void play_sound(unsigned int frequency) {}
 
 int init(env_t *env) {
 	init_env(env);
+	env->fb_printf("Программа инициализирована!\n");
 	return 0;
 	// Массив с нотами
 	unsigned int tetris_notes[] = { 0 };
