@@ -103,7 +103,7 @@
 ### Ubuntu 18.04+
 
 ```bash
-sudo apt install clang-format python3 git qemu-system-x86 gdisk
+sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
