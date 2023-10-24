@@ -14,7 +14,26 @@ static inline void usleep(uint64_t ticks) {
 	for (uint64_t i = 0; i < ticks * 100; i++) { asm volatile("pause"); }
 }
 
-static inline void play_sound(unsigned int frequency) {}
+static inline void play_sound(unsigned int frequency) {
+	uint32_t div;
+	uint8_t tmp;
+
+	// Set the PIT to the desired frequency
+	div = 1193180 / frequency;
+	outb(0x43, 0xb6);
+	outb(0x42, (uint8_t)(div));
+	outb(0x42, (uint8_t)(div >> 8));
+
+	// And play the sound using the PC speaker
+	tmp = inb(0x61);
+	if (tmp != (tmp | 3)) { outb(0x61, tmp | 3); }
+}
+
+static void nosound( ) {
+	uint8_t tmp = inb(0x61) & 0xFC;
+
+	outb(0x61, tmp);
+}
 
 int init(env_t *env) {
 	init_env(env);

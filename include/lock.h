@@ -17,9 +17,9 @@ typedef struct {
 	const char* file;
 } lock_t;
 
-#define LOCK_INIT                                                                                  \
-	(lock_t) {                                                                                     \
-		0, __FILE__                                                                                \
+#define LOCK_INIT                                                              \
+	(lock_t) {                                                                 \
+		0, __FILE__                                                            \
 	}
 
 int lock_swap(lock_t* lock);

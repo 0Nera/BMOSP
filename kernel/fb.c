@@ -73,10 +73,11 @@ void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w, uint32_t *buf)
 	}
 }
 
-// Побитовый вывод из числа
-static inline void print_bits(uint64_t x, uint64_t y, uint8_t num) {
-	for (uint64_t i = 0; i <= 7; i++) {
-		if ((num >> i) & 1) { SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color; }
+static inline void print_bits(size_t x, size_t y, uint8_t num) {
+	for (size_t i = 0; i <= 7; i++) {
+		if ((num >> i) & 1) {
+			SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color;
+		}
 	}
 }
 
@@ -92,14 +93,15 @@ static void print_char(int x, int y, char glyth) {
 	}
 }
 
-// Прокрутка буффера вверх. Нижний слой удаляется
-static void scroll_fb( ) {
-	uint64_t last_line_index = (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
+void scroll_fb( ) {
+	size_t last_line_index =
+	    (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
 
 	for (uint64_t y = 0; y < SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT); y++) {
 		for (uint64_t x = 0; x < SCREEN_WIDTH; x++) {
 			SCREEN_BUFFER[x + y * SCREEN_WIDTH] =
-			    SCREEN_BUFFER[x + (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
+			    SCREEN_BUFFER[x +
+			                  (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
 		}
 	}
 

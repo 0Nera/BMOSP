@@ -6,6 +6,7 @@
  *
  */
 
+#include "idt.h"
 #include <arch.h>
 #include <fb.h>
 #include <stdbool.h>
@@ -57,39 +58,6 @@ void *isr[256];
 extern void *isr_stubs[];
 static idt_ptr_t idtr;
 
-#define NO_NAME "Не задано название"
-
-const char *exception_names[] = { "Деление на ноль",
-	                              "Отладка",
-	                              "NMI",
-	                              "Точка останова",
-	                              "Переполнение",
-	                              "Выход за границы",
-	                              "Недопустимая операция",
-	                              "Устройство недоступно",
-	                              "Двойное исключение",
-	                              NO_NAME,
-	                              "Недопустимый TSS",
-	                              "Сегмент не присутствует",
-	                              "Ошибка сегмента стека",
-	                              "Общая защитная ошибка",
-	                              "Ошибка страницы",
-	                              NO_NAME,
-	                              "x87 исключение",
-	                              "Проверка выравнивания",
-	                              "Ошибка машины",
-	                              "SIMD исключение",
-	                              "Виртуализация",
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              NO_NAME,
-	                              "Безопасность" };
-
 void idt_load( ) {
 	asm volatile("lidt %0" : : "m"(idtr));
 	asm volatile("sti");
@@ -121,9 +89,10 @@ static void exception_handler(struct frame state) {
 	          "  RIP=%x  RFLAGS=%x\n"
 	          "  CS=%x SS=%x\n"
 	          "  ERR=%x  INT=%u",
-	          state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi, state.rbp,
-	          state.rsp, state.r8, state.r9, state.r10, state.r11, state.r12, state.r13, state.r14,
-	          state.r15, state.rip, state.rflags, state.cs, state.ss, state.err, state.int_number);
+	          state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi,
+	          state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
+	          state.r12, state.r13, state.r14, state.r15, state.rip,
+	          state.rflags, state.cs, state.ss, state.err, state.int_number);
 
 	asm volatile("cli; hlt");
 }
@@ -140,11 +109,11 @@ void idt_init( ) {
 	idtr = (idt_ptr_t){ .limit = sizeof(idt) - 1, .base = (uint64_t)idt };
 
 	for (uint64_t i = 0; i < 256; i++) {
-		if (i < 32) {
-			encode_idt_entry(i, isr_stubs[i], 0x8e);
+		if (i < 31) {
+			encode_idt_entry(i, isr_stubs[i], 0x8E);
 			isr[i] = (void *)exception_handler;
 		} else {
-			encode_idt_entry(i, isr_stubs[i], 0x8e);
+			encode_idt_entry(i, isr_stubs[i], 0x8E);
 			isr[i] = (void *)isr_generic;
 		}
 	}
@@ -153,6 +122,8 @@ void idt_init( ) {
 	fb_printf("IDT инициализирован\n");
 }
 
-void idt_set_ist(uint8_t vector, uint8_t ist) {
-	idt[vector].ist = ist;
+void idt_set_int(uint8_t vector, void *int_handler) {
+	encode_idt_entry(vector, int_handler, 0x8E);
+	isr[vector] = int_handler;
+	idt_load( );
 }

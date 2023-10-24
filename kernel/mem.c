@@ -14,10 +14,14 @@
 #include <tool.h>
 
 static volatile struct limine_memmap_request memmap_request = {
-	.id = LIMINE_MEMMAP_REQUEST, .revision = 0, .response = (struct limine_memmap_response *)0
+	.id = LIMINE_MEMMAP_REQUEST,
+	.revision = 0,
+	.response = (struct limine_memmap_response *)0
 };
 static volatile struct limine_hhdm_request hhdm_request = {
-	.id = LIMINE_HHDM_REQUEST, .revision = 0, .response = (struct limine_hhdm_response *)0
+	.id = LIMINE_HHDM_REQUEST,
+	.revision = 0,
+	.response = (struct limine_hhdm_response *)0
 };
 
 struct mem_entry {
@@ -60,8 +64,9 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		fb_printf("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data, (curr->size) / 1024,
-		          (curr->size) % 1024, curr->free, curr->next);
+		fb_printf("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data,
+		          (curr->size) / 1024, (curr->size) % 1024, curr->free,
+		          curr->next);
 		curr = curr->next;
 	}
 }
@@ -235,7 +240,8 @@ void mem_init( ) {
 		if (mmaps[i]->type == LIMINE_MEMMAP_FRAMEBUFFER) {
 			fb_printf("На видеопамять BIOS/UEFI выделено: %u мегабайт + %u "
 			          "килобайт\n",
-			          mmaps[i]->length / 1024 / 1024, (mmaps[i]->length / 1024) % 1024);
+			          mmaps[i]->length / 1024 / 1024,
+			          (mmaps[i]->length / 1024) % 1024);
 		}
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
@@ -263,7 +269,9 @@ void mem_init( ) {
 
 	// Освобождаем все доступные фреймы памяти
 	for (uint64_t i = 0; i < mmmap_count; i++) {
-		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) { bitmap_limit++; }
+		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) {
+			bitmap_limit++;
+		}
 
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
@@ -283,7 +291,8 @@ void mem_init( ) {
 	mem_merge_all_blocks( );
 	mem_dump_memory( );
 	fb_printf("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
-	          (bitmap_available * BLOCK_SIZE) / 1024 / 1024, available / 1024 / 1024);
+	          (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
+	          available / 1024 / 1024);
 
 	fb_printf("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 	fb_printf("Проверка менеджера памяти\n");

@@ -21,7 +21,8 @@
 #define FONT_6X8_SLIM_CHAR_WIDTH 6
 #define FONT_6X8_SLIM_CHAR_HEIGHT 8
 #define FONT_6X8_SLIM_FONT_TYPE (FONT_TYPE_MONOSPACED)
-#define FONT_6X8_SLIM_ARRAY_LENGTH (FONT_6X8_SLIM_LENGTH * FONT_6X8_SLIM_CHAR_HEIGHT)
+#define FONT_6X8_SLIM_ARRAY_LENGTH                                             \
+	(FONT_6X8_SLIM_LENGTH * FONT_6X8_SLIM_CHAR_HEIGHT)
 
 static const unsigned char font_6x8_slim[FONT_6X8_SLIM_ARRAY_LENGTH] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Символ 32  < >
