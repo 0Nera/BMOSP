@@ -2,10 +2,11 @@
 
 const char name[] = "Привет мир!";
 const char message[] = "Привет из модуля!";
-module_info_t info = {
+module_info_t static_info = {
 	.name = (char *)&name, .message = (char *)&message, .err_code = 2023, .func_count = 1
 };
 
 uint64_t init(env_t *env) {
-	return info.err_code;
+	init_env(env);
+	return 0;
 }

@@ -41,6 +41,7 @@ static void *elf_entry(void *module_bin, uint64_t size) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
 
+#if 0
 	fb_printf("  Класс:       ELF64\n");
 	fb_printf("  Версия:      %u\n", elf_header->e_ident[6]);
 	fb_printf("  ОС/ABI:      %u\n", elf_header->e_ident[7]);
@@ -48,6 +49,7 @@ static void *elf_entry(void *module_bin, uint64_t size) {
 	fb_printf("  Машина:      %u\n", elf_header->e_machine);
 	fb_printf("  Версия:      %u\n", elf_header->e_version);
 	fb_printf("  Точка входа: 0x%x\n", elf_header->e_entry);
+#endif
 
 	// Возвращаем указатель на точку входа
 	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
@@ -72,9 +74,11 @@ void mod_init( ) {
 		          module_ptr->address);
 		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n", module_ptr->size,
 		          module_ptr->media_type, module_ptr->partition_index);
+#if 0
 		fb_printf("->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
 		          module_ptr->mbr_disk_id, module_ptr->tftp_ip, module_ptr->tftp_port);
 
+#endif
 		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
 			fb_printf("\t\t[BOOTIMG]\n");
 			bootpng_ptr = module_ptr->address;

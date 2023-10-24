@@ -1,12 +1,19 @@
+/**
+ * system.h
+ * Системные вызовы
+ *
+ * Заголовочный файл содержащий заготовку для работы с системными вызовами
+ *
+ */
+
+#ifndef SYSTEM_H
+#define SYSTEM_H
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef unsigned long long uint64_t;
 typedef long long int64_t;
-
-typedef struct {
-	void (*fb_printf)(char *str, ...);
-} env_t;
 
 typedef struct {
 	int reserved;
@@ -46,4 +53,14 @@ typedef struct {
 	uint8_t second;
 } time_t;
 
+typedef struct {
+	uint64_t offset;
+	module_info_t *info;
+	void (*fb_printf)(char *str, ...);
+} env_t;
+
 void (*fb_printf)(char *str, ...);
+
+static inline void init_env(env_t *loader_env) {}
+
+#endif // system.h

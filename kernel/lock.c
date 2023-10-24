@@ -11,10 +11,12 @@
 #include <stdint.h>
 #include <tool.h>
 
+// Если не заблокировано - блокируем
 int lock_swap(lock_t *lock) {
 	return __sync_bool_compare_and_swap(&lock->lock, 0, 1);
 }
 
+// Запрос блокировки ресурса
 void lock_acquire(lock_t *lock) {
 	uint64_t count = 0;
 
@@ -30,6 +32,7 @@ void lock_acquire(lock_t *lock) {
 	}
 }
 
+// Запрос разблокировки ресурса
 void lock_release(lock_t *lock) {
 	__sync_bool_compare_and_swap(&lock->lock, 1, 0);
 }
