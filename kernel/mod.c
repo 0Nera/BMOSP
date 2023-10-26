@@ -71,10 +71,11 @@ void mod_init( ) {
 
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
-		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path, module_ptr->cmdline,
-		          module_ptr->address);
-		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n", module_ptr->size,
-		          module_ptr->media_type, module_ptr->partition_index);
+		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
+		          module_ptr->cmdline, module_ptr->address);
+		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
+		          module_ptr->size, module_ptr->media_type,
+		          module_ptr->partition_index);
 #if 0
 		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
 		          module_ptr->cmdline, module_ptr->address);
@@ -94,8 +95,9 @@ void mod_init( ) {
 		}
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
 		modules_count++;
-		uint64_t (*module_init)(env_t *env) = (module_info_t * (*)(env_t * env))
-		    elf_entry(module_ptr->address, module_ptr->size);
+		uint64_t (*module_init)(env_t * env) =
+		    (module_info_t * (*)(env_t * env))
+		        elf_entry(module_ptr->address, module_ptr->size);
 
 		fb_printf("\t->Точка входа: 0x%x\n", module_init);
 

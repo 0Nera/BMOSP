@@ -64,7 +64,8 @@ void fb_init( ) {
 }
 
 // Отрисовка буффера по координатам (полезно для картинок)
-void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w, uint32_t *buf) {
+void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w,
+                  uint32_t *buf) {
 	for (uint64_t j = 0; j < h; j++) {
 		for (uint64_t i = 0; i < w; i++) {
 			uint64_t where = (i + x) + (j + y) * width;

@@ -162,7 +162,8 @@ void cpu_init( ) {
 	}
 
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
-	fb_printf("Максимально поддерживаемая функция CPUID = 0x%x (%u)\n", eax, eax);
+	fb_printf("Максимально поддерживаемая функция CPUID = 0x%x (%u)\n", eax,
+	          eax);
 
 	cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 
@@ -187,11 +188,13 @@ void cpu_init( ) {
 	}
 	if ((edx >> 11) & 1) { fb_printf("SYSCALL/SYSRET подерживаются!\n"); }
 
-	// if ((edx >> 26) & 1) { fb_printf("Гигабайтные страницы подерживаются!\n"); }
+	// if ((edx >> 26) & 1) { fb_printf("Гигабайтные страницы
+	// подерживаются!\n"); }
 
 	if ((edx >> 29) & 1) { fb_printf("AMD64 поддерживается!\n"); }
 	// if ((edx >> 30) & 1) { fb_printf("\"3DNow!\" поддерживается!\n"); }
-	// if ((edx >> 31) & 1) { fb_printf("\"Extended 3DNow!\" поддерживается!\n"); }
+	// if ((edx >> 31) & 1) { fb_printf("\"Extended 3DNow!\"
+	// поддерживается!\n"); }
 	if ((ecx >> 6) & 1) { fb_printf("SSE4a поддерживается!\n"); }
 	if ((ecx >> 7) & 1) { fb_printf("Смещенный режим SSE поддерживается!\n"); }
 
