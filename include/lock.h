@@ -18,9 +18,7 @@ typedef struct {
 } lock_t;
 
 #define LOCK_INIT                                                              \
-	(lock_t) {                                                                 \
-		0, __FILE__                                                            \
-	}
+	(lock_t) { 0, __FILE__ }
 
 int lock_swap(lock_t* lock);
 void lock_acquire(lock_t* lock);
