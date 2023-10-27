@@ -96,18 +96,32 @@
 ### Ubuntu 18.04+
 
 ```bash
-sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix
+sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
 ./build.sh
 ```
 
+### Astra Linux
+
+На текущий момент доступна только сборка ISO образов
+В qemu недоступен флаг `-cpu max`, просто уберите его при запуске
+
+```bash
+sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso
+git clone https://git.synapseos.ru/Aren/BMOSP.git
+cd BMOSP/
+python3.7 pbuild.py
+```
+
 ### ArchLinux
+
+Модули грузятся с ошибкой
 
 ```bash
 yay -S clang-format
-sudo pacman -S python3 git qemu-system-x86
+sudo pacman -S python3 git qemu-system-x86 xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
@@ -118,10 +132,16 @@ chmod +x build.sh
 
 ### Qemu
 
-Стандартная конфигурация
+Стандартная конфигурация загрузки с HDD
 
 ```bash
-qemu-system-x86_64 -cpu max -m 1G -smp 1 -bios ovmf/OVMF.fd -hda bmosp.hdd  -name "БМПОС"
+qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -bios ovmf/OVMF.fd -hda bmosp.hdd
+```
+
+Стандартная конфигурация загрузки с ISO образа
+
+```bash
+qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -cdrom bmosp.iso -boot d --no-reboot
 ```
 
 Или
@@ -139,14 +159,16 @@ chmod +x run.sh
 ## Ресурсы
 
 - <https://vk.com/BMOSP> Страница вконтакте
-- <https://t.me/bmosp> Телеграм
-- <https://bmosp.ru> Вебсайт
+- <https://t.me/bmosp> Телеграм (активный форум)
+- <https://bmosp.ru> Вебсайт (в процессе)
 - <https://wiki.synapseos.ru/index.php?title=БМПОС> Страница на вики
 
 ### Зеркала
 
+Для отправки своих изменений вы можете использовать следующие зеркала:
+
 - <https://git.synapseos.ru/Aren/BMOSP> - доверенный сервер(главный репозиторий)
-- <https://github.com/0Nera/BMOSP> - зеркало
+- <https://github.com/0Nera/BMOSP> - зеркало с CI
 - <https://tvoygit.ru/0Nera/BMOSP> - зеркало
 - <https://hub.mos.ru/synapseos/BMOSP> - неактивное зеркало
 
