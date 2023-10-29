@@ -30,6 +30,12 @@ void _start( ) {
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	mod_init( );
 	pit_init( );
-	LOG("Готово!\n");
-	for (;;) { asm volatile("hlt"); }
+	LOG("Готово! Для выхода из симуляции: ESCAPE\n");
+	while (1) {
+		uint64_t byte = inb(0x60);
+		if (byte == 0x1) {
+			LOG("Exit!\n");
+			return;
+		}
+	}
 }
