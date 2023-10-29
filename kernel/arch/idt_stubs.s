@@ -1,7 +1,7 @@
     .text
     .code64
     .global  isr_stubs
-    .extern isr_generic
+    .extern exception_handler
 
 common:
     subq $120, %rsp
@@ -22,7 +22,7 @@ common:
     movq %rdi, 112(%rsp)
     cld
     movq %rsp, %rdi
-    call isr_generic
+    call exception_handler
     movq 0(%rsp), %rbp
     movq 8(%rsp), %rbx
     movq 16(%rsp), %r15
