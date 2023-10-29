@@ -61,6 +61,20 @@ void fb_init( ) {
 	for (uint64_t i = 0; i < width * height; i++) { fb_addr[i] = background; }
 
 	LOG("0x%x %ux%u\n", fb_addr, width, height);
+	if (framebuffer_response->framebuffer_count == 1) { return; }
+	LOG("Инициализация дополнительных: %u мониторов\n",
+	    framebuffer_response->framebuffer_count);
+
+	for (uint64_t i = 1; i < framebuffer_response->framebuffer_count; i++) {
+		struct limine_framebuffer *framebuffer =
+		    framebuffer_response->framebuffers[i];
+		uint32_t *framebuffer_addr = (uint32_t *)framebuffer->address;
+		LOG("[%u]->0x%x %ux%u\n", i, framebuffer->address, framebuffer->width,
+		    framebuffer->height);
+		for (uint64_t ij = 0; ij < width * height; ij++) {
+			framebuffer_addr[ij] = background;
+		}
+	}
 }
 
 // Отрисовка буффера по координатам (полезно для картинок)
