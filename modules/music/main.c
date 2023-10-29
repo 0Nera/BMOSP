@@ -37,7 +37,7 @@ static void nosound( ) {
 
 module_info_t init(env_t *env) {
 	init_env(env);
-	env->fb_printf("Программа инициализирована!\n");
+	fb_printf("Программа инициализирована!\n");
 	return (module_info_t){ .name = (char *)"Мелодия",
 		                    .message =
 		                        (char *)"Надеюсь скоро тут будет тетрис!",

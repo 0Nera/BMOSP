@@ -60,9 +60,11 @@ typedef struct {
 } env_t;
 
 extern module_info_t static_info;
+static void (*fb_printf)(char *str, ...);
 
 static inline void init_env(env_t *loader_env) {
 	loader_env->info = (module_info_t *)&static_info + loader_env->offset;
+	fb_printf = loader_env->fb_printf;
 }
 
 #endif // system.h
