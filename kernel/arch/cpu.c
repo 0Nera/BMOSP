@@ -45,19 +45,6 @@ static int64_t get_cpu_temperature_intel( ) {
 	return ((temperature - 32) * 5 / 9);
 }
 
-static void l2_cache( ) {
-	unsigned int eax, ebx, ecx, edx;
-	unsigned int lsize, assoc, cache;
-
-	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
-	lsize = ecx & 0xFF;
-	assoc = (ecx >> 12) & 0x07;
-	cache = (ecx >> 16) & 0xFFFF;
-
-	LOG("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", lsize,
-	    assoc, cache);
-}
-
 static void do_amd( ) {
 	uint32_t eax, ebx, ecx, edx;
 	uint32_t eggs[4];
@@ -152,5 +139,4 @@ void cpu_init( ) {
 	}
 
 	brandname( );
-	l2_cache( );
 }
