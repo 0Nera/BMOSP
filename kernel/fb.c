@@ -51,6 +51,11 @@ uint64_t pos_y = 4;
 // Настройка прослойки графики ядра
 void fb_init( ) {
 	framebuffer_response = framebuffer_request.response;
+	
+	if (framebuffer_response == NULL) {
+		asm volatile("hlt");
+	}
+
 	boot_framebuffer = framebuffer_response->framebuffers[0];
 	fb_addr = (uint32_t *)boot_framebuffer->address;
 	width = boot_framebuffer->width;
