@@ -7,6 +7,7 @@
  */
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 void tool_memcpy(void *dest, void *src, uint64_t n) {
@@ -44,130 +45,140 @@ uint64_t tool_starts_with(const char *str, const char *prefix) {
 	return 1;
 }
 
+// Функция для переворачивания строки
+void tool_reverse_str(char *str) {
+	int len = 0;
+	while (str[len] != '\0') { len++; }
+
+	int start = 0;
+	int end = len - 1;
+
+	while (start < end) {
+		char temp = str[start];
+		str[start] = str[end];
+		str[end] = temp;
+		start++;
+		end--;
+	}
+}
+
+// Преобразование целого числа "i" в системе счисления "base" в строку "buf"
+void tool_int_to_str(int64_t i, uint8_t base, char *buf) {
+	bool negative = false;
+
+	// Проверяем, является ли число отрицательным
+	if (i < 0) {
+		negative = true;
+		i *= -1; // Если да, то умножаем на -1, чтобы сделать его положительным
+	}
+
+	int64_t index = 0;
+	// Деление с остатком для преобразования числа в нужную систему счисления
+	do {
+		int64_t remainder = i % base;
+		// Преобразовываем остаток в символ и добавляем его в строку
+		buf[index++] =
+		    (remainder > 9)
+		        ? (remainder - 10) + 'A'
+		        : remainder +
+		              '0'; // Если остаток > 9, добавляем заглавную букву А
+		i /= base;
+	} while (i > 0);
+
+	// Если число было отрицательным, добавляем знак минуса в конец строки
+	if (negative) { buf[index++] = '-'; }
+
+	// Добавляем нулевой символ в конец строки, чтобы завершить ее
+	buf[index] = '\0';
+
+	// Переворачиваем строку, чтобы цифры были в правильном порядке
+	tool_reverse_str(buf);
+}
+
+// Преобразование неотрицательного целого числа "i" в системе счисления "base" в
+// строку "buf"
+void tool_uint_to_str(uint64_t i, uint8_t base, char *buf) {
+	uint64_t index = 0;
+	// Деление с остатком для преобразования числа в нужную систему счисления
+	do {
+		uint64_t remainder = i % base;
+		// Преобразовываем остаток в символ и добавляем его в строку
+		buf[index++] =
+		    (remainder > 9)
+		        ? (remainder - 10) + 'A'
+		        : remainder +
+		              '0'; // Если остаток > 9, добавляем заглавную букву А
+		i /= base;
+	} while (i > 0);
+
+	// Добавляем нулевой символ в конец строки, чтобы завершить ее
+	buf[index] = '\0';
+
+	// Переворачиваем строку, чтобы цифры были в правильном порядке
+	tool_reverse_str(buf);
+}
+
 // Функция для форматированного вывода
 void tool_format(void (*putc)(char c), const char *format_string,
                  va_list args) {
 	while (*format_string != '\0') {
 		if (*format_string == '%') {
+			char buf[48];
+			uint64_t point = 0;
+			const char *arg_s;
+			int64_t arg_d = 0;
+			uint64_t arg_u = 0;
 			format_string++;
+
 			if (*format_string == '\0') {
 				break; // Неожиданный конец строки формата
 			}
-			if (*format_string == '%') {
-				putc('%'); // Вывод одного символа '%'
-			} else if (*format_string == 'd') {
-				int64_t arg = va_arg(args, int64_t);
-				// Преобразование целочисленного аргумента в строку и вывод
-				// каждого символа
-				if (arg < 0) {
-					putc('-');
-					arg = -arg;
-				}
-				if (arg == 0) {
-					putc('0');
-				} else {
-					char buffer[10]; // Предполагаем, что максимальное число из
-					                 // 10 цифр
-					int64_t i = 0;
 
-					while (arg > 0) {
-						buffer[i++] = '0' + (arg % 10);
-						arg /= 10;
+			switch (*format_string) {
+				case '%': putc('%'); break;
+				case 'c': putc(va_arg(args, int)); break;
+				case 's':
+					arg_s = va_arg(args, const char *);
+					// Вывод каждого символа строки
+					while (*arg_s != '\0') {
+						putc(*arg_s);
+						arg_s++;
+					}
+					break;
+				case 'd':
+					arg_d = va_arg(args, int64_t);
+					tool_int_to_str(arg_d, 10, buf);
+					while (buf[point] != '\0') {
+						putc(buf[point]);
+						point++;
 					}
 
-					while (i > 0) { putc(buffer[--i]); }
-				}
-			} else if (*format_string == 's') {
-				const char *arg = va_arg(args, const char *);
-				// Вывод каждого символа строки
-				while (*arg != '\0') {
-					putc(*arg);
-					arg++;
-				}
-			} else if (*format_string == 'u') {
-				uint64_t arg = va_arg(args, uint64_t);
-				// Преобразование беззнакового целочисленного аргумента в строку
-				// и вывод каждого символа
-				if (arg == 0) {
-					putc('0');
-				} else {
-					char buffer[32]; // Предполагаем, что максимальное число из
-					                 // 10 цифр
-					int64_t i = 0;
-
-					while (arg > 0) {
-						buffer[i++] = '0' + (arg % 10);
-						arg /= 10;
+					break;
+				case 'u':
+					arg_u = va_arg(args, uint64_t);
+					tool_uint_to_str(arg_u, 10, buf);
+					while (buf[point] != '\0') {
+						putc(buf[point]);
+						point++;
 					}
-
-					while (i > 0) { putc(buffer[--i]); }
-				}
-			} else if (*format_string == 'x') {
-				uint64_t arg = va_arg(args, uint64_t);
-				// Преобразование беззнакового целочисленного аргумента в
-				// шестнадцатеричную строку и вывод каждого символа
-				if (arg == 0) {
-					putc('0');
-				} else {
-					char buffer[32]; // Предполагаем, что максимальное число из
-					                 // 8 символов
-					int64_t i = 0;
-
-					while (arg > 0) {
-						int64_t rem = arg % 16;
-						if (rem < 10) {
-							buffer[i++] = '0' + rem;
-						} else {
-							buffer[i++] = 'A' + (rem - 10);
-						}
-						arg /= 16;
+					break;
+				case 'x':
+					arg_u = va_arg(args, uint64_t);
+					tool_uint_to_str(arg_u, 16, buf);
+					while (buf[point] != '\0') {
+						putc(buf[point]);
+						point++;
 					}
-
-					while (i > 0) { putc(buffer[--i]); }
-				}
-			} else if (*format_string == 'c') {
-				char arg = va_arg(args, int);
-				// Вывод символа
-				putc(arg);
-			} else if (*format_string == 'o') {
-				uint64_t arg = va_arg(args, uint64_t);
-				// Преобразование беззнакового целочисленного аргумента в
-				// восьмеричную строку и вывод каждого символа
-				if (arg == 0) {
-					putc('0');
-				} else {
-					char buffer[12]; // Предполагаем, что максимальное число из
-					                 // 11 символов
-					int64_t i = 0;
-
-					while (arg > 0) {
-						buffer[i++] = '0' + (arg % 8);
-						arg /= 8;
+					break;
+				case 'l':
+					arg_u = va_arg(args, uint64_t);
+					tool_uint_to_str(arg_u, 16, buf);
+					while (buf[point] != '\0') {
+						putc(buf[point]);
+						point++;
 					}
-
-					while (i > 0) { putc(buffer[--i]); }
-				}
-			} else if (*format_string == 'b') {
-				uint64_t arg = va_arg(args, uint64_t);
-				// Преобразование беззнакового целочисленного аргумента в
-				// двоичную строку и вывод каждого символа
-				if (arg == 0) {
-					putc('0');
-				} else {
-					char buffer[33]; // Предполагаем, что максимальное число из
-					                 // 32 символа
-					int64_t i = 0;
-
-					while (arg > 0) {
-						buffer[i++] = '0' + (arg % 2);
-						arg /= 2;
-					}
-
-					while (i > 0) { putc(buffer[--i]); }
-				}
-			} else {
-				// Неподдерживаемый спецификатор формата
-				putc('?');
+					break;
+				default: putc('?'); break;
 			}
 		} else {
 			putc(*format_string);
