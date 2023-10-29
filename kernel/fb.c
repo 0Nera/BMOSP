@@ -60,7 +60,7 @@ void fb_init( ) {
 
 	for (uint64_t i = 0; i < width * height; i++) { fb_addr[i] = background; }
 
-	fb_printf("0x%x %ux%u\n", fb_addr, width, height);
+	LOG("0x%x %ux%u\n", fb_addr, width, height);
 }
 
 // Отрисовка буффера по координатам (полезно для картинок)

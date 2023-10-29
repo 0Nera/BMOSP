@@ -17,6 +17,7 @@ void cpu_init( );
 void gdt_init( );
 void idt_init( );
 void idt_set_int(uint8_t vector, void *int_handler);
+uint64_t arch_get_tick( );
 
 static inline void outb(uint16_t port, uint8_t val) {
 	asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));

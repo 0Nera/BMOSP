@@ -24,7 +24,7 @@ void lock_acquire(lock_t *lock) {
 		if (lock_swap(lock)) { break; }
 		count++;
 		if (count > 1000000) {
-			fb_printf("%s блокировка зависла", lock->file);
+			LOG("%s блокировка зависла", lock->file);
 			assert(0);
 		}
 

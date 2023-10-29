@@ -69,8 +69,8 @@ static void l2_cache( ) {
 	assoc = (ecx >> 12) & 0x07;
 	cache = (ecx >> 16) & 0xFFFF;
 
-	fb_printf("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
-	          lsize, assoc, cache);
+	LOG("Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", lsize,
+	    assoc, cache);
 }
 
 static void do_amd( ) {
@@ -87,9 +87,9 @@ static void do_amd( ) {
 	cpu_model = (eax >> 4) & 0x0F;
 	cpu_family = (eax >> 8) & 0x0F;
 
-	fb_printf("Используется процессор AMD, 0x8FFFFFFF = [%s]\n", eggs_string);
-	fb_printf("cpu_model = [%u]\n", cpu_model);
-	fb_printf("cpu_family = [%u]\n", cpu_family);
+	LOG("Используется процессор AMD, 0x8FFFFFFF = [%s]\n", eggs_string);
+	LOG("cpu_model = [%u]\n", cpu_model);
+	LOG("cpu_family = [%u]\n", cpu_family);
 }
 
 static void brandname( ) {
@@ -106,7 +106,7 @@ static void brandname( ) {
 	brand_string[48] = 0;
 	manufacturer_string[12] = 0;
 
-	fb_printf("[CPUID] manufacturer [%s]\n", manufacturer_string);
+	LOG("[CPUID] manufacturer [%s]\n", manufacturer_string);
 
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 	if (eax >= 0x80000004) {
@@ -114,7 +114,7 @@ static void brandname( ) {
 		cpuid(0x80000003, &brand[4], &brand[5], &brand[6], &brand[7]);
 		cpuid(0x80000004, &brand[8], &brand[9], &brand[10], &brand[11]);
 		tool_memcpy(brand_string, brand, 48);
-		fb_printf("[CPUID] 0x80000002:0x80000004 [%s]\n", brand_string);
+		LOG("[CPUID] 0x80000002:0x80000004 [%s]\n", brand_string);
 	}
 
 	if (manufacturer[0] == 0x68747541) { do_amd( ); }
@@ -124,106 +124,102 @@ void cpu_init( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 
-	if ((edx >> 0) & 1) { fb_printf("FPU(x87) поддерживается!\n"); }
+	if ((edx >> 0) & 1) { LOG("FPU(x87) поддерживается!\n"); }
 
 	if ((edx >> 22) & 1) {
 		acpi_msrs_support = true;
-		fb_printf("Встроенный терморегулятор MSRS для ACPI\n");
-		fb_printf("Температура: %u (в QEMU/KVM всегда 0)\n",
-		          get_cpu_temperature( ));
+		LOG("Встроенный терморегулятор MSRS для ACPI\n");
+		LOG("Температура: %u (в QEMU/KVM всегда 0)\n", get_cpu_temperature( ));
 	}
 
 	if ((edx >> 23) & 1) {
 		mmx_support = true;
-		fb_printf("MMX поддерживается!\n");
+		LOG("MMX поддерживается!\n");
 	}
 
 	if ((edx >> 25) & 1) {
 		sse2_support = true;
-		fb_printf("SSE2 поддерживается!\n");
+		LOG("SSE2 поддерживается!\n");
 		// sse_init( );
 	}
 
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 	if ((edx >> 29) & 1) {
-		fb_printf("Термоконтроллер автоматически ограничивает температуру\n");
+		LOG("Термоконтроллер автоматически ограничивает температуру\n");
 	}
 
 	if ((ecx >> 28) & 1) {
 		avx_support = true;
-		fb_printf("AVX поддерживается!\n");
+		LOG("AVX поддерживается!\n");
 	}
 
-	if ((ecx >> 26) & 1) { fb_printf("XSAVE поддерживается!\n"); }
+	if ((ecx >> 26) & 1) { LOG("XSAVE поддерживается!\n"); }
 
 	if ((ecx >> 30) & 1) {
 		rdrnd_support = true;
-		fb_printf("RDRND поддерживается!\n");
+		LOG("RDRND поддерживается!\n");
 	}
 
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
-	fb_printf("Максимально поддерживаемая функция CPUID = 0x%x (%u)\n", eax,
-	          eax);
+	LOG("Максимально поддерживаемая функция CPUID = 0x%x (%u)\n", eax, eax);
 
 	cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
 
-	if ((edx >> 5) & 1) { fb_printf("Регистры MSR подерживаются!\n"); }
+	if ((edx >> 5) & 1) { LOG("Регистры MSR подерживаются!\n"); }
 
 	if ((edx >> 6) & 1) {
-		fb_printf("Расширение физического адреса поддерживается!\n");
+		LOG("Расширение физического адреса поддерживается!\n");
 	}
 
 	if ((edx >> 7) & 1) {
-		fb_printf("Исключение проверки компьютера (MCE) поддерживается!\n");
+		LOG("Исключение проверки компьютера (MCE) поддерживается!\n");
 	}
 
 	if ((edx >> 9) & 1) {
-		fb_printf("Усовершенствованный программируемый контроллер прерываний "
-		          "поддерживается!\n");
+		LOG("Усовершенствованный программируемый контроллер прерываний "
+		    "поддерживается!\n");
 	}
 
 	if ((edx >> 10) & 1) {
 		fb_printf(
 		    "SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n");
 	}
-	if ((edx >> 11) & 1) { fb_printf("SYSCALL/SYSRET подерживаются!\n"); }
+	if ((edx >> 11) & 1) { LOG("SYSCALL/SYSRET подерживаются!\n"); }
 
-	// if ((edx >> 26) & 1) { fb_printf("Гигабайтные страницы
+	// if ((edx >> 26) & 1) { LOG("Гигабайтные страницы
 	// подерживаются!\n"); }
 
-	if ((edx >> 29) & 1) { fb_printf("AMD64 поддерживается!\n"); }
-	// if ((edx >> 30) & 1) { fb_printf("\"3DNow!\" поддерживается!\n"); }
-	// if ((edx >> 31) & 1) { fb_printf("\"Extended 3DNow!\"
+	if ((edx >> 29) & 1) { LOG("AMD64 поддерживается!\n"); }
+	// if ((edx >> 30) & 1) { LOG("\"3DNow!\" поддерживается!\n"); }
+	// if ((edx >> 31) & 1) { LOG("\"Extended 3DNow!\"
 	// поддерживается!\n"); }
-	if ((ecx >> 6) & 1) { fb_printf("SSE4a поддерживается!\n"); }
-	if ((ecx >> 7) & 1) { fb_printf("Смещенный режим SSE поддерживается!\n"); }
+	if ((ecx >> 6) & 1) { LOG("SSE4a поддерживается!\n"); }
+	if ((ecx >> 7) & 1) { LOG("Смещенный режим SSE поддерживается!\n"); }
 
 	cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 	if ((ebx >> 0) & 1) {
-		fb_printf("Восстановление после переполнения MCA поддерживается!\n");
+		LOG("Восстановление после переполнения MCA поддерживается!\n");
 	}
 	if ((ebx >> 1) & 1) {
-		fb_printf("Возможность локализации и восстановления неисправимых "
-		          "программных ошибок поддерживается!\n");
+		LOG("Возможность локализации и восстановления неисправимых "
+		    "программных ошибок поддерживается!\n");
 	}
-	if ((edx >> 0) & 1) { fb_printf("Датчик температуры поддерживается!\n"); }
-	if ((edx >> 3) & 1) { fb_printf("Терморегулятор поддерживается!\n"); }
+	if ((edx >> 0) & 1) { LOG("Датчик температуры поддерживается!\n"); }
+	if ((edx >> 3) & 1) { LOG("Терморегулятор поддерживается!\n"); }
 	if ((edx >> 4) & 1) {
-		fb_printf("Аппаратный терморегулятор (HTC) поддерживается!\n");
+		LOG("Аппаратный терморегулятор (HTC) поддерживается!\n");
 	}
 	if ((edx >> 5) & 1) {
-		fb_printf("Программный терморегулятор (STC) поддерживается!\n");
+		LOG("Программный терморегулятор (STC) поддерживается!\n");
 	}
 	if ((edx >> 6) & 1) {
-		fb_printf("Управление множителем 100 МГц поддерживается!\n");
+		LOG("Управление множителем 100 МГц поддерживается!\n");
 	}
 
-	// fb_printf("0x80000007[ECX] = 0x%x (%u)\n", ecx, ecx);
+	// LOG("0x80000007[ECX] = 0x%x (%u)\n", ecx, ecx);
 
 	cpuid(0xC0000000, &eax, &ebx, &ecx, &edx);
-	if (eax > 0xC0000000) {
-		fb_printf("0xC0000000 [EAX] = 0x%x (%u)\n", eax, eax);
-	}
+	if (eax > 0xC0000000) { LOG("0xC0000000 [EAX] = 0x%x (%u)\n", eax, eax); }
 
 	brandname( );
 	l2_cache( );

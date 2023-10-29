@@ -126,44 +126,33 @@ def check_tools():
 
 
 def create_hdd(IMAGE_NAME):
-    subprocess.run(["rm", "-f", IMAGE_NAME+".hdd"])
-    subprocess.run(["dd", "if=/dev/zero", "bs=1M", "count=0", "seek=4", "of="+IMAGE_NAME+".hdd"])
-    subprocess.run(["sgdisk", IMAGE_NAME+".hdd", "-n", "1:2048", "-t", "1:ef00"])
-    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
-    subprocess.run(["mformat", "-i", IMAGE_NAME+".hdd@@1M"])
-    subprocess.run(["mmd", "-i", IMAGE_NAME+".hdd@@1M", "::/mod", "::/EFI", "::/EFI/BOOT", "::/user"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "kernel.elf", "configs/limine.cfg", "limine/limine-bios.sys", "::/"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "modules/music/music.so", "modules/helloworld/hello.so", "::/mod"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M", 
-                    "limine/BOOTX64.EFI", "limine/BOOTIA32.EFI", "::/EFI/BOOT"])
-    subprocess.run(["mcopy", "-i", IMAGE_NAME+".hdd@@1M",
-                    "boot.tga", "::/"])
-    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".hdd"])
+    os.system("rm -f {}.hdd".format(IMAGE_NAME))
+    os.system("dd if=/dev/zero bs=1M count=0 seek=4 of={}.hdd".format(IMAGE_NAME))
+    os.system("sgdisk {}.hdd -n 1:2048 -t 1:ef00".format(IMAGE_NAME))
+    os.system("./limine/limine bios-install {}.hdd".format(IMAGE_NAME))
+    os.system("mformat -i {}.hdd@@1M".format(IMAGE_NAME))
+    os.system("mmd -i {}.hdd@@1M ::/mod ::/EFI ::/EFI/BOOT ::/user".format(IMAGE_NAME))
+    os.system("mcopy -i {}.hdd@@1M kernel.elf configs/limine.cfg limine/limine-bios.sys ::/".format(IMAGE_NAME))
+    os.system("mcopy -i {}.hdd@@1M modules/music/music.ko modules/helloworld/hello.ko ::/mod".format(IMAGE_NAME))
+    os.system("mcopy -i {}.hdd@@1M limine/BOOTX64.EFI limine/BOOTIA32.EFI ::/EFI/BOOT".format(IMAGE_NAME))
+    os.system("mcopy -i {}.hdd@@1M boot.tga ::/".format(IMAGE_NAME))
+    os.system("./limine/limine bios-install {}.hdd".format(IMAGE_NAME))
 
 
 def create_iso(IMAGE_NAME):
-    subprocess.run(["rm", "-f", IMAGE_NAME+".iso"])
-    subprocess.run(["rm", "-rf", "iso_root"])
-    subprocess.run(["mkdir", "-p", "iso_root"])
-    subprocess.run(["cp", "-v", "iso_root/"])
-    subprocess.run(["cp", "-v", "kernel.elf", "boot.tga",
-                    "configs/limine.cfg", "limine/limine-bios.sys", 
-                    "limine/limine-bios-cd.bin", "limine/limine-uefi-cd.bin", 
-                    "iso_root/"])
-    subprocess.run(["mkdir", "-p", "iso_root/EFI/BOOT"])
-    subprocess.run(["mkdir", "-p", "iso_root/mod"])
-    subprocess.run(["cp", "-v", "modules/helloworld/hello.so", "iso_root/mod/"])
-    subprocess.run(["cp", "-v", "modules/music/music.so", "iso_root/mod/"])
-    subprocess.run(["cp", "-v", "limine/BOOTX64.EFI", "iso_root/EFI/BOOT/"])
-    subprocess.run(["cp", "-v", "limine/BOOTIA32.EFI", "iso_root/EFI/BOOT/"])
-    subprocess.run(["xorriso", "-as", "mkisofs", "-b", "limine-bios-cd.bin",
-                    "-no-emul-boot", "-boot-load-size", "4", "-boot-info-table",
-                    "--efi-boot", "limine-uefi-cd.bin",
-                    "-efi-boot-part", "--efi-boot-image", "--protective-msdos-label",
-                    "iso_root", "-o", IMAGE_NAME+".iso"])
-    subprocess.run(["./limine/limine", "bios-install", IMAGE_NAME+".iso"])
+    os.system("rm -f {}.iso".format(IMAGE_NAME))
+    os.system("rm -rf iso_root")
+    os.system("mkdir -p iso_root")
+    os.system("cp -v iso_root/")
+    os.system("cp -v kernel.elf boot.tga configs/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/")
+    os.system("mkdir -p iso_root/EFI/BOOT")
+    os.system("mkdir -p iso_root/mod")
+    os.system("cp -v modules/helloworld/hello.ko iso_root/mod/")
+    os.system("cp -v modules/music/music.ko iso_root/mod/")
+    os.system("cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/")
+    os.system("cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/")
+    os.system("xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o {}.iso".format(IMAGE_NAME))
+    os.system("./limine/limine bios-install {}.iso".format(IMAGE_NAME))
 
 if __name__ == "__main__":
     os.system("""find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file""")
@@ -176,7 +165,8 @@ if __name__ == "__main__":
         subprocess.run(["curl", "-Lo", "OVMF.fd", "https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd"])
         os.chdir("..")
 
-    check_limine()
+    if not os.path.isdir("limine"):
+        check_limine()
     check_tools()
     major, minor, build = version_build()
     compile_all()

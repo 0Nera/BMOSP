@@ -62,5 +62,5 @@ void gdt_init( ) {
 	set_gdt_entry(&gdt[10], 0, 0, 0, 0);
 
 	gdt_load( );
-	fb_printf("GDT инициализирован\n");
+	LOG("GDT инициализирован\n");
 }

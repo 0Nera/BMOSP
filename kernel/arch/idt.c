@@ -76,23 +76,23 @@ static void encode_idt_entry(uint8_t vector, void *handler, uint8_t flags) {
 }
 
 static void exception_handler(struct frame state) {
-	fb_printf("\nПОЛУЧЕНО ИСКЛЮЧЕНИЕ: %s\n", exception_names[state.int_number]);
+	LOG("\nПОЛУЧЕНО ИСКЛЮЧЕНИЕ: %s\n", exception_names[state.int_number]);
 
-	fb_printf("  RAX=%x  RBX=%x\n"
-	          "  RCX=%x  RDX=%x\n"
-	          "  RSI=%x  RDI=%x\n"
-	          "  RBP=%x  RSP=%x\n"
-	          "  R08=%x  R09=%x\n"
-	          "  R10=%x  R11=%x\n"
-	          "  R12=%x  R13=%x\n"
-	          "  R14=%x  R15=%x\n"
-	          "  RIP=%x  RFLAGS=%x\n"
-	          "  CS=%x SS=%x\n"
-	          "  ERR=%x  INT=%u",
-	          state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi,
-	          state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
-	          state.r12, state.r13, state.r14, state.r15, state.rip,
-	          state.rflags, state.cs, state.ss, state.err, state.int_number);
+	LOG("  RAX=%x  RBX=%x\n"
+	    "  RCX=%x  RDX=%x\n"
+	    "  RSI=%x  RDI=%x\n"
+	    "  RBP=%x  RSP=%x\n"
+	    "  R08=%x  R09=%x\n"
+	    "  R10=%x  R11=%x\n"
+	    "  R12=%x  R13=%x\n"
+	    "  R14=%x  R15=%x\n"
+	    "  RIP=%x  RFLAGS=%x\n"
+	    "  CS=%x SS=%x\n"
+	    "  ERR=%x  INT=%u",
+	    state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi,
+	    state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
+	    state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags,
+	    state.cs, state.ss, state.err, state.int_number);
 
 	asm volatile("cli; hlt");
 }
@@ -101,7 +101,7 @@ void isr_generic(struct frame state) {
 	if (state.int_number < 32) {
 		exception_handler(state);
 	} else {
-		fb_printf("\nПрерывание! %u необработано :(\n", state.int_number);
+		LOG("\nПрерывание! %u необработано :(\n", state.int_number);
 	}
 }
 
@@ -119,7 +119,7 @@ void idt_init( ) {
 	}
 
 	idt_load( );
-	fb_printf("IDT инициализирован\n");
+	LOG("IDT инициализирован\n");
 }
 
 void idt_set_int(uint8_t vector, void *int_handler) {

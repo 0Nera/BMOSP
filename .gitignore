@@ -10,6 +10,7 @@ iso_root/
 modules/helloworld/helloworld.elf
 modules/com/com.elf
 modules/helloworld/hello.o
-modules/helloworld/hello.so
+modules/helloworld/hello.ko
 *.so
 *.o
+*.ko

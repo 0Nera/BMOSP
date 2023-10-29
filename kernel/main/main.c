@@ -10,8 +10,7 @@
 #include <mem.h>
 #include <tool.h>
 
-#define TGA_ERR( )                                                             \
-	fb_printf("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
+#define TGA_ERR( ) LOG("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
 
 extern void *bootpng_ptr;
 extern uint64_t bootpng_size;
@@ -41,8 +40,8 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 
 	data = (unsigned int *)mem_alloc((w * h + 2) * sizeof(unsigned int));
 	if (!data) {
-		fb_printf("Ошибка декодирования TGA на строчке: %u, %x, %u kb\n",
-		          __LINE__, data, ((w * h + 2) * sizeof(unsigned int)) / 1024);
+		LOG("Ошибка декодирования TGA на строчке: %u, %x, %u kb\n", __LINE__,
+		    data, ((w * h + 2) * sizeof(unsigned int)) / 1024);
 		return NULL;
 	}
 
@@ -171,16 +170,16 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 }
 void main( ) {
 	for (uint64_t i = 512; i > 1; i--) { pause( ); }
-	fb_printf("Загрузка завершена! 1\n");
+	LOG("Загрузка завершена! 1\n");
 	unsigned int *res = tga_parse((uint8_t *)bootpng_ptr, bootpng_size);
-	fb_printf("Загрузка завершена! 2 %x\n", res);
+	LOG("Загрузка завершена! 2 %x\n", res);
 
 	tga_header_t *head = (tga_header_t *)bootpng_ptr;
 
 	if (res != NULL) {
-		fb_printf("Размер экрана загрузки: %ux%u \n", res[0], res[1]);
+		LOG("Размер экрана загрузки: %ux%u \n", res[0], res[1]);
 	}
-	fb_printf("Размер экрана загрузки: %ux%u \n", head->h, head->w);
+	LOG("Размер экрана загрузки: %ux%u \n", head->h, head->w);
 	mem_dump_memory( );
 
 	fb_print_buf(0, 0, head->w, head->h, (uint32_t *)(res + 2));

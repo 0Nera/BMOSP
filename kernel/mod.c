@@ -42,13 +42,13 @@ static void *elf_entry(void *module_bin, uint64_t size) {
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
 
 #if 0
-	fb_printf("  Класс:       ELF64\n");
-	fb_printf("  Версия:      %u\n", elf_header->e_ident[6]);
-	fb_printf("  ОС/ABI:      %u\n", elf_header->e_ident[7]);
-	fb_printf("  Тип:         %u\n", elf_header->e_type);
-	fb_printf("  Машина:      %u\n", elf_header->e_machine);
-	fb_printf("  Версия:      %u\n", elf_header->e_version);
-	fb_printf("  Точка входа: 0x%x\n", elf_header->e_entry);
+	LOG("  Класс:       ELF64\n");
+	LOG("  Версия:      %u\n", elf_header->e_ident[6]);
+	LOG("  ОС/ABI:      %u\n", elf_header->e_ident[7]);
+	LOG("  Тип:         %u\n", elf_header->e_type);
+	LOG("  Машина:      %u\n", elf_header->e_machine);
+	LOG("  Версия:      %u\n", elf_header->e_version);
+	LOG("  Точка входа: 0x%x\n", elf_header->e_entry);
 #endif
 
 	// Возвращаем указатель на точку входа
@@ -71,44 +71,44 @@ void mod_init( ) {
 
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
-		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
-		          module_ptr->cmdline, module_ptr->address);
-		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
-		          module_ptr->size, module_ptr->media_type,
-		          module_ptr->partition_index);
+		LOG("[%d] %s [%s] 0x%x\n", i, module_ptr->path, module_ptr->cmdline,
+		    module_ptr->address);
+		LOG("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
+		    module_ptr->size, module_ptr->media_type,
+		    module_ptr->partition_index);
 #if 0
-		fb_printf("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
+		LOG("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
 		          module_ptr->cmdline, module_ptr->address);
-		fb_printf("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
+		LOG("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
 		          module_ptr->size, module_ptr->media_type,
 		          module_ptr->partition_index);
-		fb_printf("->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
+		LOG("->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
 		          module_ptr->mbr_disk_id, module_ptr->tftp_ip,
 		          module_ptr->tftp_port);
 
 #endif
 		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
-			fb_printf("\t\t[BOOTIMG]\n");
+			LOG("\t\t[BOOTIMG]\n");
 			bootpng_ptr = module_ptr->address;
 			bootpng_size = module_ptr->size;
 			continue;
 		}
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
 		modules_count++;
-		uint64_t (*module_init)(env_t * env) =
+		module_info_t (*module_init)(env_t * env) =
 		    (module_info_t * (*)(env_t * env))
 		        elf_entry(module_ptr->address, module_ptr->size);
 
-		fb_printf("\t->Точка входа: 0x%x\n", module_init);
+		LOG("\t->Точка входа: 0x%x\n", module_init);
 
 		main_env.offset = module_ptr->address;
 		main_env.info = (module_info_t *)0;
 		main_env.fb_printf = &fb_printf;
-		uint64_t ret = module_init(&main_env);
+		module_info_t ret = module_init(&main_env);
 
-		fb_printf("Инициализированно с кодом: %u\n", ret);
-		// fb_printf("Инициализированно с кодом: %u\n", ret->err_code);
-		// fb_printf("Сообщение из модуля: %s\n\n", ret->message);
+		LOG("Инициализированно с кодом: %u\n", ret.err_code);
+		// LOG("Инициализированно с кодом: %u\n", ret->err_code);
+		// LOG("Сообщение из модуля: %s\n\n", ret->message);
 	}
-	fb_printf("Модулей обработано: %u\n", modules_count);
+	LOG("Модулей обработано: %u\n", modules_count);
 }

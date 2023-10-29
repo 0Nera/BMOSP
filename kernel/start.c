@@ -22,14 +22,14 @@ void _start( ) {
 	fb_init( );
 	arch_init( );
 	mem_init( );
+
+	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
+	    "версии %u.%u.%u ***\n",
+	    VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
+
+	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	mod_init( );
-
-	fb_printf("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
-	          "версии %u.%u.%u ***\n",
-	          VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
-
-	fb_printf("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	pit_init( );
-	fb_printf("Готово!\n");
+	LOG("Готово!\n");
 	for (;;) { asm volatile("hlt"); }
 }

@@ -15,7 +15,7 @@
 static uint64_t count = 0;
 
 static void isr_generic( ) {
-	fb_printf("\nТик! %u", count++);
+	LOG("\nТик! %u", count++);
 }
 
 void pit_set_interval(int hz) {
