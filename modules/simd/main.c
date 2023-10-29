@@ -29,6 +29,6 @@ module_info_t init(env_t *env) {
 
 	return (module_info_t){ .name = (char *)"SIMD",
 		                    .message = (char *)"SIMD инструкции",
-		                    .err_code = 404,
+		                    .err_code = 0,
 		                    .func_count = 1 };
 }
