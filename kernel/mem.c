@@ -64,9 +64,30 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		LOG("->0x%x | %u.%u kb | %u | 0x%x\n", &curr->data, (curr->size) / 1024,
-		    (curr->size) % 1024, curr->free, curr->next);
+		LOG("->0x%x | %u.%u kb | %s | 0x%x\n", &curr->data, (curr->size) / 1024,
+		    (curr->size) % 1024, curr->free ? memory_types[0] : memory_types[1],
+		    curr->next);
 		curr = curr->next;
+	}
+}
+
+void mem_check_dynamic_memory( ) {
+	mem_entry_t *curr = first_node;
+	uint64_t free_mem = 0;
+
+	while (curr) {
+		if (curr->free) { free_mem += curr->size; }
+		curr = curr->next;
+	}
+
+	if (free_mem < 1024 * BLOCK_SIZE) {
+		void *ptr = mem_frame_alloc(1024);
+		if (ptr == NULL) {
+			LOG("Память кончилась!\n");
+			return;
+		}
+		mem_add_block(ptr, 1024 * BLOCK_SIZE);
+		mem_merge_all_blocks( );
 	}
 }
 
@@ -126,7 +147,7 @@ void mem_merge_all_blocks( ) {
 	}
 }
 
-static void add_block(void *addr, size_t size) {
+void mem_add_block(void *addr, size_t size) {
 	mem_entry_t *new_entry = (mem_entry_t *)addr;
 
 	new_entry->size = size - sizeof(mem_entry_t);
@@ -187,6 +208,7 @@ static void *alloc_align(size_t size, size_t alignment) {
 }
 
 void *mem_alloc(size_t size) {
+	mem_check_dynamic_memory( );
 	return alloc_align(size, 1);
 }
 
@@ -231,7 +253,7 @@ void mem_init( ) {
 	LOG("Записей в карте памяти: %u\n", memmap_response->entry_count);
 
 	// Обработка каждой записи в карте памяти
-	for (int i = 0; i < mmmap_count; i++) {
+	for (uint64_t i = 0; i < mmmap_count; i++) {
 		available += mmaps[i]->length;
 
 		// LOG("\t%d: 0x%x\tдлина: 0x%x\tтип: %s\n", i + 1,
@@ -285,7 +307,7 @@ void mem_init( ) {
 	LOG("%u мегабайт выделено в динамичную память\n",
 	    (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
 	for (uint64_t i = 256 * 16; i > 0; i -= BLOCK_SIZE) {
-		add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE);
+		mem_add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE);
 	}
 	mem_merge_all_blocks( );
 	mem_dump_memory( );
