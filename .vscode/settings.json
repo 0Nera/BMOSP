@@ -12,6 +12,7 @@
         "sys.h": "c",
         "arch.h": "c",
         "fb.h": "c",
-        "system.h": "c"
+        "system.h": "c",
+        "mod.h": "c"
     }
 }
