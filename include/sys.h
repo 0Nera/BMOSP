@@ -13,6 +13,11 @@
 #include <stdint.h>
 
 typedef struct {
+	uint32_t *address;
+	uint64_t width;
+	uint64_t height;
+	uint64_t pitch;
+	uint16_t bpp;
 	int reserved;
 } framebuffer_t;
 
@@ -28,8 +33,9 @@ typedef struct {
 typedef struct {
 	char *name;
 	char *message;
-	int err_code;
-	uint64_t func_count;
+	uint64_t type;
+	int64_t err_code;
+	uint64_t module_id;
 } module_info_t;
 
 typedef struct {

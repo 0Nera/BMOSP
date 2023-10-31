@@ -70,6 +70,7 @@ void exception_handler(struct frame state) {
 	    state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
 	    state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags,
 	    state.cs, state.ss, state.err, state.int_number);
+	LOG("stack_top = %x\n", stack_top);
 
 	asm volatile("cli; hlt");
 }
@@ -90,11 +91,14 @@ static void idt_load( ) {
 	asm volatile("lidt %0" : : "m"(*ptr));
 }
 
-void idt_set_int(uint8_t vector, void *int_handler) {}
+void idt_set_int(uint8_t vector, void *int_handler) {
+	idt_desc_setup(&IDT[vector], KERNEL_CS, (uintptr_t)int_handler,
+	               IDT_INTERRUPT_FLAGS);
+	idt_load( );
+}
 
 void idt_init( ) {
 	asm volatile("sti");
-	fb_printf("Настройка прерываний...\n");
 
 	for (int i = 0; i != IDT_EXCEPTIONS; ++i) {
 		const uintptr_t handler = (uintptr_t)isr_stubs[i];

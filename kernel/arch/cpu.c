@@ -13,7 +13,6 @@
 #include <tool.h>
 
 static bool acpi_msrs_support = false;
-static bool mmx_support = false;
 
 static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
                   uint32_t *edx) {
@@ -26,7 +25,8 @@ static void msr_get(uint32_t msr, uint32_t *lo, uint32_t *hi) {
 	asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
 }
 
-static void msr_set(uint32_t msr, uint32_t lo, uint32_t hi) {
+static void __attribute__((unused))
+msr_set(uint32_t msr, uint32_t lo, uint32_t hi) {
 	asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
 }
 
@@ -90,6 +90,13 @@ static void brandname( ) {
 	}
 
 	if (manufacturer[0] == 0x68747541) { do_amd( ); }
+}
+
+void cpu_idle( ) {
+	if (acpi_msrs_support) {
+		LOG("Температура: %d (в QEMU/KVM всегда 0)\n",
+		    get_cpu_temperature_intel( ));
+	}
 }
 
 void cpu_init( ) {

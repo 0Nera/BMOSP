@@ -35,9 +35,7 @@
 
 static inline void pause( ) {
 	for (uint64_t i = 0; i < 1024; i++) {
-		for (uint64_t j = 0; j < 1024; j++) {
-			for (uint64_t q = 0; q < 8; q++) { asm volatile("pause"); }
-		}
+		for (uint64_t j = 0; j < 4; j++) { asm volatile("pause"); }
 	}
 }
 

@@ -10,6 +10,12 @@
 #ifndef MOD_H
 #define MOD_H
 
+// Максимальное количество модулей 16. Позже перепишем на динамический массив,
+// сейчас для прототипа это не так важно
+#define MOD_MAX 16
+
 void mod_init( );
+void mod_list_show( );
+void mod_find(char *name);
 
 #endif // mod.h
