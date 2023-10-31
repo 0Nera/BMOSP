@@ -15,15 +15,6 @@
 #include <stdint.h>
 #include <tool.h>
 
-enum colors {
-	WHITE = 0xFFFFFF,
-	BLACK = 0x000000,
-	RED = 0xFF0000,
-	GREEN = 0x00FF00,
-	BLUE = 0x0000FF,
-	DARK_GREEN = 0x013220,
-};
-
 static volatile struct limine_framebuffer_request framebuffer_request = {
 	.id = LIMINE_FRAMEBUFFER_REQUEST,
 	.revision = 0,
@@ -44,9 +35,9 @@ uint16_t bpp;
 uint64_t pos_x = 4;
 uint64_t pos_y = 4;
 
-#define SCREEN_WIDTH width
-#define SCREEN_HEIGHT height
-#define SCREEN_BUFFER fb_addr
+void fb_set_text_color(uint32_t color) {
+	text_color = color;
+}
 
 // Настройка прослойки графики ядра
 void fb_init( ) {
@@ -64,7 +55,9 @@ void fb_init( ) {
 	for (uint64_t i = 0; i < width * height; i++) { fb_addr[i] = background; }
 
 	LOG("0x%x %ux%u\n", fb_addr, width, height);
+
 	if (framebuffer_response->framebuffer_count == 1) { return; }
+
 	LOG("Инициализация дополнительных: %u мониторов\n",
 	    framebuffer_response->framebuffer_count);
 
@@ -130,6 +123,7 @@ void scroll_fb( ) {
 
 // Вывод одного символа
 static void fb_putchar(char c) {
+	pause( );
 	if (c == '\t') {
 		pos_x += FONT_6X8_SLIM_CHAR_WIDTH * 4;
 	} else if (c == '\n') {
