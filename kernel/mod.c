@@ -35,9 +35,8 @@ static env_t main_env;
 
 void *bootpng_ptr;
 uint64_t bootpng_size;
-void main( );
 
-static void *elf_entry(void *module_bin, uint64_t size) {
+static void *elf_entry(void *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
 
@@ -62,7 +61,19 @@ static volatile struct limine_module_request module_request = {
 };
 
 static struct limine_module_response *module_response;
-static uint64_t modules_count = 0;
+uint64_t modules_count = 0;
+module_info_t module_list[MOD_MAX];
+static char *graphics_module_message = "Графический модуль-объект";
+static char *other_module_message = "Неизвестный тип модуля";
+
+void mod_list_show( ) {
+	for (uint64_t i = 0; i < modules_count; i++) {
+		fb_printf("Имя: %s\n", module_list[i].name);
+		fb_printf("Описание модуля: %s\n", module_list[i].message);
+		fb_printf("Тип модуля: %u\n", module_list[i].type);
+		fb_printf("Код ошибки модуля: %u\n", module_list[i].err_code);
+	}
+}
 
 void mod_init( ) {
 	module_response = module_request.response;
@@ -71,44 +82,44 @@ void mod_init( ) {
 
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
-		LOG("[%d] %s [%s] 0x%x\n", i, module_ptr->path, module_ptr->cmdline,
-		    module_ptr->address);
-		LOG("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
-		    module_ptr->size, module_ptr->media_type,
-		    module_ptr->partition_index);
-#if 0
-		LOG("[%d] %s [%s] 0x%x\n", i, module_ptr->path,
-		          module_ptr->cmdline, module_ptr->address);
-		LOG("->Размер: %u, тип носителя: %u, индекс раздела: %u\n",
-		          module_ptr->size, module_ptr->media_type,
-		          module_ptr->partition_index);
-		LOG("->Идентификатор диска MBR: %u, TFTP IP: %u, TFTP порт: %u\n",
-		          module_ptr->mbr_disk_id, module_ptr->tftp_ip,
-		          module_ptr->tftp_port);
 
-#endif
+		LOG("[%d] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path,
+		    module_ptr->cmdline, module_ptr->address, module_ptr->size);
+
+		if (modules_count >= MOD_MAX) {
+			LOG("Модуль не обработан. Максимум %u модулей!\n", MOD_MAX);
+			break;
+		}
+
+		module_list[modules_count].name = module_ptr->cmdline;
+		module_list[modules_count].message = other_module_message;
+
 		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
-			LOG("\t\t[BOOTIMG]\n");
 			bootpng_ptr = module_ptr->address;
 			bootpng_size = module_ptr->size;
+			module_list[modules_count].type = 1; // Графика
+			module_list[modules_count].message = graphics_module_message;
+			modules_count++;
 			continue;
 		}
-		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) { continue; }
-		modules_count++;
+
+		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) {
+			module_list[modules_count].type = 255; // Неизвестный тип модуля
+			modules_count++;
+			continue;
+		}
 		module_info_t (*module_init)(env_t * env) =
-		    (module_info_t * (*)(env_t * env))
-		        elf_entry(module_ptr->address, module_ptr->size);
+		    (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
 
 		LOG("\t->Точка входа: 0x%x\n", module_init);
 
-		main_env.offset = module_ptr->address;
+		main_env.offset = (uint64_t)module_ptr->address;
 		main_env.info = (module_info_t *)0;
 		main_env.fb_printf = &fb_printf;
 		module_info_t ret = module_init(&main_env);
+		module_list[modules_count].message = ret.message;
 
-		LOG("Инициализированно с кодом: %u\n", ret.err_code);
-		// LOG("Инициализированно с кодом: %u\n", ret->err_code);
-		// LOG("Сообщение из модуля: %s\n\n", ret->message);
+		modules_count++;
 	}
 	LOG("Модулей обработано: %u\n", modules_count);
 }
