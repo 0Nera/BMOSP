@@ -143,7 +143,6 @@ def create_iso(IMAGE_NAME):
     os.system(f"rm -f {IMAGE_NAME}.iso")
     os.system(f"rm -rf iso_root")
     os.system(f"mkdir -p iso_root")
-    os.system(f"cp -v iso_root/")
     os.system(f"cp -v kernel.elf boot.jpg boot.tga configs/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/")
     os.system(f"mkdir -p iso_root/EFI/BOOT")
     os.system(f"mkdir -p iso_root/mod")
