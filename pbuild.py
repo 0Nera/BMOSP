@@ -83,7 +83,7 @@ def compile_all():
 
 def check_limine():
     if not os.path.isdir("limine"):
-        subprocess.run(["git", "clone", "https://github.com/limine-bootloader/limine.git", "--branch=v5.x-branch-binary", "--depth=1"])
+        subprocess.run(["git", "clone", "https://git.synapseos.ru/Aren/limine.git", "--branch=v5.x-branch-binary", "--depth=1"])
     else:
         os.chdir("limine")
         subprocess.run(["git", "pull"])
