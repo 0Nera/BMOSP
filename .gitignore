@@ -1,16 +1,10 @@
-kernel.elf
 bmosp.hdd
 bmosp.iso
-*.0
-
 bin/
 limine/
 ovmf/
 iso_root/
-modules/helloworld/helloworld.elf
-modules/com/com.elf
-modules/helloworld/hello.o
-modules/helloworld/hello.ko
 *.so
 *.o
 *.ko
+*.elf
