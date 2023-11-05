@@ -4,6 +4,7 @@ bin/
 limine/
 ovmf/
 iso_root/
+output/
 *.so
 *.o
 *.ko
