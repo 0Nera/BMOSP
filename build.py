@@ -17,6 +17,22 @@ def update_repo():
     print('Repository updated')
     return True
 
+def remove_header(file_path):
+    with open(file_path, 'r') as file:
+        html = file.read()
+
+    start_tag = '<header id="title-block-header">\n<h1 class="title">'
+    end_tag = '</h1>\n</header>'
+
+    start_index = html.find(start_tag)
+    end_index = html.find(end_tag) + len(end_tag)
+
+    if start_index != -1 and end_index != -1:
+        html = html[:start_index] + html[end_index:]
+
+    with open(file_path, 'w') as file:
+        file.write(html)
+
 def convert_md_to_html(md_file):
     # Получаем путь к папке "output"
     bin_path = os.path.join(os.getcwd(), 'output')
@@ -34,19 +50,26 @@ def convert_md_to_html(md_file):
     html_file = os.path.join(bin_path, file_name)
 
     # Преобразуем файл MD в HTML, используя, например, Pandoc
-    os.system(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\"")
+    print(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
+    os.system(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
+    remove_header(html_file)
 
 
 def main():
-    # Получаем путь к папке "output"
+    # Получаем путь к папке "output" и "assets"
     bin_path = os.path.join(os.getcwd(), 'output')
+    assets_path = os.path.join(os.getcwd(), 'assets')
 
 
-    # Создаем папку "output", если она не существует
-    os.makedirs(bin_path, exist_ok=True)
     while True:
         # Проверяем обновление репозитория Git
-        update_repo()
+        if not update_repo():
+            time.sleep(60)
+        
+        shutil.rmtree(bin_path, ignore_errors=True)
+        os.makedirs(bin_path, exist_ok=True)
+
+        shutil.copytree(assets_path, os.path.join(bin_path, 'assets'))
 
         # Получаем список всех файлов в репозитории
         repo_files = os.listdir('.')
@@ -58,8 +81,8 @@ def main():
         for md_file in md_files:
             convert_md_to_html(md_file)
 
-        # Ожидаем 1 минуту перед следующей проверкой обновлений
-        time.sleep(60)
+        # Ожидаем 2 минуты перед следующей проверкой обновлений
+        time.sleep(120)
 
 if __name__ == '__main__':
     main()
