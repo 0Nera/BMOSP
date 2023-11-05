@@ -1,10 +1,12 @@
 
 limine/
+iso_root/*
+bin/*
+output/*
 *.elf
 *.o
 *.fd
 *.so
-iso_root/*
-bin/*
 *.hdd
 *.iso
+*.ko

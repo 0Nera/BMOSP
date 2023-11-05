@@ -1,58 +1,65 @@
 import os
-import time
+import subprocess
 import shutil
-from git import Repo
-from mistune import Markdown
+import time
 
-# Путь до репозитория Git
-repo_path = '/project/pages/'
+def update_repo():
+    # Переходим в директорию с репозиторием
+    repo_path = '.'
+    os.chdir(repo_path)
 
-# Путь до папки assets
-assets_path = os.path.join(repo_path, 'assets')
+    # Выполняем команду git pull для обновления репозитория
+    result = subprocess.run(['git', 'pull'], capture_output=True, text=True)
+    # Проверяем вывод команды git pull
+    if result.stdout.strip().lower() == 'already up to date':
+        print('No updates, waiting for further update...')
+        return False
+    print('Repository updated')
+    return True
 
-# Путь до папки, в которую будут скопированы файлы
-target_path = '/var/www/pages/'
+def convert_md_to_html(md_file):
+    # Получаем путь к папке "output"
+    bin_path = os.path.join(os.getcwd(), 'output')
 
-# Функция для преобразования markdown в html
-def markdown_to_html(markdown_content):
-    markdown = Markdown()
-    return markdown(markdown_content)
+    # Получаем заголовок странцы из файла
+    title = ''
+    with open(md_file, 'r') as file:
+        for line in file:
+            if line.startswith('#'):
+                title = line.strip('#').strip()
+                break
 
-# Функция для копирования файлов и папки
-def copy_files(source_path, target_path):
-    if os.path.isdir(source_path):
-        shutil.copytree(source_path, target_path)
-    else:
-        shutil.copy2(source_path, target_path)
+    # Генерируем имя файла HTML на основе имени файла MD
+    file_name = os.path.splitext(md_file)[0] + '.html'
+    html_file = os.path.join(bin_path, file_name)
 
-while True:
-    try:
-        # Открываем репозиторий
-        repo = Repo(repo_path)
+    # Преобразуем файл MD в HTML, используя, например, Pandoc
+    os.system(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\"")
 
-        # Проверяем наличие изменений
-        if repo.is_dirty():
-            # Вытягиваем изменения из репозитория
-            origin = repo.remote(name='origin')
-            origin.pull()
 
-            # Получаем список markdown файлов
-            markdown_files = [file for file in os.listdir(repo_path) if file.endswith('.md')]
+def main():
+    # Получаем путь к папке "output"
+    bin_path = os.path.join(os.getcwd(), 'output')
 
-            # Копируем файлы и папку assets в целевую папку
-            for file in markdown_files:
-                source_file_path = os.path.join(repo_path, file)
-                target_file_path = os.path.join(target_path, file.replace('.md', '.html'))
-                with open(source_file_path) as f:
-                    markdown_content = f.read()
-                    html_content = markdown_to_html(markdown_content)
-                    with open(target_file_path, 'w') as f:
-                        f.write(html_content)
-            copy_files(assets_path, target_path)
 
-        # Засыпаем на 10 минут
-        time.sleep(600)
+    # Создаем папку "output", если она не существует
+    os.makedirs(bin_path, exist_ok=True)
+    while True:
+        # Проверяем обновление репозитория Git
+        update_repo()
 
-    except Exception as e:
-        print(f'Error: {e}')
-        time.sleep(600)
+        # Получаем список всех файлов в репозитории
+        repo_files = os.listdir('.')
+
+        # Фильтруем только MD файлы
+        md_files = [file for file in repo_files if file.endswith('.md')]
+
+        # Преобразуем каждый MD файл в HTML и копируем в папку "output"
+        for md_file in md_files:
+            convert_md_to_html(md_file)
+
+        # Ожидаем 1 минуту перед следующей проверкой обновлений
+        time.sleep(60)
+
+if __name__ == '__main__':
+    main()
