@@ -57,8 +57,8 @@ static void scan( ) {
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
 
-				fb_printf("[%u] vendor: %x, device: %x, class: %u\n",
-				          devices, vendor, device_id);
+				fb_printf("[%u] vendor: %x, device: %x, class: %u\n", devices,
+				          vendor, device_id, class_id);
 				devices++;
 			}
 		}
