@@ -131,7 +131,7 @@ def create_hdd(IMAGE_NAME):
     os.system(f"sgdisk {IMAGE_NAME}.hdd -n 1:2048 -t 1:ef00")
     os.system(f"./limine/limine bios-install {IMAGE_NAME}.hdd")
     os.system(f"mformat -i {IMAGE_NAME}.hdd@@1M")
-    os.system(f"mmd -i {IMAGE_NAME}.hdd@@1M ::/mod ::/EFI ::/EFI/BOOT ::/user")
+    os.system(f"mmd -i {IMAGE_NAME}.hdd@@1M ::/mod ::/EFI ::/EFI/BOOT")
     os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M kernel.elf configs/limine.cfg limine/limine-bios.sys ::/")
     os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M modules/bin/*.ko ::/mod")
     os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M limine/BOOTX64.EFI limine/BOOTIA32.EFI ::/EFI/BOOT")
