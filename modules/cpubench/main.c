@@ -56,6 +56,5 @@ module_info_t init(env_t *env) {
 		.name = (char *)"CPUBENCH",
 		.message = (char *)"Дополнительная информация о процессоре",
 		.err_code = 0,
-		.func_count = 1
 	};
 }

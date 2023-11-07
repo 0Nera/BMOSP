@@ -1,5 +1,10 @@
 #include <system.h>
 
+typedef struct {
+	char *name;
+	uint16_t id;
+} vendor_t;
+
 static inline uint32_t inl(uint16_t port) {
 	uint32_t data;
 	asm volatile("inl %1, %0" : "=a"(data) : "Nd"(port));
@@ -53,12 +58,15 @@ static void scan( ) {
 		for (uint32_t slot = 0; slot < 32; slot++) {
 			for (uint32_t function = 0; function < 8; function++) {
 				uint16_t vendor = get_vendor_id(bus, slot, function);
+
 				if (vendor == 0xFFFF) { continue; }
+
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
 
-				fb_printf("[%u] vendor: %x, device: %x, class: %u\n", devices,
-				          vendor, device_id, class_id);
+				fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u\n",
+				          devices, vendor, device_id, class_id);
+
 				devices++;
 			}
 		}
@@ -68,8 +76,9 @@ static void scan( ) {
 module_info_t init(env_t *env) {
 	init_env(env);
 	scan( );
-	return (module_info_t){ .name = (char *)"[PCI]",
-		                    .message = (char *)"PCI драйвер",
-		                    .err_code = 0,
-		                    .func_count = 1 };
+	return (module_info_t){
+		.name = (char *)"[PCI]",
+		.message = (char *)"PCI драйвер",
+		.err_code = 0,
+	};
 }

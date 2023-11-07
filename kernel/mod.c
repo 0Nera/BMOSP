@@ -13,47 +13,6 @@
 #include <sys.h>
 #include <tool.h>
 
-// Структуры соответствующие ELF заголовкам
-typedef struct {
-	unsigned char e_ident[16];
-	uint16_t e_type;
-	uint16_t e_machine;
-	uint32_t e_version;
-	uint64_t e_entry;
-	uint64_t e_phoff;
-	uint64_t e_shoff;
-	uint32_t e_flags;
-	uint16_t e_ehsize;
-	uint16_t e_phentsize;
-	uint16_t e_phnum;
-	uint16_t e_shentsize;
-	uint16_t e_shnum;
-	uint16_t e_shstrndx;
-} elf64_header_t;
-
-static env_t main_env;
-
-void *bootpng_ptr;
-uint64_t bootpng_size;
-
-static void *elf_entry(void *module_bin) {
-	// Приводим заголовок ELF файла к типу elf64_header_t
-	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
-
-#if 0
-	LOG("  Класс:       ELF64\n");
-	LOG("  Версия:      %u\n", elf_header->e_ident[6]);
-	LOG("  ОС/ABI:      %u\n", elf_header->e_ident[7]);
-	LOG("  Тип:         %u\n", elf_header->e_type);
-	LOG("  Машина:      %u\n", elf_header->e_machine);
-	LOG("  Версия:      %u\n", elf_header->e_version);
-	LOG("  Точка входа: 0x%x\n", elf_header->e_entry);
-#endif
-
-	// Возвращаем указатель на точку входа
-	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
-}
-
 static volatile struct limine_module_request module_request = {
 	.id = LIMINE_MODULE_REQUEST,
 	.revision = 0,
@@ -66,13 +25,37 @@ module_info_t module_list[MOD_MAX];
 static char *graphics_module_message = "Графический модуль-объект";
 static char *other_module_message = "Неизвестный тип модуля";
 
+static env_t main_env;
+
+void *bootpng_ptr;
+uint64_t bootpng_size;
+
+static void *elf_entry(elf64_header_t *module_bin) {
+	// Приводим заголовок ELF файла к типу elf64_header_t
+	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
+
+	// Возвращаем указатель на точку входа
+	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
+}
+
 void mod_list_show( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		fb_printf("Имя: %s\n", module_list[i].name);
 		fb_printf("Описание модуля: %s\n", module_list[i].message);
 		fb_printf("Тип модуля: %u\n", module_list[i].type);
 		fb_printf("Код ошибки модуля: %u\n", module_list[i].err_code);
+		fb_printf("Размер данных: %u\n", module_list[i].data_size);
+		fb_printf("Адрес данных: 0x%x\n", module_list[i].data);
 	}
+}
+
+module_info_t *mod_find(char *tag) {
+	for (uint64_t i = 0; i < modules_count; i++) {
+		if (!tool_starts_with(module_list[i].name, tag)) {
+			return &module_list[i];
+		}
+	}
+	return (module_info_t *)NULL;
 }
 
 void mod_init( ) {
@@ -95,6 +78,8 @@ void mod_init( ) {
 		module_list[modules_count].message = other_module_message;
 
 		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
+			module_list[modules_count].data_size = module_ptr->size;
+			module_list[modules_count].data = module_ptr->address;
 			bootpng_ptr = module_ptr->address;
 			bootpng_size = module_ptr->size;
 			module_list[modules_count].type = 1; // Графика
@@ -108,16 +93,29 @@ void mod_init( ) {
 			modules_count++;
 			continue;
 		}
+
 		module_info_t (*module_init)(env_t * env) =
-		    (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
+		    (module_info_t(*)(env_t * env))
+		        elf_entry((elf64_header_t *)module_ptr->address);
 
 		LOG("\t->Точка входа: 0x%x\n", module_init);
 
 		main_env.offset = (uint64_t)module_ptr->address;
 		main_env.info = (module_info_t *)0;
+
+		sys_install(main_env);
+
 		main_env.fb_printf = &fb_printf;
+
 		module_info_t ret = module_init(&main_env);
+
 		module_list[modules_count].message = ret.message;
+		module_list[modules_count].data_size = ret.data_size;
+
+		if (ret.data_size != 0) {
+			module_list[modules_count].data =
+			    (&(ret.data) + (uint64_t)module_ptr->address);
+		}
 
 		modules_count++;
 	}

@@ -31,8 +31,11 @@ typedef struct {
 typedef struct {
 	char *name;
 	char *message;
-	int err_code;
-	uint64_t func_count;
+	uint64_t type;
+	uint64_t data_size;
+	void *data;
+	int64_t err_code;
+	uint64_t module_id;
 } module_info_t;
 
 typedef struct {
@@ -56,14 +59,25 @@ typedef struct {
 typedef struct {
 	uint64_t offset;
 	module_info_t *info;
-	void (*fb_printf)(char *str, ...);
+	void (*fb_printf)(char *str, ...); // Временная функция
+	framebuffer_t *(*alloc_framebuffer)( );
+	void (*free_framebuffer)(framebuffer_t *frame);
+	void (*exit)(int code);
+	void (*get_error)( );
+	sys_info_t *(*get_info)( );
+	module_info_t *(*get_module)(char *module_id);
+	uint64_t (*new_thread)(uint64_t func);
+	int (*delete_thread)(uint64_t thread_id);
+	time_t (*get_time)( );
 } env_t;
 
 extern module_info_t static_info;
 static void (*fb_printf)(char *str, ...);
+static uint64_t offset;
 
 static inline void init_env(env_t *loader_env) {
-	loader_env->info = (module_info_t *)&static_info + loader_env->offset;
+	offset = loader_env->offset;
+	loader_env->info = (module_info_t *)&static_info + offset;
 	fb_printf = loader_env->fb_printf;
 }
 

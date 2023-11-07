@@ -27,8 +27,9 @@ module_info_t init(env_t *env) {
 
 	if ((ecx >> 28) & 1) { env->fb_printf("AVX поддерживается!\n"); }
 
-	return (module_info_t){ .name = (char *)"SIMD",
-		                    .message = (char *)"SIMD инструкции",
-		                    .err_code = 0,
-		                    .func_count = 1 };
+	return (module_info_t){
+		.name = (char *)"SIMD",
+		.message = (char *)"SIMD инструкции",
+		.err_code = 0,
+	};
 }
