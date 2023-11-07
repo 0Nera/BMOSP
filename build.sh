@@ -7,5 +7,6 @@ dos2unix */*.sh
 cd simd/ && chmod +x build.sh && ./build.sh && cd ..
 cd cpubench/ && chmod +x build.sh && ./build.sh && cd ..
 cd pci/ && chmod +x build.sh && ./build.sh && cd ..
+cd pci_data/ && chmod +x build.sh && ./build.sh && cd ..
 cd ..
 python3 pbuild.py
