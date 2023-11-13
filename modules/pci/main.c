@@ -52,7 +52,7 @@ static uint16_t get_sub_class_id(uint16_t bus, uint16_t device,
 	return (r0 & ~0xFF00);
 }
 
-static void scan( ) {
+static void scan(env_t *env) {
 	uint64_t devices = 0;
 	for (uint32_t bus = 0; bus < 256; bus++) {
 		for (uint32_t slot = 0; slot < 32; slot++) {
@@ -64,8 +64,8 @@ static void scan( ) {
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
 
-				fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u\n",
-				          devices, vendor, device_id, class_id);
+				env->fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u\n",
+				               devices, vendor, device_id, class_id);
 
 				devices++;
 			}
@@ -75,7 +75,7 @@ static void scan( ) {
 
 module_info_t init(env_t *env) {
 	init_env(env);
-	scan( );
+	scan(env);
 	return (module_info_t){
 		.name = (char *)"[PCI]",
 		.message = (char *)"PCI драйвер",

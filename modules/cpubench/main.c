@@ -9,38 +9,38 @@ static inline void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx,
 	             : "a"(leaf));
 }
 
-static void L1_cache_size( ) {
+static void L1_cache_size(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L1 кэш недоступен\n");
+		env->fb_printf("L1 кэш недоступен\n");
 		return;
 	}
-	fb_printf(
+	env->fb_printf(
 	    "L1: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
 	    ecx & 0xff, (ecx >> 12) & 0x07, (ecx >> 16) & 0xffff);
 }
 
-static void L2_cache_size( ) {
+static void L2_cache_size(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L2 кэш недоступен\n");
+		env->fb_printf("L2 кэш недоступен\n");
 		return;
 	}
-	fb_printf(
+	env->fb_printf(
 	    "L2: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
 	    ecx & 0xff, (ecx >> 12) & 0x0F, (ecx >> 16) & 0xFFFF);
 }
 
-static void L3_cache_size( ) {
+static void L3_cache_size(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L3 кэш недоступен\n");
+		env->fb_printf("L3 кэш недоступен\n");
 		return;
 	}
-	fb_printf(
+	env->fb_printf(
 	    "L3: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n",
 	    edx & 0xff, (edx >> 12) & 0x0F, (edx >> 16) & 0xFFFF);
 }
@@ -48,9 +48,9 @@ static void L3_cache_size( ) {
 module_info_t init(env_t *env) {
 	init_env(env);
 
-	L1_cache_size( );
-	L2_cache_size( );
-	L3_cache_size( );
+	L1_cache_size(env);
+	L2_cache_size(env);
+	L3_cache_size(env);
 
 	return (module_info_t){
 		.name = (char *)"CPUBENCH",
