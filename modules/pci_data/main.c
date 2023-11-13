@@ -8,7 +8,7 @@ typedef struct {
 vendor_t vendor_list[] = { { "Intel", 0x8086 },
 	                       { "AMD", 0x1002 },
 	                       { "AMD", 0x1002 } };
-						   
+
 module_info_t init(env_t *env) {
 	init_env(env);
 	return (module_info_t){ .name = (char *)"[PCI][DATA]",

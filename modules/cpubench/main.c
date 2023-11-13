@@ -9,7 +9,7 @@ static inline void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx,
 	             : "a"(leaf));
 }
 
-static void L1_cache_size( ) {
+static inline void L1_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
@@ -21,7 +21,7 @@ static void L1_cache_size( ) {
 	    ecx & 0xff, (ecx >> 12) & 0x07, (ecx >> 16) & 0xffff);
 }
 
-static void L2_cache_size( ) {
+static inline void L2_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
@@ -33,7 +33,7 @@ static void L2_cache_size( ) {
 	    ecx & 0xff, (ecx >> 12) & 0x0F, (ecx >> 16) & 0xFFFF);
 }
 
-static void L3_cache_size( ) {
+static inline void L3_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
