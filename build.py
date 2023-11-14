@@ -81,6 +81,9 @@ def main():
         for md_file in md_files:
             convert_md_to_html(md_file)
 
+        shutil.rmtree('/var/www/html/', ignore_errors=True)
+        shutil.copytree(bin_path, '/var/www/html/')
+        
         # Ожидаем 2 минуты перед следующей проверкой обновлений
         time.sleep(120)
 
