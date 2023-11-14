@@ -10,8 +10,9 @@ def update_repo():
 
     # Выполняем команду git pull для обновления репозитория
     result = subprocess.run(['git', 'pull'], capture_output=True, text=True)
+    
     # Проверяем вывод команды git pull
-    if result.stdout.strip().lower() == 'already up to date':
+    if 'up to date' in result.stdout.strip().lower():
         print('No updates, waiting for further update...')
         return False
     print('Repository updated')
@@ -83,7 +84,7 @@ def main():
 
         shutil.rmtree('/var/www/html/', ignore_errors=True)
         shutil.copytree(bin_path, '/var/www/html/')
-        
+
         # Ожидаем 2 минуты перед следующей проверкой обновлений
         time.sleep(120)
 
