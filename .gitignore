@@ -5,6 +5,7 @@ limine/
 ovmf/
 iso_root/
 output/
+sdk/
 *.so
 *.o
 *.ko
