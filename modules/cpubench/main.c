@@ -52,9 +52,16 @@ module_info_t init(env_t *env) {
 	L2_cache_size( );
 	L3_cache_size( );
 
+	fb_printf("Конец");
+
 	return (module_info_t){
 		.name = (char *)"CPUBENCH",
 		.message = (char *)"Дополнительная информация о процессоре",
+		.type = 0,
+		.data_size = 0,
+		.data = (void *)0,
+		.data_size = 0,
 		.err_code = 0,
+		.module_id = 0,
 	};
 }

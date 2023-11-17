@@ -94,7 +94,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t * env) =
+		module_info_t (*module_init)(env_t *env) =
 		    (module_info_t(*)(env_t * env))
 		        elf_entry((elf64_header_t *)module_ptr->address);
 
@@ -109,6 +109,7 @@ void mod_init( ) {
 
 		module_info_t ret = module_init(&main_env);
 
+		LOG("\t->%s\n", ret.message);
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
 

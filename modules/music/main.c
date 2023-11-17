@@ -41,7 +41,12 @@ module_info_t init(env_t *env) {
 	return (module_info_t){
 		.name = (char *)"Мелодия",
 		.message = (char *)"Надеюсь скоро тут будет тетрис!",
-		.err_code = 404,
+		.type = 0,
+		.data_size = 0,
+		.data = (void *)0,
+		.data_size = 0,
+		.err_code = 0,
+		.module_id = 0,
 	};
 
 	// Массив с нотами

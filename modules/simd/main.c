@@ -30,6 +30,12 @@ module_info_t init(env_t *env) {
 	return (module_info_t){
 		.name = (char *)"SIMD",
 		.message = (char *)"SIMD инструкции",
+
+		.type = 0,
+		.data_size = 0,
+		.data = (void *)0,
+		.data_size = 0,
 		.err_code = 0,
+		.module_id = 0,
 	};
 }

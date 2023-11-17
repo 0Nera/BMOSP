@@ -9,6 +9,11 @@ module_info_t init(env_t *env) {
 	return (module_info_t){
 		.name = (char *)&name,
 		.message = (char *)&message,
-		.err_code = 2023,
+		.type = 0,
+		.data_size = 0,
+		.data = (void *)0,
+		.data_size = 0,
+		.err_code = 0,
+		.module_id = 0,
 	};
 }
