@@ -56,9 +56,9 @@ jobs:
         name: ${{ inputs.test_label }}
         tag_name: autobuild
         draft: true
-        files: '*.hdd'
+        files: '**/*.hdd', '**/*.iso'
         body: |
           ${{ inputs.test_label }}
-          
+
           Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
           Мы не несем ответственности за нанесенный ущерб.
