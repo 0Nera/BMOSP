@@ -1,0 +1,64 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_label:
+        required: true
+        type: string
+
+jobs:
+  x86_64:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: install depends
+      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
+    
+    - name: install limine
+      run: |
+        git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
+        cd limine && make && cd ..
+
+    - name: build
+      run: |
+        dos2unix *.sh
+        chmod +x build.sh
+        ./build.sh
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bmosp.hdd
+        path: ${{ github.workspace }}/bmosp.hdd
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bmosp.iso
+        path: ${{ github.workspace }}/bmosp.iso
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: kernel.elf
+        path: ${{ github.workspace }}/kernel.elf
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [x86_64]
+
+    steps:
+    - uses: actions/download-artifact@v3
+      
+    - name: release
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        name: ${{ inputs.test_label }}
+        tag_name: autobuild
+        draft: true
+        files: '*.hdd'
+        body: |
+          ${{ inputs.test_label }}
+          
+          Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
+          Мы не несем ответственности за нанесенный ущерб.
