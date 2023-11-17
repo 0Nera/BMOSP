@@ -50,7 +50,7 @@ jobs:
         name: Автосборка
         tag_name: autobuild
         draft: true
-        files: ['bmosp.hdd', 'kernel.elf', 'bmosp.iso', 'LICENSE']
+        files: 'bmosp.hdd', 'kernel.elf', 'bmosp.iso', 'LICENSE'
         body: |
           Нестабильный релиз. Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
           Мы не несем ответственности за нанесенный ущерб.
