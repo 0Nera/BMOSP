@@ -36,3 +36,21 @@ jobs:
 
     - name: check bin
       run: ls -la bin
+  
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+    - uses: actions/download-artifact@v3
+      
+    - name: release
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        name: Автосборка
+        tag_name: autobuild
+        draft: true
+        files: ['bmosp.hdd', 'kernel.elf', 'bmosp.iso', 'LICENSE']
+        body: |
+          Нестабильный релиз. Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
+          Мы не несем ответственности за нанесенный ущерб.
