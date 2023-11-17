@@ -15,17 +15,17 @@ module_info_t init(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 
-	if ((edx >> 23) & 1) { env->fb_printf("MMX поддерживается!\n"); }
+	if ((edx >> 23) & 1) { fb_printf("MMX поддерживается!\n"); }
 
 	if ((edx >> 25) & 1) {
-		env->fb_printf("SSE2 поддерживается!\n");
-		env->fb_printf("Адрес региона fxsave 0x%x\n", &fxsave_region);
+		fb_printf("SSE2 поддерживается!\n");
+		fb_printf("Адрес региона fxsave 0x%x\n", &fxsave_region);
 		asm volatile(" fxsave %0 " ::"m"(fxsave_region));
 		uint32_t sse_version = (ecx >> 25) & 0x7;
-		env->fb_printf("SSE%u включен\n", sse_version);
+		fb_printf("SSE%u включен\n", sse_version);
 	}
 
-	if ((ecx >> 28) & 1) { env->fb_printf("AVX поддерживается!\n"); }
+	if ((ecx >> 28) & 1) { fb_printf("AVX поддерживается!\n"); }
 
 	return (module_info_t){
 		.name = (char *)"SIMD",
