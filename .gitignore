@@ -10,3 +10,4 @@ sdk/
 *.o
 *.ko
 *.elf
+*.zip

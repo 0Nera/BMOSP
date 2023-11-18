@@ -5,12 +5,19 @@ import time
 from multiprocessing import Pool
 
 
+__VERSION = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode('utf-8').strip()
+
+output = subprocess.check_output(["git", "status", "-s"]).decode('utf-8').strip()
+if "^.M" in output:
+    __VERSION = __VERSION
+
 ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-red-zone -mcmodel=kernel -MMD -MP"
-WARN_FLAGS = "-Wall -Wextra -nostdlib "
-STANDART_FLAGS = "-std=gnu11"
-PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
+WARN_FLAGS = "-Wall -Wextra -nostdlib"
+STANDART_FLAGS = f"-std=gnu11 -DKERNEL_GIT_TAG=\\\"{__VERSION}\\\""
+PROTECT_FLAGS = "-O0 -g -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"
 LIBS_FLAGS = "-Ilimine -Iinclude"
+FORMAT_CMD = """find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file"""
 
 def version_build():
     with open("include/version.h", "r") as file:
@@ -57,9 +64,11 @@ def find_files(directory, extensions):
 
 def compile(file: str):
     CC = "gcc"
+    if os.path.isdir("sdk"):
+        CC = "./sdk/bin/x86_64-elf-gcc"
     output_file = file.replace('/', '_')
     obj_file = f"bin/{output_file}.o"
-    cmd = f"{CC} {WARN_FLAGS} {PROTECT_FLAGS} {ARCH_FLAGS} {CHARSET_FLAGS} {LIBS_FLAGS} -c {file} -o {obj_file}"
+    cmd = f"{CC} {WARN_FLAGS} {STANDART_FLAGS} {PROTECT_FLAGS} {ARCH_FLAGS} {CHARSET_FLAGS} {LIBS_FLAGS} -c {file} -o {obj_file}"
     print(cmd)
     os.system(cmd)
     return obj_file
@@ -106,7 +115,7 @@ def check_os():
         linux_distro = distro.like()
     else:
         linux_distro = platform.linux_distribution()[0]
-    if linux_distro.lower() in ['debian', 'ubuntu']:
+    if linux_distro.lower() in ['debian', 'ubuntu', 'astra']:
         return 1
     return 0
 
@@ -152,22 +161,48 @@ def create_iso(IMAGE_NAME):
     os.system(f"./limine/limine bios-install {IMAGE_NAME}.iso")
 
 if __name__ == "__main__":
-    os.system("""find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file""")
+    print("Форматирование кода")
+
+    os.chdir("include")
+    os.system(FORMAT_CMD)
+    os.chdir("../kernel/")
+    os.system(FORMAT_CMD)
+    os.chdir("../modlib/")
+    os.system(FORMAT_CMD)
+    os.chdir("../modules/")
+    os.system(FORMAT_CMD)
+    os.chdir("../")
+
+
+    print("Очистка папки bin")
     subprocess.run(["rm", "-rf", "bin"])
     subprocess.run(["mkdir", "-p", "bin"])
 
     if not os.path.isdir("ovmf"):
+        print("Установка UEFI")
         subprocess.run(["mkdir", "-p", "ovmf"])
         os.chdir("ovmf")
         subprocess.run(["curl", "-Lo", "OVMF.fd", "https://retrage.github.io/edk2-nightly/bin/RELEASEX64_OVMF.fd"])
         os.chdir("..")
 
+
     if not os.path.isdir("limine"):
+        print("Установка Limine")
         check_limine()
+
+    print("Проверка зависимостей")
+
     check_tools()
+    
     major, minor, build = version_build()
+    
+    print("Сборка модульного ядра")
     compile_all()
+
+    print("Создание ISO образа")
     create_iso("bmosp")
+
+    print("Создание HDD образа")
     create_hdd("bmosp")
 
     print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}.{build}")

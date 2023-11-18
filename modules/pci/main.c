@@ -74,7 +74,7 @@ static inline void scan( ) {
 	}
 }
 
-module_info_t init(env_t *env) {
+module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	scan( );
 	return (module_info_t){

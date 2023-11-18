@@ -3,7 +3,7 @@
 static const char name[] = "Привет мир!";
 static const char message[] = "Привет из модуля!";
 
-module_info_t init(env_t *env) {
+module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	fb_printf("[%s]\n", message);
 	return (module_info_t){

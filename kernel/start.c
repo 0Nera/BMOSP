@@ -25,8 +25,8 @@ void _start( ) {
 
 	fb_set_text_color(0x00FF00);
 	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
-	    "версии %u.%u.%u ***\n",
-	    VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD);
+	    "версии %u.%u.%u %s***\n",
+	    VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD, KERNEL_GIT_TAG);
 
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	fb_set_text_color(0x00D000);

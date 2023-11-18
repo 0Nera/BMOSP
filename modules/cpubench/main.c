@@ -45,14 +45,12 @@ static inline void L3_cache_size( ) {
 	    edx & 0xff, (edx >> 12) & 0x0F, (edx >> 16) & 0xFFFF);
 }
 
-module_info_t init(env_t *env) {
+module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
 	L1_cache_size( );
 	L2_cache_size( );
 	L3_cache_size( );
-
-	fb_printf("Конец");
 
 	return (module_info_t){
 		.name = (char *)"CPUBENCH",

@@ -9,7 +9,7 @@ static inline void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx,
 	             : "a"(leaf));
 }
 
-module_info_t init(env_t *env) {
+module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
 	uint32_t eax, ebx, ecx, edx;

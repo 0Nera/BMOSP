@@ -31,16 +31,6 @@ typedef struct {
 } module_func_t;
 
 typedef struct {
-	char *name;
-	char *message;
-	uint64_t type;
-	uint64_t data_size;
-	void *data;
-	int64_t err_code;
-	uint64_t module_id;
-} module_info_t;
-
-typedef struct {
 	int reserved;
 } func_t;
 
@@ -59,8 +49,17 @@ typedef struct {
 } time_t;
 
 typedef struct {
+	char *name;
+	char *message;
+	uint64_t type;
+	uint64_t data_size;
+	void *data;
+	int64_t err_code;
+	uint64_t module_id;
+} __attribute__((packed)) module_info_t;
+
+typedef struct {
 	uint64_t offset;
-	module_info_t *info;
 	void (*fb_printf)(char *str, ...); // Временная функция
 	framebuffer_t *(*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
@@ -71,8 +70,8 @@ typedef struct {
 	uint64_t (*new_thread)(uint64_t func);
 	int (*delete_thread)(uint64_t thread_id);
 	time_t (*get_time)( );
-} env_t;
+} __attribute__((packed)) env_t;
 
-env_t sys_install(env_t module);
+env_t *sys_install(env_t *module);
 
 #endif // sys.h

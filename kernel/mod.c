@@ -33,7 +33,8 @@ uint64_t bootpng_size;
 static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
-
+	LOG("(uint64_t)elf_header->e_entry = 0x%x\n",
+	    (uint64_t)elf_header->e_entry);
 	// Возвращаем указатель на точку входа
 	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
 }
@@ -94,18 +95,15 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
+		module_info_t (*module_init)(env_t * env) =
 		    (module_info_t(*)(env_t * env))
 		        elf_entry((elf64_header_t *)module_ptr->address);
 
 		LOG("\t->Точка входа: 0x%x\n", module_init);
 
 		main_env.offset = (uint64_t)module_ptr->address;
-		main_env.info = (module_info_t *)0;
 
-		sys_install(main_env);
-
-		main_env.fb_printf = &fb_printf;
+		sys_install(&main_env);
 
 		module_info_t ret = module_init(&main_env);
 

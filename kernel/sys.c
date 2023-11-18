@@ -50,17 +50,17 @@ static time_t sys_get_time( ) {
 	return (time_t){ .year = 2023, .month = 10, .day = 31, .second = 1 };
 }
 
-env_t sys_install(env_t module) {
-	module.fb_printf = &fb_printf;
-	module.alloc_framebuffer = &sys_alloc_framebuffer;
-	module.free_framebuffer = &sys_free_framebuffer;
-	module.exit = &sys_exit;
-	module.get_error = &sys_get_error;
-	module.get_info = &sys_get_info;
-	module.get_module = &sys_get_module;
-	module.new_thread = &sys_new_thread;
-	module.delete_thread = &sys_delete_thread;
-	module.get_time = &sys_get_time;
+env_t *sys_install(env_t *module) {
+	module->fb_printf = &fb_printf;
+	module->alloc_framebuffer = &sys_alloc_framebuffer;
+	module->free_framebuffer = &sys_free_framebuffer;
+	module->exit = &sys_exit;
+	module->get_error = &sys_get_error;
+	module->get_info = &sys_get_info;
+	module->get_module = &sys_get_module;
+	module->new_thread = &sys_new_thread;
+	module->delete_thread = &sys_delete_thread;
+	module->get_time = &sys_get_time;
 
 	return module;
 }
