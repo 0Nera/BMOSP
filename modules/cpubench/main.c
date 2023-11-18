@@ -58,7 +58,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.type = 0,
 		.data_size = 0,
 		.data = (void *)0,
-		.data_size = 0,
 		.err_code = 0,
 		.module_id = 0,
 	};

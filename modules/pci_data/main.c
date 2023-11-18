@@ -15,7 +15,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.name = (char *)"[PCI][DATA]",
 		.message = (char *)"PCI данные",
 		.type = 0,
-		.data_size = 0,
 		.data_size = 3,
 		.data = &vendor_list,
 		.err_code = 0,
