@@ -2,9 +2,11 @@
 
 ## Установка SDK
 
-Перед сборкой рекомендуем установить готовый пакет SDK
+Перед сборкой рекомендуем установить готовый пакет SDK вместе с libc6
 
 ```bash
+sudo apt update
+sudo apt install libc6
 ./scripts/get_sdk.sh
 ```
 
@@ -24,7 +26,7 @@ chmod +x build.sh
 В qemu недоступен флаг `-cpu max`, просто уберите его при запуске
 
 ```bash
-sudo apt install clang-format python3.7 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
+sudo apt install clang-format python3.7 unzip git qemu-system-x86 gdisk dos2unix xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 python3.7 pbuild.py
@@ -32,7 +34,6 @@ python3.7 pbuild.py
 
 ## ArchLinux
 
-Модули грузятся с ошибкой
 
 ```bash
 yay -S clang-format
