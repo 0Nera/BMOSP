@@ -13,6 +13,6 @@
         "arch.h": "c",
         "fb.h": "c",
         "system.h": "c",
-        "mod.h": "c"
+        "mod.h": "c",
     }
 }
