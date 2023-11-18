@@ -28,6 +28,14 @@ jobs:
         chmod +x build.sh
         ./build.sh
 
+    - name: save
+      run: |
+        mkdir -p release
+        cp ${{ github.workspace }}/kernel.elf release/
+        cp ${{ github.workspace }}/bmosp.hdd release/
+        cp ${{ github.workspace }}/bmosp.iso release/
+        cp ${{ github.workspace }}/LICENSE release/
+
     - uses: actions/upload-artifact@v3
       with:
         name: bmosp.hdd
@@ -56,7 +64,7 @@ jobs:
         name: ${{ inputs.test_label }}
         tag_name: autobuild
         draft: true
-        files: '**/*.hdd'
+        files: '**/release/*'
         body: |
           ${{ inputs.test_label }}
 
