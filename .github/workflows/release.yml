@@ -56,7 +56,7 @@ jobs:
         name: ${{ inputs.test_label }}
         tag_name: autobuild
         draft: true
-        files: '**/*.hdd', '**/*.iso'
+        files: '**/*.hdd'
         body: |
           ${{ inputs.test_label }}
 
