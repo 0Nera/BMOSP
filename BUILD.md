@@ -1,9 +1,17 @@
 # Сборка из исходного кода
 
+## Установка SDK
+
+Перед сборкой рекомендуем установить готовый пакет SDK
+
+```bash
+./scripts/get_sdk.sh
+```
+
 ## Ubuntu 18.04+
 
 ```bash
-sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix xorriso
+sudo apt install clang-format python3 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
@@ -16,7 +24,7 @@ chmod +x build.sh
 В qemu недоступен флаг `-cpu max`, просто уберите его при запуске
 
 ```bash
-sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso
+sudo apt install clang-format python3.7 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 python3.7 pbuild.py
@@ -28,7 +36,7 @@ python3.7 pbuild.py
 
 ```bash
 yay -S clang-format
-sudo pacman -S python3 git qemu-system-x86 xorriso
+sudo pacman -S python3 unzip git qemu-system-x86 qemu-system-gui xorriso
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
@@ -39,13 +47,13 @@ chmod +x build.sh
 
 ## Qemu
 
-Стандартная конфигурация загрузки с HDD
+Стандартная конфигурация загрузки с HDD под x86_64(AMD64) UEFI
 
 ```bash
 qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -bios ovmf/OVMF.fd -hda bmosp.hdd
 ```
 
-Стандартная конфигурация загрузки с ISO образа
+Стандартная конфигурация загрузки с ISO образа под x86_64(AMD64) UEFI
 
 ```bash
 qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -cdrom bmosp.iso -boot d --no-reboot
