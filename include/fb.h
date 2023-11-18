@@ -33,10 +33,14 @@ enum colors {
 #define SCREEN_HEIGHT height
 #define SCREEN_BUFFER fb_addr
 
+#ifndef NO_DEBUG
 #define LOG(...)                                                               \
 	fb_printf("[%u]%s() (%s:%d) ", GET_TICK_BIG, __func__, __FILE__,           \
 	          __LINE__);                                                       \
 	fb_printf(__VA_ARGS__)
+#else
+#define LOG(...)
+#endif
 
 void fb_set_text_color(uint32_t color);
 void fb_init( );
