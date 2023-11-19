@@ -30,11 +30,11 @@ jobs:
 
     - name: save
       run: |
-        mkdir -p ${{ github.workspace }}/release
-        cp ${{ github.workspace }}/kernel.elf ${{ github.workspace }}/release/
-        cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/release/
-        cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/release/
-        cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/release/
+        mkdir -p ${{ github.workspace }}/rel
+        cp ${{ github.workspace }}/kernel.elf ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/rel/
 
     - uses: actions/upload-artifact@v3
       with:
@@ -60,7 +60,8 @@ jobs:
 
     - name: check
       run: |
-        ls -la release
+        echo ${{ github.workspace }}/rel/
+        ls -la ${{ github.workspace }}/rel/
       
     - name: release
       uses: softprops/action-gh-release@v0.1.15
@@ -69,10 +70,10 @@ jobs:
         tag_name: autobuild
         draft: true
         files: |
-          ${{ github.workspace }}/release/kernel.elf
-          ${{ github.workspace }}/release/bmosp.hdd
-          ${{ github.workspace }}/release/bmosp.iso
-          ${{ github.workspace }}/release/LICENSE
+          ${{ github.workspace }}/rel/kernel.elf
+          ${{ github.workspace }}/rel/bmosp.hdd
+          ${{ github.workspace }}/rel/bmosp.iso
+          ${{ github.workspace }}/rel/LICENSE
 
         body: |
           ${{ inputs.test_label }}
