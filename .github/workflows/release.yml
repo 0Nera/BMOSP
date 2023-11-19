@@ -30,11 +30,11 @@ jobs:
 
     - name: save
       run: |
-        mkdir -p release
-        cp ${{ github.workspace }}/kernel.elf release/
-        cp ${{ github.workspace }}/bmosp.hdd release/
-        cp ${{ github.workspace }}/bmosp.iso release/
-        cp ${{ github.workspace }}/LICENSE release/
+        mkdir -p ${{ github.workspace }}/release
+        cp ${{ github.workspace }}/kernel.elf ${{ github.workspace }}/release/
+        cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/release/
+        cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/release/
+        cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/release/
 
     - uses: actions/upload-artifact@v3
       with:
@@ -57,6 +57,10 @@ jobs:
 
     steps:
     - uses: actions/download-artifact@v3
+
+    - name: check
+      run: |
+        ls -la release
       
     - name: release
       uses: softprops/action-gh-release@v0.1.15
@@ -64,7 +68,12 @@ jobs:
         name: ${{ inputs.test_label }}
         tag_name: autobuild
         draft: true
-        files: '**/release/*'
+        files: |
+          ${{ github.workspace }}/release/kernel.elf
+          ${{ github.workspace }}/release/bmosp.hdd
+          ${{ github.workspace }}/release/bmosp.iso
+          ${{ github.workspace }}/release/LICENSE
+
         body: |
           ${{ inputs.test_label }}
 
