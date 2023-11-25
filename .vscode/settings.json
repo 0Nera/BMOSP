@@ -14,5 +14,6 @@
         "fb.h": "c",
         "system.h": "c",
         "mod.h": "c",
+        "modstd.h": "c"
     }
 }
