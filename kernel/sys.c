@@ -6,6 +6,7 @@
  */
 
 #include <fb.h>
+#include <mem.h>
 #include <mod.h>
 #include <stdint.h>
 #include <sys.h>
@@ -54,6 +55,8 @@ env_t *sys_install(env_t *module) {
 	module->fb_printf = &fb_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
 	module->free_framebuffer = &sys_free_framebuffer;
+	module->alloc = &mem_alloc;
+	module->free = &mem_free;
 	module->exit = &sys_exit;
 	module->get_error = &sys_get_error;
 	module->get_info = &sys_get_info;

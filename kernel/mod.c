@@ -90,6 +90,8 @@ void mod_init( ) {
 		}
 
 		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) {
+			module_list[modules_count].data_size = module_ptr->size;
+			module_list[modules_count].data = module_ptr->address;
 			module_list[modules_count].type = 255; // Неизвестный тип модуля
 			modules_count++;
 			continue;

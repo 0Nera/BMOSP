@@ -3,27 +3,45 @@ typedef struct {
 	char *name;
 	uint16_t id;
 } vendor_t;
-/*
-vendor_t *parse_file(char *str, int *num_vendors) {
-    vendor_t *vendor_list = NULL;
-    int size = 0;
 
-    char *token;
-    char *line = strtok(str, "\n");
+static vendor_t *parse_file(char *str, uint64_t num_vendors, uint64_t size) {
+	vendor_t *vendor_list = alloc(num_vendors * sizeof(vendor_t));
+	if (vendor_list == NULL) { return NULL; }
 
-    while (line != NULL) {
-        vendor_list = realloc(vendor_list, (size + 1) * sizeof(vendor_t));
-        token = strtok(line, ";");
-        vendor_list[size].id = (uint16_t)strtol(token, NULL, 16);
-        token = strtok(NULL, ";");
-        vendor_list[size].name = strdup(token);
-        size++;
-        line = strtok(NULL, "\n");
-    }
+	char *line = str;
+	uint64_t i = 0;
+	while (line != NULL && i < num_vendors) {
+		char *name = trstr(line, ';');
+		char *id_str = strtok(line, ";");
+		name = strtok(name, "\n");
+		fb_printf("\t%s, %s\n", id_str, name);
 
-    *num_vendors = size;
-    return vendor_list;
-}*/
+		if (id_str != NULL && name != NULL) {
+			fb_printf("\tID: 0x%x, Name: %s\n", strtol(id_str, NULL, 16), name);
+			vendor_list[i].id = strtol(id_str, NULL, 16);
+			vendor_list[i].name = name;
+			i++;
+		}
+		line = trstr(line, '\n');
+		fb_printf(line);
+	}
+
+	if (i != num_vendors) {
+		// Ошибка в парсинге данных
+		for (uint64_t j = 0; j < i; j++) { free(vendor_list[j].name); }
+		free(vendor_list);
+		return NULL;
+	}
+
+	return vendor_list;
+}
+
+static void print_vendors(uint64_t num_vendors, vendor_t *vendor_list) {
+	for (uint64_t i = 0; i < num_vendors; i++) {
+		vendor_t *vendor = &vendor_list[i];
+		fb_printf("ID: 0x%x, Name: %s\n", vendor->id, vendor->name);
+	}
+}
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
@@ -33,12 +51,22 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	if (pci_data == NULL) { fb_printf("Модуль PCI данных не найден!\n"); }
 	char *str = pci_data->data;
 
-	int num_vendors = count_chars(str, ';');
-	// vendor_t *vendor_list = parse_file(str, &num_vendors);
-	vendor_t *vendor_list;
+	uint64_t num_vendors = count_chars(str, ';');
+
+	uint64_t i = 1;
+	char *line = str;
+	while (line != NULL && i < num_vendors) {
+		i++;
+		line = trstr(line, '\n');
+		fb_printf("\t\t%u\n%s\n", i, line);
+	}
 	fb_printf("Количество вендоров: %u\n", num_vendors);
+	for (;;) {}
+
+	vendor_t *vendor_list = parse_file(str, num_vendors, pci_data->data_size);
+	// print_vendors(num_vendors, vendor_list);
 	return (module_info_t){
-		.name = (char *)"[PCI][DATA]",
+		.name = (char *)"[PCI][ADAPTER]",
 		.message = (char *)"PCI данные",
 		.type = 0,
 		.data_size = num_vendors,

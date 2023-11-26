@@ -79,7 +79,7 @@ static inline void scan( ) {
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
-	module_info_t *pci_data = get_module("[PCI][DATA]");
+	module_info_t *pci_data = get_module("[PCI][ADAPTER]");
 
 	if (pci_data == NULL) {
 		fb_printf("Модуль PCI данных не найден!\n");

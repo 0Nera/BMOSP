@@ -63,6 +63,8 @@ typedef struct {
 	void (*fb_printf)(char *str, ...); // Временная функция
 	framebuffer_t *(*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
+	void *(*alloc)(uint64_t size);
+	void (*free)(void *ptr);
 	void (*exit)(int code);
 	int (*get_error)( );
 	sys_info_t *(*get_info)( );
