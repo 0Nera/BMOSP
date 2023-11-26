@@ -64,9 +64,9 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		LOG("->0x%x | %u.%u kb | %s | 0x%x\n", &curr->data, (curr->size) / 1024,
-		    (curr->size) % 1024, curr->free ? memory_types[0] : memory_types[1],
-		    curr->next);
+		fb_printf("->0x%x | %u.%u kb | %s | 0x%x\n", &curr->data,
+		          (curr->size) / 1024, (curr->size) % 1024,
+		          curr->free ? memory_types[0] : memory_types[1], curr->next);
 		curr = curr->next;
 	}
 }
@@ -209,7 +209,9 @@ static void *alloc_align(size_t size, size_t alignment) {
 
 void *mem_alloc(size_t size) {
 	mem_check_dynamic_memory( );
-	return alloc_align(size, 1);
+	void *data = alloc_align(size, 1);
+	tool_memset(data, 0, size);
+	return data;
 }
 
 void mem_free(void *addr) {

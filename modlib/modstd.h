@@ -20,16 +20,25 @@ static uint64_t strlen(char *str) {
 	return length;
 }
 
-static void memcpy(void *dest, void *src, uint64_t n) {
+static void strcpy(char *dest, char *src) {
+	size_t i = 0;
+	while (src[i] != '\0') {
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0'; // добавляем завершающий нулевой символ
+}
+
+static void memcpy(void *dest, void *src, size_t n) {
 	char *d = (char *)dest;
 	char *s = (char *)src;
 
-	for (uint64_t i = 0; i < n; i++) { d[i] = s[i]; }
+	for (size_t i = 0; i < n; i++) { d[i] = s[i]; }
 }
 
-static void *memset(void *ptr, uint8_t n, uint64_t size) {
+static void *memset(void *ptr, uint8_t n, size_t size) {
 	uint8_t *p = (uint8_t *)ptr;
-	for (uint64_t i = 0; i < size; i++) { p[i] = n; }
+	for (size_t i = 0; i < size; i++) { p[i] = n; }
 	return ptr;
 }
 
@@ -103,9 +112,9 @@ static char *strtok(char *str, char *delim) {
 	return token;
 }
 
-static long int strtol(char *str, char **endptr, int base) {
-	long int num = 0;
-	int sign = 1;
+static size_t strtol(char *str, char **endptr, int64_t base) {
+	size_t num = 0;
+	int64_t sign = 1;
 
 	// Пропускаем пробелы в начале строки
 	while (*str == ' ') { str++; }
@@ -136,7 +145,7 @@ static long int strtol(char *str, char **endptr, int base) {
 
 	// Преобразование строки в число
 	while (*str != '\0') {
-		int digit;
+		int64_t digit;
 		if (*str >= '0' && *str <= '9') {
 			digit = *str - '0';
 		} else if (*str >= 'A' && *str <= 'Z') {
@@ -156,7 +165,7 @@ static long int strtol(char *str, char **endptr, int base) {
 	}
 
 	if (endptr != NULL) {
-		*endptr = (char *)str; // Указатель на символ, следующий за числом
+		//*endptr = (char *)str; // Указатель на символ, следующий за числом
 	}
 
 	return num * sign;

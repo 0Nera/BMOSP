@@ -6,6 +6,14 @@ typedef struct {
 } vendor_t;
 
 static vendor_t **vendor_list;
+static uint64_t num_vendors;
+
+static char *find_vendor(uint16_t id) {
+	for (uint64_t i = 0; i < num_vendors - 1; i++) {
+		if (vendor_list[i]->id == id) { return vendor_list[i]->name; }
+	}
+	return NULL;
+}
 
 static inline uint32_t inl(uint16_t port) {
 	uint32_t data;
@@ -66,10 +74,18 @@ static inline void scan( ) {
 
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
-
-				fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u\n",
-				          devices, vendor, device_id, class_id);
-
+				char *name = find_vendor(vendor);
+				if (name != NULL) {
+					fb_printf("[%u] vendor: [%s], device: 0x%x, class: %u, "
+					          "%u.%u.%u\n",
+					          devices, name, device_id, class_id, bus, slot,
+					          function);
+				} else {
+					fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u, "
+					          "%u.%u.%u\n",
+					          devices, vendor, device_id, class_id, bus, slot,
+					          function);
+				}
 				devices++;
 			}
 		}
@@ -86,6 +102,8 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	} else {
 		fb_printf("Записей в базе PCI: %u\n", pci_data->data_size);
 		vendor_list = (vendor_t **)pci_data->data;
+		fb_printf("База PCI: 0x%x\n", vendor_list);
+		fb_printf("База PCI: 0x%x\n", &vendor_list);
 	}
 
 	scan( );

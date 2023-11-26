@@ -27,4 +27,22 @@ static inline void init_env(env_t *loader_env) {
 	get_module = loader_env->get_module;
 }
 
+static void *realloc(void *addr, size_t size) {
+	if (size == 0) {
+		free(addr);
+		return NULL;
+	}
+
+	if (addr == NULL) { return alloc(size); }
+
+	void *new_addr = alloc(size);
+
+	if (new_addr == NULL) { return NULL; }
+
+	memcpy(new_addr, addr, size);
+	free(addr);
+
+	return new_addr;
+}
+
 #endif // system.h

@@ -45,8 +45,10 @@ void mod_list_show( ) {
 		fb_printf("Описание модуля: %s\n", module_list[i].message);
 		fb_printf("Тип модуля: %u\n", module_list[i].type);
 		fb_printf("Код ошибки модуля: %u\n", module_list[i].err_code);
-		fb_printf("Размер данных: %u\n", module_list[i].data_size);
-		fb_printf("Адрес данных: 0x%x\n", module_list[i].data);
+		if (module_list[i].data_size) {
+			fb_printf("Размер данных: %u\n", module_list[i].data_size);
+			fb_printf("Адрес данных: 0x%x\n", module_list[i].data);
+		}
 	}
 }
 
@@ -114,10 +116,7 @@ void mod_init( ) {
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
 
-		if (ret.data_size != 0) {
-			module_list[modules_count].data =
-			    (&(ret.data) + (uint64_t)module_ptr->address);
-		}
+		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
 
 		modules_count++;
 	}
