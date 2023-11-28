@@ -100,7 +100,7 @@ static inline void scan( ) {
 				uint16_t class_id = get_class_id(bus, slot, function);
 
 				char *name = find_vendor(vendor);
-				fb_printf("[%u] vendor: %x [%s], device: 0x%x, class: %u, "
+				fb_printf("[%u] %x [%s], устройство: %x, класс: %u, "
 				          "%u.%u.%u\n",
 				          devices, vendor, name, device_id, class_id, bus, slot,
 				          function);
@@ -119,7 +119,7 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	num_vendors = pci_data->data_size - 1;
 
 	if (pci_data == NULL) {
-		fb_printf("Модуль PCI данных не найден!\n");
+		fb_printf("Адаптер PCI данных не найден!\n");
 		num_vendors = 0;
 	} else {
 		fb_printf("Записей в базе PCI: %u\n", pci_data->data_size);

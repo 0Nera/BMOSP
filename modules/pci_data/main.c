@@ -67,17 +67,13 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	module_info_t *pci_data = get_module("[PCI][DATA][VENDORS]");
 
-	if (pci_data == NULL) { fb_printf("Модуль PCI данных не найден!\n"); }
+	if (pci_data == NULL) { fb_printf("База PCI не найдена!\n"); }
 
 	uint64_t num_vendors = count_chars(pci_data->data, ';');
 	fb_printf("Количество вендоров: %u\n", num_vendors);
 
 	vendor_t **vendor_list =
 	    parse_file(pci_data->data, num_vendors, pci_data->data_size);
-	fb_printf("База PCI: 0x%x\n", vendor_list);
-	fb_printf("База PCI: 0x%x\n", &vendor_list);
-	fb_printf("База PCI: 0x%x\n", vendor_list[0]);
-	fb_printf("База PCI: 0x%x\n", vendor_list + offset);
 	// print_vendors(num_vendors, vendor_list);
 	return (module_info_t){
 		.name = (char *)"[PCI][ADAPTER]",
