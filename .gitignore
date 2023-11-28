@@ -11,3 +11,5 @@ sdk/
 *.ko
 *.elf
 *.zip
+*.log
+*.lck
