@@ -64,8 +64,8 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		fb_printf("->0x%x | %u.%u kb | %s | 0x%x\n", &curr->data,
-		          (curr->size) / 1024, (curr->size) % 1024,
+		fb_printf("->0x%x | %u kb | %s | 0x%x\n", &curr->data,
+		          (curr->size) / 1024,
 		          curr->free ? memory_types[0] : memory_types[1], curr->next);
 		curr = curr->next;
 	}
@@ -308,7 +308,10 @@ void mem_init( ) {
 	alloc_init(mem_frame_alloc(1), BLOCK_SIZE);
 	LOG("%u мегабайт выделено в динамичную память\n",
 	    (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
-	for (uint64_t i = 256 * 16; i > 0; i -= BLOCK_SIZE) {
+	
+	// Выделяем по 4 мегабайта в аллокатор динамичной памяти
+	for (int64_t i = 0; i < 16; i += 4) {
+		//fb_printf("%d/%u\n", i, 16);
 		mem_add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE);
 	}
 	mem_merge_all_blocks( );
@@ -317,5 +320,4 @@ void mem_init( ) {
 	    (bitmap_available * BLOCK_SIZE) / 1024 / 1024, available / 1024 / 1024);
 
 	LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
-	LOG("Проверка менеджера памяти\n");
 }
