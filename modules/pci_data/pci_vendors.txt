@@ -5,8 +5,10 @@
 10EC;Realtek
 10FA;Truevision
 1234;Technical
+1274;Ensoniq
 1344;Micron
 1462;MSI
+15AD;VMware
 1AF4;Red Hat
 1B36;Red Hat
 1D6B;Linux Foundation
