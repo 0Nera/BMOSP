@@ -9,10 +9,10 @@ static vendor_t **vendor_list;
 static uint64_t num_vendors;
 
 static char *find_vendor(uint16_t id) {
-	for (uint64_t i = 0; i < num_vendors - 1; i++) {
+	for (uint64_t i = 0; i < num_vendors; i++) {
 		if (vendor_list[i]->id == id) { return vendor_list[i]->name; }
 	}
-	return NULL;
+	return "Нет в базе";
 }
 
 static inline uint32_t inl(uint16_t port) {
@@ -63,6 +63,30 @@ static inline uint16_t get_sub_class_id(uint16_t bus, uint16_t device,
 	return (r0 & ~0xFF00);
 }
 
+static char *get_class_name(uint16_t number) {
+	switch (number) {
+		case 0x0: return "Неклассифицирован";
+		case 0x1: return "Контроллер устройства хранения";
+		case 0x2: return "Контроллер сети";
+		case 0x3: return "Контроллер дисплея";
+		case 0x4: return "Мультимедийный контроллер";
+		case 0x5: return "Контроллер памяти";
+		case 0x6: return "Мост";
+		case 0x7: return "Простой коммуникационный контроллер";
+		case 0x8: return "Периферийное устройство базовой системы";
+		case 0x9: return "Устройство ввода";
+		case 0xA: return "Док-станция";
+		case 0xB: return "Процессор";
+		case 0xC: return "Контроллер последовательной шины";
+		case 0xD: return "Беспроводной контроллер";
+		case 0xE: return "Интеллектуальный контроллер ввода/вывода";
+		case 0xF: return "Контроллер спутниковой связи";
+		case 0x10: return "Контроллер шифрования/дешифрования";
+		case 0x11: return "Контроллер сбора данных и обработки сигналов";
+		default: return "Неизвестный";
+	}
+}
+
 static inline void scan( ) {
 	uint64_t devices = 0;
 	for (uint32_t bus = 0; bus < 256; bus++) {
@@ -74,18 +98,14 @@ static inline void scan( ) {
 
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
+
 				char *name = find_vendor(vendor);
-				if (name != NULL) {
-					fb_printf("[%u] vendor: [%s], device: 0x%x, class: %u, "
-					          "%u.%u.%u\n",
-					          devices, name, device_id, class_id, bus, slot,
-					          function);
-				} else {
-					fb_printf("[%u] vendor: 0x%x, device: 0x%x, class: %u, "
-					          "%u.%u.%u\n",
-					          devices, vendor, device_id, class_id, bus, slot,
-					          function);
-				}
+				fb_printf("[%u] vendor: %x [%s], device: 0x%x, class: %u, "
+				          "%u.%u.%u\n",
+				          devices, vendor, name, device_id, class_id, bus, slot,
+				          function);
+				fb_printf("\t\\->%s\n", get_class_name(class_id));
+
 				devices++;
 			}
 		}
@@ -96,14 +116,14 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
 	module_info_t *pci_data = get_module("[PCI][ADAPTER]");
+	num_vendors = pci_data->data_size - 1;
 
 	if (pci_data == NULL) {
 		fb_printf("Модуль PCI данных не найден!\n");
+		num_vendors = 0;
 	} else {
 		fb_printf("Записей в базе PCI: %u\n", pci_data->data_size);
 		vendor_list = (vendor_t **)pci_data->data;
-		fb_printf("База PCI: 0x%x\n", vendor_list);
-		fb_printf("База PCI: 0x%x\n", &vendor_list);
 	}
 
 	scan( );
