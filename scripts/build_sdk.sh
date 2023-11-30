@@ -8,9 +8,9 @@ echo "Updating..."
 sudo apt-get update
 sudo apt-get -y install build-essential g++ make bison flex texinfo libgmp-dev libmpc-dev libmpfr-dev libisl-dev
 if [ ! -d "gcc-12.3.0" ]; then
-    echo "Installing gcc..."
-    wget https://ftp.gnu.org/gnu/gcc/gcc-12.3.0/gcc-12.3.0.tar.xz
-    tar -xf gcc-12.3.0.tar.xz
+	echo "Installing gcc..."
+	wget https://ftp.gnu.org/gnu/gcc/gcc-12.3.0/gcc-12.3.0.tar.xz
+	tar -xf gcc-12.3.0.tar.xz
 fi
 cd gcc-12.3.0/
 echo "Configure..."

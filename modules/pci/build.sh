@@ -7,7 +7,7 @@ CC="gcc"
 ARCH_FLAGS="-ffreestanding -O0 -g -fPIC -shared -nostdlib "
 
 if [ -d "../../sdk" ]; then
-    CC="../../sdk/bin/x86_64-elf-gcc"
+	CC="../../sdk/bin/x86_64-elf-gcc"
 fi
 
 

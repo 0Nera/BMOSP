@@ -1,19 +1,20 @@
 {
-    "C_Cpp.errorSquiggles": "disabled",
-    "files.associations": {
-        "array": "cpp",
-        "bitset": "cpp",
-        "string_view": "cpp",
-        "initializer_list": "cpp",
-        "complex": "cpp",
-        "string": "cpp",
-        "limine.h": "c",
-        "tool.h": "c",
-        "sys.h": "c",
-        "arch.h": "c",
-        "fb.h": "c",
-        "system.h": "c",
-        "mod.h": "c",
-        "modstd.h": "c"
-    }
+	"C_Cpp.errorSquiggles": "disabled",
+	"files.eol": "\n",
+	"files.associations": {
+		"array": "cpp",
+		"bitset": "cpp",
+		"string_view": "cpp",
+		"initializer_list": "cpp",
+		"complex": "cpp",
+		"string": "cpp",
+		"limine.h": "c",
+		"tool.h": "c",
+		"sys.h": "c",
+		"arch.h": "c",
+		"fb.h": "c",
+		"system.h": "c",
+		"mod.h": "c",
+		"modstd.h": "c"
+	}
 }
