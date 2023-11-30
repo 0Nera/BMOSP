@@ -2,37 +2,37 @@ name: CI BUILD
 
 on:
   push:
-	branches-ignore: [ "pages" ]
+    branches-ignore: [ "pages" ]
   pull_request:
-	branches-ignore: [ "pages" ]
+    branches-ignore: [ "pages" ]
 
 jobs:
   build:
 
-	runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-	steps:
-	- uses: actions/checkout@v3
-	
-	- name: install depends
-	  run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
-	
-	- name: install limine
-	  run: |
-		git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
-		cd limine && make && cd ..
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: install depends
+      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
+    
+    - name: install limine
+      run: |
+        git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
+        cd limine && make && cd ..
 
-	- name: build
-	  run: |
-		dos2unix *.sh
-		chmod +x build.sh
-		./build.sh
+    - name: build
+      run: |
+        dos2unix *.sh
+        chmod +x build.sh
+        ./build.sh
 
-	- name: check root dir
-	  run: ls -la
+    - name: check root dir
+      run: ls -la
 
-	- name: check iso_root
-	  run: ls -la iso_root
+    - name: check iso_root
+      run: ls -la iso_root
 
-	- name: check bin
-	  run: ls -la bin
+    - name: check bin
+      run: ls -la bin
