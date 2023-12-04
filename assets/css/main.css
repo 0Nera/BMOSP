@@ -2,3 +2,24 @@ a {
     color: green;
     text-decoration: none;
 }
+
+@media screen and (max-width: 600px) {
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+  
+  @media screen and (min-width: 601px) and (max-width: 1200px) {
+    img {
+      width: 50%;
+      height: auto;
+    }
+  }
+  
+  @media screen and (min-width: 1201px) {
+    img {
+      width: auto;
+      height: auto;
+    }
+  }
