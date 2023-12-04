@@ -34,7 +34,7 @@ def add_time_to_file(file_path):
     
     timezone_3 = timezone('Etc/GMT+3')
     time_utc_3 = datetime.datetime.now(pytz.utc).astimezone(timezone_3)
-    time_str = time_utc_3.strftime('%Y-%m-%d %H:%M:%S')
+    time_str = time_utc_3.strftime('%d.%m.%Y %H:%M:%S')
 
     with open(file_path, 'r') as file:
         contents = file.read()
