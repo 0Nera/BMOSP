@@ -18,6 +18,23 @@ def update_repo():
     print('Repository updated')
     return True
 
+def add_to_head(file_path, string):
+    # Открываем HTML-файл для чтения и записи
+    with open(file_path, 'r+') as file:
+        # Читаем содержимое файла
+        contents = file.read()
+
+        # Ищем тег <head> в содержимом
+        header_start = contents.find('<head>')
+        header_end = contents.find('</head>') + len('</head>')
+
+        # Если найден тег <head>, добавляем строку внутри него
+        if header_start != -1 and header_end != len('</head>')-1:
+            new_contents = contents[:header_end] + string + contents[header_end:]
+            file.seek(0)
+            file.write(new_contents)
+            file.truncate()
+
 def remove_header(file_path):
     with open(file_path, 'r') as file:
         html = file.read()
@@ -54,6 +71,7 @@ def convert_md_to_html(md_file):
     print(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
     os.system(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
     remove_header(html_file)
+    add_to_head(html_file, "123")
 
 
 def main():
