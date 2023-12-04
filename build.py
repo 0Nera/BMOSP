@@ -25,14 +25,14 @@ def update_repo():
     return True
 
 
-def add_time_to_file(file_path):
+def add_footer_to_file(file_path):
     __VERSION = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode('utf-8').strip()
     output = subprocess.check_output(["git", "status", "-s"]).decode('utf-8').strip()
 
     if "^.M" in output:
         __VERSION = __VERSION
-    
-    timezone_3 = timezone('Etc/GMT+3')
+
+    timezone_3 = pytz.timezone('Europe/Moscow')
     time_utc_3 = datetime.datetime.now(pytz.utc).astimezone(timezone_3)
     time_str = time_utc_3.strftime('%d.%m.%Y %H:%M:%S')
 
@@ -41,10 +41,23 @@ def add_time_to_file(file_path):
         soup = BeautifulSoup(contents, 'html.parser')
         body = soup.body
 
-        time_tag = soup.new_tag('p')
-        time_tag.string = f"Сайт был обновлен: {time_str} (Москва +3) {__VERSION}"
+        footer_text = [
+            "Команда разработчиков БМПОС 2023. Все права защищены",
+            f"Сайт был обновлен: {time_str} (Москва +3) {__VERSION}",
+            "По всем вопросам и предложениям - aren@synapseos.ru"
+        ]
+
+        time_tag = soup.new_tag('footer')
+
+        for text in footer_text:
+            p = soup.new_tag('p')
+            p.string = text
+            time_tag.append(p)
 
         body.append(time_tag)
+
+    with open(file_path, 'w') as file:
+        file.write(str(soup))
 
     with open(file_path, 'w') as file:
         file.write(str(soup))
@@ -105,7 +118,7 @@ def convert_md_to_html(md_file):
     # Удаляем заголовок с использованием функции remove_header
     remove_header(html_file)
 
-    add_time_to_file(html_file)
+    add_footer_to_file(html_file)
 
 
 def main():
