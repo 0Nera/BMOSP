@@ -101,12 +101,13 @@ def main():
         for md_file in md_files:
             convert_md_to_html(md_file)
 
+        os.system("chmod 644 /var/www/html/*/*")
         shutil.rmtree('/var/www/html/', ignore_errors=True)
         shutil.copytree(bin_path, '/var/www/html/')
 
         # Проверяем обновление репозитория Git
         if not update_repo():
-            time.sleep(60)
+            time.sleep(240)
 
 
 if __name__ == '__main__':
