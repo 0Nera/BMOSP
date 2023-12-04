@@ -1,7 +1,10 @@
+from bs4 import BeautifulSoup
+
 import os
 import subprocess
 import shutil
 import time
+
 
 def update_repo():
     # Переходим в директорию с репозиторием
@@ -18,44 +21,41 @@ def update_repo():
     print('Repository updated')
     return True
 
+
 def add_to_head(file_path, string):
-    # Открываем HTML-файл для чтения и записи
-    with open(file_path, 'r+') as file:
-        # Читаем содержимое файла
+    with open(file_path, 'r') as file:
         contents = file.read()
+        soup = BeautifulSoup(contents, 'html.parser')
+        head = soup.head
+        
+        # Парсим строку в виде HTML-кода с помощью Beautiful Soup
+        string_soup = BeautifulSoup(string, 'html.parser')
+        
+        # Находим содержимое тега string_soup и добавляем его внутрь head
+        for tag in string_soup.contents:
+            head.append(tag)
+        
+    with open(file_path, 'w') as file:
+        file.write(str(soup))
 
-        # Ищем тег <head> в содержимом
-        header_start = contents.find('<head>')
-        header_end = contents.find('</head>') + len('</head>')
-
-        # Если найден тег <head>, добавляем строку внутри него
-        if header_start != -1 and header_end != len('</head>')-1:
-            new_contents = contents[:header_end] + string + contents[header_end:]
-            file.seek(0)
-            file.write(new_contents)
-            file.truncate()
 
 def remove_header(file_path):
     with open(file_path, 'r') as file:
         html = file.read()
 
-    start_tag = '<header id="title-block-header">\n<h1 class="title">'
-    end_tag = '</h1>\n</header>'
+    soup = BeautifulSoup(html, 'html.parser')
+    header_tag = soup.find('header', id='title-block-header')
+    if header_tag:
+        header_tag.decompose()
+        with open(file_path, 'w') as file:
+            file.write(str(soup))
 
-    start_index = html.find(start_tag)
-    end_index = html.find(end_tag) + len(end_tag)
-
-    if start_index != -1 and end_index != -1:
-        html = html[:start_index] + html[end_index:]
-
-    with open(file_path, 'w') as file:
-        file.write(html)
 
 def convert_md_to_html(md_file):
     # Получаем путь к папке "output"
     bin_path = os.path.join(os.getcwd(), 'output')
 
-    # Получаем заголовок странцы из файла
+    # Получаем заголовок страницы из файла
     title = ''
     with open(md_file, 'r') as file:
         for line in file:
@@ -70,8 +70,12 @@ def convert_md_to_html(md_file):
     # Преобразуем файл MD в HTML, используя, например, Pandoc
     print(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
     os.system(f"pandoc -s {md_file} -o {html_file} --metadata title=\"{title}\" --css=assets/css/main.css")
+    
+    # Добавляем метатег в HTML
+    add_to_head(html_file, """<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">""")
+
+    # Удаляем заголовок с использованием функции remove_header
     remove_header(html_file)
-    add_to_head(html_file, "123")
 
 
 def main():
@@ -81,9 +85,6 @@ def main():
 
 
     while True:
-        # Проверяем обновление репозитория Git
-        if not update_repo():
-            time.sleep(60)
         
         shutil.rmtree(bin_path, ignore_errors=True)
         os.makedirs(bin_path, exist_ok=True)
@@ -103,8 +104,10 @@ def main():
         shutil.rmtree('/var/www/html/', ignore_errors=True)
         shutil.copytree(bin_path, '/var/www/html/')
 
-        # Ожидаем 2 минуты перед следующей проверкой обновлений
-        time.sleep(120)
+        # Проверяем обновление репозитория Git
+        if not update_repo():
+            time.sleep(60)
+
 
 if __name__ == '__main__':
     main()
