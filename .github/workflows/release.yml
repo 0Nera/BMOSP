@@ -2,74 +2,74 @@ name: release
 
 on:
   workflow_dispatch:
-	inputs:
-	  test_label:
-		required: true
-		type: string
+    inputs:
+      test_label:
+        required: true
+        type: string
 
 jobs:
   x86_64:
-	runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-	steps:
-	- uses: actions/checkout@v4
-	
-	- name: install depends
-	  run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
-	
-	- name: install limine
-	  run: |
-		git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
-		cd limine && make && cd ..
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: install depends
+      run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
+    
+    - name: install limine
+      run: |
+        git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
+        cd limine && make && cd ..
 
-	- name: build
-	  run: |
-		dos2unix *.sh
-		chmod +x build.sh
-		./build.sh
+    - name: build
+      run: |
+        dos2unix *.sh
+        chmod +x build.sh
+        ./build.sh
 
-	- name: save
-	  run: |
-		mkdir -p ${{ github.workspace }}/rel
-		cp ${{ github.workspace }}/kernel.elf ${{ github.workspace }}/rel/
-		cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/rel/
-		cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/rel/
-		cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/rel/
+    - name: save
+      run: |
+        mkdir -p ${{ github.workspace }}/rel
+        cp ${{ github.workspace }}/kernel.elf ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/rel/
+        cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/rel/
 
-	- uses: actions/upload-artifact@v3
-	  with:
-		name: bmosp.hdd
-		path: ${{ github.workspace }}/bmosp.hdd
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bmosp.hdd
+        path: ${{ github.workspace }}/bmosp.hdd
 
-	- uses: actions/upload-artifact@v3
-	  with:
-		name: bmosp.iso
-		path: ${{ github.workspace }}/bmosp.iso
+    - uses: actions/upload-artifact@v3
+      with:
+        name: bmosp.iso
+        path: ${{ github.workspace }}/bmosp.iso
 
-	- uses: actions/upload-artifact@v3
-	  with:
-		name: kernel.elf
-		path: ${{ github.workspace }}/kernel.elf
+    - uses: actions/upload-artifact@v3
+      with:
+        name: kernel.elf
+        path: ${{ github.workspace }}/kernel.elf
 
-	- name: check
-	  run: |
-		echo ${{ github.workspace }}/rel/
-		ls -la ${{ github.workspace }}/rel/
-	  
-	- name: release
-	  uses: softprops/action-gh-release@v0.1.15
-	  with:
-		name: ${{ inputs.test_label }}
-		tag_name: autobuild
-		draft: true
-		files: |
-		  ${{ github.workspace }}/rel/kernel.elf
-		  ${{ github.workspace }}/rel/bmosp.hdd
-		  ${{ github.workspace }}/rel/bmosp.iso
-		  ${{ github.workspace }}/rel/LICENSE
+    - name: check
+      run: |
+        echo ${{ github.workspace }}/rel/
+        ls -la ${{ github.workspace }}/rel/
+      
+    - name: release
+      uses: softprops/action-gh-release@v0.1.15
+      with:
+        name: ${{ inputs.test_label }}
+        tag_name: autobuild
+        draft: true
+        files: |
+          ${{ github.workspace }}/rel/kernel.elf
+          ${{ github.workspace }}/rel/bmosp.hdd
+          ${{ github.workspace }}/rel/bmosp.iso
+          ${{ github.workspace }}/rel/LICENSE
 
-		body: |
-		  ${{ inputs.test_label }}
+        body: |
+          ${{ inputs.test_label }}
 
-		  Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
-		  Мы не несем ответственности за нанесенный ущерб.
+          Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
+          Мы не несем ответственности за нанесенный ущерб.
