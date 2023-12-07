@@ -3,7 +3,7 @@ echo "Название: CPUBENCH"
 echo "Лицензия: Публичное достояние"
 
 CC="gcc"
-ARCH_FLAGS="-ffreestanding -O0 -g -fPIC -shared -nostdlib "
+ARCH_FLAGS="-ffreestanding -O0 -g -fPIC -static -nostdlib "
 
 if [ -d "../../sdk" ]; then
 	CC="../../sdk/bin/x86_64-elf-gcc"
