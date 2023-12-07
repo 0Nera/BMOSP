@@ -42,6 +42,7 @@ static inline void pause( ) {
 void tool_memcpy(void *dest, void *src, uint64_t n);
 void *tool_memset(void *ptr, uint8_t n, uint64_t size);
 uint64_t tool_strlen(const char *str);
+void tool_strcpy(char *dest, char *src);
 uint64_t tool_starts_with(const char *str, const char *prefix);
 void tool_format(void (*putc)(char c), const char *format_string, va_list args);
 
