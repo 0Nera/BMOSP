@@ -64,9 +64,16 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		fb_printf("->0x%x | %u kb | %s | 0x%x\n", &curr->data,
-		          (curr->size) / 1024,
-		          curr->free ? memory_types[0] : memory_types[1], curr->next);
+		if (curr->next) {
+			fb_printf("->0x%x | %u килобайт | %s | 0x%x\n", &curr->data,
+			          (curr->size) / 1024,
+			          curr->free ? memory_types[0] : memory_types[1],
+			          curr->next);
+		} else {
+			fb_printf("->0x%x | %u килобайт | %s | Это последний блок\n",
+			          &curr->data, (curr->size) / 1024,
+			          curr->free ? memory_types[0] : memory_types[1]);
+		}
 		curr = curr->next;
 	}
 }
