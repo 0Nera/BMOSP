@@ -7,7 +7,9 @@ chmod +x */build.sh
 
 for dir in */; do
 	if [ $dir != "bin/" ]; then
-		cd $dir && ./build.sh && cd ..
+		cd $dir
+		./build.sh
+		cd ..
 	fi
 done
 

@@ -32,6 +32,15 @@ uint64_t tool_strlen(const char *str) {
 	return length;
 }
 
+void tool_strcpy(char *dest, char *src) {
+	uint64_t i = 0;
+	while (src[i] != '\0') {
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+}
+
 uint64_t tool_starts_with(const char *str, const char *prefix) {
 	uint64_t str_len = tool_strlen(str);
 	uint64_t prefix_len = tool_strlen(prefix);

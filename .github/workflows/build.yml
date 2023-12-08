@@ -13,10 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+        
     - name: install depends
       run: sudo apt install clang-format python3 git gdisk gcc g++ xorriso make mtools curl dos2unix
-    
+        
     - name: install limine
       run: |
         git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1

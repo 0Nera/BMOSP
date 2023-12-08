@@ -6,6 +6,7 @@ ovmf/
 iso_root/
 output/
 sdk/
+_sdk/
 *.so
 *.o
 *.ko
