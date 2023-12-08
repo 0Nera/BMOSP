@@ -34,8 +34,6 @@ void _start( ) {
 	mod_init( );
 	// pit_init( );
 
-	mod_list_show( );
-
 	fb_set_text_color(0x00FF00);
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	fb_set_text_color(0x00D000);
@@ -43,8 +41,17 @@ void _start( ) {
 	while (1) {
 		uint64_t byte = inb(0x60);
 		if (byte == 0x1) {
-			LOG("Exit!\n");
-			return;
+			LOG("Выход для Bochs\n");
+			outw(0xB004, 0x2000);
+
+			LOG("Выход для Qemu\n");
+			outw(0x604, 0x2000);
+
+			LOG("Выход для Virtualbox\n");
+			outw(0x4004, 0x3400);
+
+			LOG("Выход для облачного гипервизора\n");
+			outw(0x600, 0x34);
 		}
 	}
 }
