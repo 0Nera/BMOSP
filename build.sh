@@ -15,4 +15,4 @@ done
 
 cd ..
 
-python3 pbuild.py
+python3 scripts/pbuild.py

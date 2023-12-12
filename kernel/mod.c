@@ -13,11 +13,9 @@
 #include <sys.h>
 #include <tool.h>
 
-static volatile struct limine_module_request module_request = {
-	.id = LIMINE_MODULE_REQUEST,
-	.revision = 0,
-	.response = (struct limine_module_response *)0
-};
+static volatile struct limine_module_request module_request = { .id = LIMINE_MODULE_REQUEST,
+	                                                            .revision = 0,
+	                                                            .response = (struct limine_module_response *)0 };
 
 static struct limine_module_response *module_response;
 uint64_t modules_count = 0;
@@ -33,8 +31,7 @@ uint64_t bootpng_size;
 static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
-	LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n",
-	    (uint64_t)elf_header->e_entry, elf_header->e_type);
+	LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
 	if (elf_header->e_type != 2) {
 		fb_printf("\t\tОшибка! Модуль неправильно собран!\n");
 		for (;;) {}
@@ -58,9 +55,7 @@ void mod_list_show( ) {
 
 module_info_t *mod_find(char *tag) {
 	for (uint64_t i = 0; i < modules_count; i++) {
-		if (tool_starts_with(module_list[i].name, tag)) {
-			return &module_list[i];
-		}
+		if (tool_starts_with(module_list[i].name, tag)) { return &module_list[i]; }
 	}
 	return (module_info_t *)NULL;
 }
@@ -73,8 +68,8 @@ void mod_init( ) {
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
 
-		LOG("[%d] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path,
-		    module_ptr->cmdline, module_ptr->address, module_ptr->size);
+		LOG("[%d] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path, module_ptr->cmdline, module_ptr->address,
+		    module_ptr->size);
 
 		if (modules_count >= MOD_MAX) {
 			LOG("Модуль не обработан. Максимум %u модулей!\n", MOD_MAX);
@@ -103,9 +98,8 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
-		    (module_info_t(*)(env_t * env))
-		        elf_entry((elf64_header_t *)module_ptr->address);
+		module_info_t (*module_init)(env_t * env) =
+		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		LOG("\t->Точка входа: 0x%x\n", module_init);
 

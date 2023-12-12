@@ -14,19 +14,15 @@
 
 static bool acpi_msrs_support = false;
 
-static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
-                  uint32_t *edx) {
-	asm volatile("cpuid"
-	             : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx)
-	             : "a"(leaf));
+static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
+	asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "a"(leaf));
 }
 
 static void msr_get(uint32_t msr, uint32_t *lo, uint32_t *hi) {
 	asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
 }
 
-static void __attribute__((unused))
-msr_set(uint32_t msr, uint32_t lo, uint32_t hi) {
+static void __attribute__((unused)) msr_set(uint32_t msr, uint32_t lo, uint32_t hi) {
 	asm volatile("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
 }
 
@@ -71,8 +67,7 @@ static void brandname( ) {
 	uint32_t manufacturer[4];
 	char manufacturer_string[13];
 
-	cpuid(0, &manufacturer[3], &manufacturer[0], &manufacturer[2],
-	      &manufacturer[1]);
+	cpuid(0, &manufacturer[3], &manufacturer[0], &manufacturer[2], &manufacturer[1]);
 	tool_memcpy(manufacturer_string, manufacturer, 12);
 
 	brand_string[48] = 0;
@@ -93,10 +88,7 @@ static void brandname( ) {
 }
 
 void cpu_idle( ) {
-	if (acpi_msrs_support) {
-		LOG("Температура: %d (в QEMU/KVM всегда 0)\n",
-		    get_cpu_temperature_intel( ));
-	}
+	if (acpi_msrs_support) { LOG("Температура: %d (в QEMU/KVM всегда 0)\n", get_cpu_temperature_intel( )); }
 }
 
 void cpu_init( ) {
@@ -111,8 +103,7 @@ void cpu_init( ) {
 	if ((edx >> 22) & 1) {
 		acpi_msrs_support = true;
 		LOG("Встроенный терморегулятор MSRS для ACPI\n");
-		LOG("Температура: %d (в QEMU/KVM всегда 0)\n",
-		    get_cpu_temperature_intel( ));
+		LOG("Температура: %d (в QEMU/KVM всегда 0)\n", get_cpu_temperature_intel( ));
 	}
 
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
@@ -128,9 +119,7 @@ void cpu_init( ) {
 		    "поддерживается!\n");
 	}
 
-	if ((edx >> 10) & 1) {
-		LOG("SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n");
-	}
+	if ((edx >> 10) & 1) { LOG("SYSCALL/SYSRET(для AMD семейства 5 линейки 7) подерживаются!\n"); }
 	if ((edx >> 11) & 1) { LOG("SYSCALL/SYSRET подерживаются!\n"); }
 
 	if ((edx >> 29) & 1) { LOG("AMD64 поддерживается!\n"); }
@@ -138,12 +127,8 @@ void cpu_init( ) {
 	cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
 
 	if ((edx >> 0) & 1) { LOG("Датчик температуры поддерживается!\n"); }
-	if ((edx >> 4) & 1) {
-		LOG("Аппаратный терморегулятор (HTC) поддерживается!\n");
-	}
-	if ((edx >> 5) & 1) {
-		LOG("Программный терморегулятор (STC) поддерживается!\n");
-	}
+	if ((edx >> 4) & 1) { LOG("Аппаратный терморегулятор (HTC) поддерживается!\n"); }
+	if ((edx >> 5) & 1) { LOG("Программный терморегулятор (STC) поддерживается!\n"); }
 
 	brandname( );
 }

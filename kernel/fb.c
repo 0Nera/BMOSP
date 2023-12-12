@@ -16,9 +16,7 @@
 #include <tool.h>
 
 static volatile struct limine_framebuffer_request framebuffer_request = {
-	.id = LIMINE_FRAMEBUFFER_REQUEST,
-	.revision = 0,
-	.response = (struct limine_framebuffer_response *)0
+	.id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0, .response = (struct limine_framebuffer_response *)0
 };
 
 static struct limine_framebuffer_response *framebuffer_response;
@@ -58,24 +56,18 @@ void fb_init( ) {
 
 	if (framebuffer_response->framebuffer_count == 1) { return; }
 
-	LOG("Инициализация дополнительных: %u мониторов\n",
-	    framebuffer_response->framebuffer_count);
+	LOG("Инициализация дополнительных: %u мониторов\n", framebuffer_response->framebuffer_count);
 
 	for (uint64_t i = 1; i < framebuffer_response->framebuffer_count; i++) {
-		struct limine_framebuffer *framebuffer =
-		    framebuffer_response->framebuffers[i];
+		struct limine_framebuffer *framebuffer = framebuffer_response->framebuffers[i];
 		uint32_t *framebuffer_addr = (uint32_t *)framebuffer->address;
-		LOG("[%u]->0x%x %ux%u\n", i, framebuffer->address, framebuffer->width,
-		    framebuffer->height);
-		for (uint64_t ij = 0; ij < width * height; ij++) {
-			framebuffer_addr[ij] = background;
-		}
+		LOG("[%u]->0x%x %ux%u\n", i, framebuffer->address, framebuffer->width, framebuffer->height);
+		for (uint64_t ij = 0; ij < width * height; ij++) { framebuffer_addr[ij] = background; }
 	}
 }
 
 // Отрисовка буффера по координатам (полезно для картинок)
-void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w,
-                  uint32_t *buf) {
+void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w, uint32_t *buf) {
 	for (uint64_t j = 0; j < h; j++) {
 		for (uint64_t i = 0; i < w; i++) {
 			uint64_t where = (i + x) + (j + y) * width;
@@ -86,9 +78,7 @@ void fb_print_buf(uint64_t x, uint64_t y, uint64_t h, uint64_t w,
 
 static inline void print_bits(size_t x, size_t y, uint8_t num) {
 	for (size_t i = 0; i <= 7; i++) {
-		if ((num >> i) & 1) {
-			SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color;
-		}
+		if ((num >> i) & 1) { SCREEN_BUFFER[x + i + y * SCREEN_WIDTH] = text_color; }
 	}
 }
 
@@ -105,20 +95,15 @@ static void print_char(int x, int y, char glyth) {
 }
 
 void scroll_fb( ) {
-	size_t last_line_index =
-	    (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
+	size_t last_line_index = (SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH;
 
 	for (uint64_t y = 0; y < SCREEN_HEIGHT - (FONT_6X8_SLIM_CHAR_HEIGHT); y++) {
 		for (uint64_t x = 0; x < SCREEN_WIDTH; x++) {
-			SCREEN_BUFFER[x + y * SCREEN_WIDTH] =
-			    SCREEN_BUFFER[x +
-			                  (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
+			SCREEN_BUFFER[x + y * SCREEN_WIDTH] = SCREEN_BUFFER[x + (y + (FONT_6X8_SLIM_CHAR_HEIGHT)) * SCREEN_WIDTH];
 		}
 	}
 
-	for (uint64_t i = last_line_index; i < SCREEN_HEIGHT * SCREEN_WIDTH; i++) {
-		SCREEN_BUFFER[i] = background;
-	}
+	for (uint64_t i = last_line_index; i < SCREEN_HEIGHT * SCREEN_WIDTH; i++) { SCREEN_BUFFER[i] = background; }
 }
 
 // Вывод одного символа

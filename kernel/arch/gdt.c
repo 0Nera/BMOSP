@@ -38,8 +38,7 @@ void gdt_load( ) {
 	load_gdt((uint64_t)&gdtr);
 }
 
-void set_gdt_entry(gdt_entry_t *entry, uint16_t limit, uint64_t base,
-                   uint8_t access, uint8_t granularity) {
+void set_gdt_entry(gdt_entry_t *entry, uint16_t limit, uint64_t base, uint8_t access, uint8_t granularity) {
 	entry->limit = limit;
 	entry->base_16 = base & 0xFFFF;
 	entry->base_middle_16 = (base >> 16) & 0xFF;

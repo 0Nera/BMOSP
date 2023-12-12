@@ -87,10 +87,7 @@ void tool_int_to_str(int64_t i, uint8_t base, char *buf) {
 		int64_t remainder = i % base;
 		// Преобразовываем остаток в символ и добавляем его в строку
 		buf[index++] =
-		    (remainder > 9)
-		        ? (remainder - 10) + 'A'
-		        : remainder +
-		              '0'; // Если остаток > 9, добавляем заглавную букву А
+		    (remainder > 9) ? (remainder - 10) + 'A' : remainder + '0'; // Если остаток > 9, добавляем заглавную букву А
 		i /= base;
 	} while (i > 0);
 
@@ -113,10 +110,7 @@ void tool_uint_to_str(uint64_t i, uint8_t base, char *buf) {
 		uint64_t remainder = i % base;
 		// Преобразовываем остаток в символ и добавляем его в строку
 		buf[index++] =
-		    (remainder > 9)
-		        ? (remainder - 10) + 'A'
-		        : remainder +
-		              '0'; // Если остаток > 9, добавляем заглавную букву А
+		    (remainder > 9) ? (remainder - 10) + 'A' : remainder + '0'; // Если остаток > 9, добавляем заглавную букву А
 		i /= base;
 	} while (i > 0);
 
@@ -128,8 +122,7 @@ void tool_uint_to_str(uint64_t i, uint8_t base, char *buf) {
 }
 
 // Функция для форматированного вывода
-void tool_format(void (*putc)(char c), const char *format_string,
-                 va_list args) {
+void tool_format(void (*putc)(char c), const char *format_string, va_list args) {
 	while (*format_string != '\0') {
 		if (*format_string == '%') {
 			char buf[48];

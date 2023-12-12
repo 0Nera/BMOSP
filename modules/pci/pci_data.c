@@ -6,13 +6,10 @@ typedef struct {
 } vendor_t;
 
 static vendor_t **parse_file(char *str, uint64_t num_vendors, uint64_t size) {
-	vendor_t **vendor_list =
-	    (vendor_t **)alloc(num_vendors * sizeof(vendor_t *));
+	vendor_t **vendor_list = (vendor_t **)alloc(num_vendors * sizeof(vendor_t *));
 
 	if (vendor_list == NULL) { return NULL; }
-	for (uint64_t i = 0; i < num_vendors; i++) {
-		vendor_list[i] = (vendor_t *)alloc(sizeof(vendor_t));
-	}
+	for (uint64_t i = 0; i < num_vendors; i++) { vendor_list[i] = (vendor_t *)alloc(sizeof(vendor_t)); }
 
 	uint64_t i = 0;
 
@@ -72,8 +69,7 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	uint64_t num_vendors = count_chars(pci_data->data, ';');
 	fb_printf("Количество вендоров: %u\n", num_vendors);
 
-	vendor_t **vendor_list =
-	    parse_file(pci_data->data, num_vendors, pci_data->data_size);
+	vendor_t **vendor_list = parse_file(pci_data->data, num_vendors, pci_data->data_size);
 	// print_vendors(num_vendors, vendor_list);
 	return (module_info_t){
 		.name = (char *)"[PCI][ADAPTER]",

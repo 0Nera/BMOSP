@@ -13,16 +13,12 @@
 #include <stdbool.h>
 #include <tool.h>
 
-static volatile struct limine_memmap_request memmap_request = {
-	.id = LIMINE_MEMMAP_REQUEST,
-	.revision = 0,
-	.response = (struct limine_memmap_response *)0
-};
-static volatile struct limine_hhdm_request hhdm_request = {
-	.id = LIMINE_HHDM_REQUEST,
-	.revision = 0,
-	.response = (struct limine_hhdm_response *)0
-};
+static volatile struct limine_memmap_request memmap_request = { .id = LIMINE_MEMMAP_REQUEST,
+	                                                            .revision = 0,
+	                                                            .response = (struct limine_memmap_response *)0 };
+static volatile struct limine_hhdm_request hhdm_request = { .id = LIMINE_HHDM_REQUEST,
+	                                                        .revision = 0,
+	                                                        .response = (struct limine_hhdm_response *)0 };
 
 struct mem_entry {
 	struct mem_entry *next;
@@ -50,11 +46,9 @@ static uint64_t highest = 0;
 // Количество записей в карте памяти
 static uint64_t mmmap_count = 0;
 
-static const char memory_types[8][82] = {
-	"Доступно",      "Зарезервировано", "ACPI, можно освободить",
-	"ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
-	"Ядро и модули", "Буфер кадра"
-};
+static const char memory_types[8][82] = { "Доступно",      "Зарезервировано", "ACPI, можно освободить",
+	                                      "ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
+	                                      "Ядро и модули", "Буфер кадра" };
 
 static struct limine_memmap_response *memmap_response;
 
@@ -65,13 +59,10 @@ void mem_dump_memory( ) {
 
 	while (curr) {
 		if (curr->next) {
-			fb_printf("->0x%x | %u килобайт | %s | 0x%x\n", &curr->data,
-			          (curr->size) / 1024,
-			          curr->free ? memory_types[0] : memory_types[1],
-			          curr->next);
+			fb_printf("->0x%x | %u килобайт | %s | 0x%x\n", &curr->data, (curr->size) / 1024,
+			          curr->free ? memory_types[0] : memory_types[1], curr->next);
 		} else {
-			fb_printf("->0x%x | %u килобайт | %s | Это последний блок\n",
-			          &curr->data, (curr->size) / 1024,
+			fb_printf("->0x%x | %u килобайт | %s | Это последний блок\n", &curr->data, (curr->size) / 1024,
 			          curr->free ? memory_types[0] : memory_types[1]);
 		}
 		curr = curr->next;
@@ -270,8 +261,7 @@ void mem_init( ) {
 		if (mmaps[i]->type == LIMINE_MEMMAP_FRAMEBUFFER) {
 			LOG("На видеопамять BIOS/UEFI выделено: %u мегабайт + %u "
 			    "килобайт\n",
-			    mmaps[i]->length / 1024 / 1024,
-			    (mmaps[i]->length / 1024) % 1024);
+			    mmaps[i]->length / 1024 / 1024, (mmaps[i]->length / 1024) % 1024);
 		}
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
@@ -299,22 +289,17 @@ void mem_init( ) {
 
 	// Освобождаем все доступные фреймы памяти
 	for (uint64_t i = 0; i < mmmap_count; i++) {
-		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) {
-			bitmap_limit++;
-		}
+		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) { bitmap_limit++; }
 
 		if (!(mmaps[i]->type == LIMINE_MEMMAP_USABLE)) { continue; }
 
-		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) {
-			mem_frame_free((void *)mmaps[i]->base + t, 1);
-		}
+		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) { mem_frame_free((void *)mmaps[i]->base + t, 1); }
 	}
 
 	LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 	LOG("Размер битовой карты: %u\n", bitmap_size);
 	alloc_init(mem_frame_alloc(1), BLOCK_SIZE);
-	LOG("%u мегабайт выделено в динамичную память\n",
-	    (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
+	LOG("%u мегабайт выделено в динамичную память\n", (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
 
 	// Выделяем по 4 мегабайта в аллокатор динамичной памяти
 	for (int64_t i = 0; i < 16; i += 4) {
@@ -323,8 +308,8 @@ void mem_init( ) {
 	}
 	mem_merge_all_blocks( );
 	mem_dump_memory( );
-	LOG("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n",
-	    (bitmap_available * BLOCK_SIZE) / 1024 / 1024, available / 1024 / 1024);
+	LOG("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n", (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
+	    available / 1024 / 1024);
 
 	LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 }

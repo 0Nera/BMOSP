@@ -66,17 +66,15 @@ void exception_handler(struct frame state) {
 	    "  RIP=%x  RFLAGS=%x\n"
 	    "  CS=%x SS=%x\n"
 	    "  ERR=%x  INT=%u",
-	    state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi,
-	    state.rbp, state.rsp, state.r8, state.r9, state.r10, state.r11,
-	    state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags,
-	    state.cs, state.ss, state.err, state.int_number);
+	    state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi, state.rbp, state.rsp, state.r8, state.r9,
+	    state.r10, state.r11, state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags, state.cs, state.ss,
+	    state.err, state.int_number);
 	LOG("stack_top = %x\n", stack_top);
 
 	asm volatile("cli; hlt");
 }
 
-static void idt_desc_setup(struct idt_desc *desc, unsigned sel, uintptr_t offs,
-                           unsigned flags) {
+static void idt_desc_setup(struct idt_desc *desc, unsigned sel, uintptr_t offs, unsigned flags) {
 	desc->offs0 = offs & 0xfffful;
 	desc->offs1 = (offs >> 16) & 0xfffful;
 	desc->offs2 = (offs >> 32) & 0xfffffffful;
@@ -92,8 +90,7 @@ static void idt_load( ) {
 }
 
 void idt_set_int(uint8_t vector, void *int_handler) {
-	idt_desc_setup(&IDT[vector], KERNEL_CS, (uintptr_t)int_handler,
-	               IDT_INTERRUPT_FLAGS);
+	idt_desc_setup(&IDT[vector], KERNEL_CS, (uintptr_t)int_handler, IDT_INTERRUPT_FLAGS);
 	idt_load( );
 }
 
@@ -112,8 +109,7 @@ void idt_init( ) {
 		idt_desc_setup(&IDT[i], KERNEL_CS, handler, IDT_INTERRUPT_FLAGS);
 	}
 
-	idt_desc_setup(&IDT[255], KERNEL_CS, (uintptr_t)isr_stubs[255],
-	               IDT_SPURIOUS_FLAGS);
+	idt_desc_setup(&IDT[255], KERNEL_CS, (uintptr_t)isr_stubs[255], IDT_SPURIOUS_FLAGS);
 
 	idt_load( );
 	LOG("IDT инициализирован\n");
