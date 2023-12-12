@@ -12,6 +12,11 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 
+	if ((edx >> 0) & 1) {
+		asm volatile("finit");
+		fb_printf("FPU(x87) поддерживается!\n");
+	}
+
 	if ((edx >> 23) & 1) { fb_printf("MMX поддерживается!\n"); }
 
 	if ((edx >> 25) & 1) {

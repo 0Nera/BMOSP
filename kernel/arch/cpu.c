@@ -94,12 +94,6 @@ void cpu_idle( ) {
 void cpu_init( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
-
-	if ((edx >> 0) & 1) {
-		asm volatile("finit");
-		LOG("FPU(x87) поддерживается!\n");
-	}
-
 	if ((edx >> 22) & 1) {
 		acpi_msrs_support = true;
 		LOG("Встроенный терморегулятор MSRS для ACPI\n");
