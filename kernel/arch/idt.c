@@ -51,12 +51,17 @@ static void exception_handler(struct frame state) {
 }
 
 void isr_generic(struct frame state) {
+	if (state.int_number > 255) { return; }
+
+	if (state.int_number != 32) { LOG("Обработка прерывания %u\n", state.int_number); }
+
 	if (state.int_number < 32) {
 		exception_handler(state);
 	} else {
-		// LOG("Обработка прерывания %u\n", state.int_number);
-		isr[state.int_number](&state);
-		outb(0x20, 0x20);
+		if (isr[state.int_number]) { isr[state.int_number](&state); }
+
+		if (state.int_number >= 39) { outb(0xA0, 0x20); }
+		// outb(0x20, 0x20);
 	}
 }
 

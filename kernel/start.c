@@ -40,10 +40,14 @@ void _start( ) {
 
 	asm volatile("sti");
 
-	while (1) {
+	for (;;) {
+		if (!(inb(0x64) & 1)) {
+			io_wait( );
+			continue;
+		}
 		uint64_t byte = inb(0x60);
 		switch (byte) {
-			case 0x1:
+			case 0x1: // Клавиша "ESCAPE"
 				LOG("Выход для Bochs\n");
 				outw(0xB004, 0x2000);
 
@@ -56,11 +60,17 @@ void _start( ) {
 				LOG("Выход для облачного гипервизора\n");
 				outw(0x600, 0x34);
 				break;
-			case 0x4F:
+			case 0x4F: // Клавиша "END"
 				LOG("Вызов прерывания переключения задач!\n");
 				asm volatile("int $32");
 				break;
 			default: break;
 		}
+
+		uint8_t status = inb(0x61);
+
+		status |= 1;
+
+		outb(0x61, status);
 	}
 }
