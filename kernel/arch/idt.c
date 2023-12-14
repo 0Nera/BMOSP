@@ -63,6 +63,7 @@ void isr_generic(struct frame state) {
 void idt_init( ) {
 	asm volatile("cli");
 	idtr = (idt_ptr_t){ .limit = sizeof(idt) - 1, .base = (uint64_t)idt };
+	tool_memset(isr, 0, 256 * sizeof(int_entry_t));
 
 	for (uint64_t i = 0; i < 256; i++) {
 		if (i < 32) {

@@ -36,5 +36,5 @@ void pit_set_interval(int hz) {
 
 void pit_init( ) {
 	idt_set_int(32, isr_local);
-	pit_set_interval(10);
+	pit_set_interval(1);
 }

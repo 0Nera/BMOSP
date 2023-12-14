@@ -60,7 +60,7 @@ void _start( ) {
 				LOG("Вызов прерывания переключения задач!\n");
 				asm volatile("int $32");
 				break;
-			default: io_wait( ); break;
+			default: break;
 		}
 	}
 }
