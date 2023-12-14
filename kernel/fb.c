@@ -33,6 +33,10 @@ uint16_t bpp;
 uint64_t pos_x = 4;
 uint64_t pos_y = 4;
 
+uint32_t fb_get_text_color( ) {
+	return text_color;
+}
+
 void fb_set_text_color(uint32_t color) {
 	text_color = color;
 }
