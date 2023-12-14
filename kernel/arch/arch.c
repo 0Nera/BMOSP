@@ -42,6 +42,7 @@ uint64_t arch_get_tick_l( ) {
 
 void arch_init( ) {
 	gdt_init( );
+	pic_init( );
 	idt_init( );
 	cpu_init( );
 }

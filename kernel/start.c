@@ -32,26 +32,35 @@ void _start( ) {
 	fb_set_text_color(0x00D000);
 
 	mod_init( );
-	// pit_init( );
+	pit_init( );
 
 	fb_set_text_color(0x00FF00);
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	fb_set_text_color(0x00D000);
 
+	asm volatile("sti");
+
 	while (1) {
 		uint64_t byte = inb(0x60);
-		if (byte == 0x1) {
-			LOG("Выход для Bochs\n");
-			outw(0xB004, 0x2000);
+		switch (byte) {
+			case 0x1:
+				LOG("Выход для Bochs\n");
+				outw(0xB004, 0x2000);
 
-			LOG("Выход для Qemu\n");
-			outw(0x604, 0x2000);
+				LOG("Выход для Qemu\n");
+				outw(0x604, 0x2000);
 
-			LOG("Выход для Virtualbox\n");
-			outw(0x4004, 0x3400);
+				LOG("Выход для Virtualbox\n");
+				outw(0x4004, 0x3400);
 
-			LOG("Выход для облачного гипервизора\n");
-			outw(0x600, 0x34);
+				LOG("Выход для облачного гипервизора\n");
+				outw(0x600, 0x34);
+				break;
+			case 0x4F:
+				LOG("Вызов прерывания переключения задач!\n");
+				asm volatile("int $32");
+				break;
+			default: io_wait( ); break;
 		}
 	}
 }
