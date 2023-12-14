@@ -12,21 +12,26 @@
 #include <stdint.h>
 #include <tool.h>
 
-static uint64_t count = 0;
+static volatile uint64_t count = 0;
 
-static void isr_generic( ) {
-	LOG("\nТик! %u", count++);
+extern uint32_t width;
+
+static volatile void isr_local( ) {
+	uint32_t last = fb_get_text_color( );
+	fb_set_text_color(0x00FF00 + count);
+	fb_printf_at(SCREEN_WIDTH - 6 * 7, 0, "БМПОС");
+	fb_set_text_color(last);
+	count++;
 }
 
 void pit_set_interval(int hz) {
 	int divisor = 1193180 / hz; // Вычисляем делитель
-	outb(0x43, 0x36);           // Устанавливаем байт команды 0x36
+	outb(0x43, 0x34);           // Устанавливаем байт команды 0x34
 	outb(0x40, divisor & 0xFF); // Устанавливаем младший байт делителя
 	outb(0x40, divisor >> 8);   // Устанавливаем старший байт делителя
 }
 
 void pit_init( ) {
-	idt_set_int(32, isr_generic);
-	pit_set_interval(100);
-	asm volatile("sti");
+	idt_set_int(32, isr_local);
+	pit_set_interval(10000);
 }
