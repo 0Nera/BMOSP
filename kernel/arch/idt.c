@@ -61,7 +61,7 @@ void isr_generic(struct frame state) {
 		if (isr[state.int_number]) { isr[state.int_number](&state); }
 
 		if (state.int_number >= 39) { outb(0xA0, 0x20); }
-		// outb(0x20, 0x20);
+		outb(0x20, 0x20);
 	}
 }
 

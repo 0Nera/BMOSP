@@ -40,7 +40,6 @@ common:
     movq 104(%rsp), %rsi
     movq 112(%rsp), %rdi
     addq $136, %rsp
-    sti
     iretq
 entry0:
     pushq $0
