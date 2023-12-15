@@ -31,11 +31,14 @@ uint64_t bootpng_size;
 static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
-	LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
+
+	// LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
+
 	if (elf_header->e_type != 2) {
 		fb_printf("\t\tОшибка! Модуль неправильно собран!\n");
 		for (;;) {}
 	}
+
 	// Возвращаем указатель на точку входа
 	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
 }
@@ -98,10 +101,10 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
+		module_info_t (*module_init)(env_t * env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
-		LOG("\t->Точка входа: 0x%x\n", module_init);
+		// LOG("\t->Точка входа: 0x%x\n", module_init);
 
 		main_env.offset = (uint64_t)module_ptr->address;
 

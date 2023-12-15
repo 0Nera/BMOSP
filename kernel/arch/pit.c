@@ -40,4 +40,5 @@ void pit_set_interval(int hz) {
 void pit_init( ) {
 	idt_set_int(32, isr_local);
 	pit_set_interval(1);
+	fb_printf_at(SCREEN_WIDTH - 6 * 7, 0, "БМПОС");
 }
