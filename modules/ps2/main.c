@@ -1,35 +1,39 @@
 #include <system.h>
 
+static inline void virt_exit( ) {
+	fb_printf("Выход для Bochs\n");
+	outw(0xB004, 0x2000);
+
+	fb_printf("Выход для Qemu\n");
+	outw(0x604, 0x2000);
+
+	fb_printf("Выход для Virtualbox\n");
+	outw(0x4004, 0x3400);
+
+	fb_printf("Выход для облачного гипервизора\n");
+	outw(0x600, 0x34);
+}
+
 static void handler( ) {
 	fb_printf("Получено прерывание, обработка\n");
+
 	while (!(inb(0x64) & 1)) {}
+
 	uint64_t byte = inb(0x60);
+
 	if (byte == 0) { return; }
+
 	fb_printf("Символ: %c, %u, %x\n", byte, byte, byte);
+
 	switch (byte) {
-		case 0x1: // Клавиша "ESCAPE"
-			fb_printf("Выход для Bochs\n");
-			outw(0xB004, 0x2000);
-
-			fb_printf("Выход для Qemu\n");
-			outw(0x604, 0x2000);
-
-			fb_printf("Выход для Virtualbox\n");
-			outw(0x4004, 0x3400);
-
-			fb_printf("Выход для облачного гипервизора\n");
-			outw(0x600, 0x34);
-			break;
-		case 0x4F: // Клавиша "END"
-			fb_printf("Вызов прерывания переключения задач!\n");
+		case 0x01: virt_exit( ); break; // Клавиша "ESCAPE"
+		case 0x4F:                      // Клавиша "END"
 			asm volatile("int $32");
 			break;
 		default: break;
 	}
 
-	uint8_t status = inb(0x61);
-
-	status |= 1;
+	uint8_t status = inb(0x61) |= 1;
 
 	outb(0x61, status);
 }

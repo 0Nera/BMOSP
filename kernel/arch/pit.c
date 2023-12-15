@@ -19,10 +19,13 @@ extern uint32_t width;
 
 static void isr_local( ) {
 	if (test_color >= 0xFFFFFF) { test_color = 0x00D000; }
+
 	uint32_t last = fb_get_text_color( );
+
 	fb_set_text_color(test_color);
 	fb_printf_at(SCREEN_WIDTH - 6 * 7, 0, "БМПОС");
 	fb_set_text_color(last);
+
 	count++;
 	test_color += 0x010101;
 }
