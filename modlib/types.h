@@ -105,7 +105,6 @@ typedef struct {
 	int (*get_error)( );
 	sys_info_t *(*get_info)( );
 	module_info_t *(*get_module)(char *module_id);
-	void *(*get_module_func)(char *module_id, uint64_t func_id);
 	uint64_t (*new_thread)(uint64_t func);
 	int (*delete_thread)(uint64_t thread_id);
 	time_t (*get_time)( );

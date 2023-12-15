@@ -58,6 +58,7 @@ typedef struct {
 	uint64_t module_id;
 	uint8_t irq;       // Номер прерывания
 	void *irq_handler; // Адрес обработчика прерываний
+	void *(*get_func)(uint64_t id);
 } __attribute__((packed)) module_info_t;
 
 typedef struct {
