@@ -12,11 +12,20 @@
 #include <sys.h>
 
 module_info_t *current_module;
+extern uint32_t *fb_addr;
+extern uint32_t text_color;
+extern uint32_t background;
+extern uint64_t width;
+extern uint64_t height;
+extern uint64_t pitch;
+extern uint16_t bpp;
 
 void sys_init( ) {}
 
-static framebuffer_t *sys_alloc_framebuffer( ) {
-	return (framebuffer_t *)0;
+static framebuffer_t sys_alloc_framebuffer( ) {
+	return (framebuffer_t){
+		.address = fb_addr, .width = width, .height = height, .pitch = pitch, .bpp = bpp, .reserved = 0
+	};
 }
 
 static void sys_free_framebuffer(framebuffer_t *frame) {

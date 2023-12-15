@@ -97,7 +97,7 @@ typedef struct {
 typedef struct {
 	uint64_t offset;
 	void (*fb_printf)(char *str, ...);
-	framebuffer_t *(*alloc_framebuffer)( );
+	framebuffer_t (*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
 	void *(*alloc)(uint64_t size);
 	void (*free)(void *ptr);
