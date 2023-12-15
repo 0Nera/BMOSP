@@ -1,5 +1,6 @@
 #!/bin/sh
 qemu-system-x86_64 -name "БМПОС" -cpu max -m 1G -smp 1          \
+ -serial file:serial.log                                        \
  -drive file=bmosp.hdd,if=none,id=sata_drive -device ahci       \
  -device virtio-blk-pci,drive=sata_drive --no-reboot            \
  -net nic,model=pcnet # AMD PCnet Am79C970
