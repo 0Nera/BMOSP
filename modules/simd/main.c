@@ -29,14 +29,14 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	if ((ecx >> 28) & 1) { fb_printf("AVX поддерживается!\n"); }
 
-	return (module_info_t){
-		.name = (char *)"SIMD",
-		.message = (char *)"SIMD инструкции",
-
-		.type = 0,
-		.data_size = 0,
-		.data = (void *)0,
-		.err_code = 0,
-		.module_id = 0,
-	};
+	return (module_info_t){ .name = (char *)"SIMD",
+		                    .message = (char *)"SIMD инструкции",
+		                    .type = 0,
+		                    .data_size = 0,
+		                    .data = (void *)0,
+		                    .err_code = 0,
+		                    .module_id = 0,
+		                    .irq = 0,
+		                    .irq_handler = 0,
+		                    .get_func = 0 };
 }

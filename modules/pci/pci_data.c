@@ -71,13 +71,14 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	vendor_t **vendor_list = parse_file(pci_data->data, num_vendors, pci_data->data_size);
 	// print_vendors(num_vendors, vendor_list);
-	return (module_info_t){
-		.name = (char *)"[PCI][ADAPTER]",
-		.message = (char *)"PCI данные",
-		.type = 0,
-		.data_size = num_vendors,
-		.data = vendor_list,
-		.err_code = 0,
-		.module_id = 0,
-	};
+	return (module_info_t){ .name = (char *)"[PCI][ADAPTER]",
+		                    .message = (char *)"PCI данные",
+		                    .type = 0,
+		                    .data_size = num_vendors,
+		                    .data = vendor_list,
+		                    .err_code = 0,
+		                    .module_id = 0,
+		                    .irq = 0,
+		                    .irq_handler = 0,
+		                    .get_func = 0 };
 }

@@ -15,16 +15,6 @@ static char *find_vendor(uint16_t id) {
 	return "Нет в базе";
 }
 
-static inline uint32_t inl(uint16_t port) {
-	uint32_t data;
-	asm volatile("inl %1, %0" : "=a"(data) : "Nd"(port));
-	return data;
-}
-
-static inline void outl(uint16_t port, uint32_t data) {
-	asm volatile("outl %0, %1" : : "a"(data), "Nd"(port));
-}
-
 static inline uint16_t pci_read_word(uint16_t bus, uint16_t slot, uint16_t func, uint16_t offset) {
 	uint64_t address;
 	uint64_t lbus = (uint64_t)bus;
@@ -134,13 +124,14 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	}
 
 	scan( );
-	return (module_info_t){
-		.name = (char *)"[PCI]",
-		.message = (char *)"PCI драйвер",
-		.type = 0,
-		.data_size = 0,
-		.data = (void *)0,
-		.err_code = 0,
-		.module_id = 0,
-	};
+	return (module_info_t){ .name = (char *)"[PCI]",
+		                    .message = (char *)"PCI драйвер",
+		                    .type = 0,
+		                    .data_size = 0,
+		                    .data = (void *)0,
+		                    .err_code = 0,
+		                    .module_id = 0,
+		                    .irq = 0,
+		                    .irq_handler = 0,
+		                    .get_func = 0 };
 }
