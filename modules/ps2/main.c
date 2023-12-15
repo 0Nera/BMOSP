@@ -33,7 +33,7 @@ static void handler( ) {
 		default: break;
 	}
 
-	uint8_t status = inb(0x61) |= 1;
+	uint8_t status = inb(0x61) | 1;
 
 	outb(0x61, status);
 }
