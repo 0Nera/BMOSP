@@ -17,6 +17,8 @@
 		"mod.h": "c",
 		"modstd.h": "c",
 		"stdbool.h": "c",
-		"stdint.h": "c"
+		"stdint.h": "c",
+		"types.h": "c",
+		"random": "c"
 	}
 }
