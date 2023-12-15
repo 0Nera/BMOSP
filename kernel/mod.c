@@ -98,7 +98,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t * env) =
+		module_info_t (*module_init)(env_t *env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		LOG("\t->Точка входа: 0x%x\n", module_init);
@@ -115,6 +115,13 @@ void mod_init( ) {
 		module_list[modules_count].data_size = ret.data_size;
 
 		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
+		if (ret.irq != 0) {
+			if (ret.irq_handler != 0) {
+				LOG("Установлен обработчик прерывания [%u] по адресу 0x%x в модуле %s\n", ret.irq, ret.irq_handler,
+				    ret.name);
+				idt_set_int(ret.irq, ret.irq_handler);
+			}
+		}
 
 		modules_count++;
 	}
