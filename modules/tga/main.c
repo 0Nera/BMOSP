@@ -1,19 +1,6 @@
-/**
- * main.c
- * Точка входа окончания загрузки
- *
- * Функции эффектов после полной инициализации ядра
- *
- */
+#include <system.h>
 
-#include <fb.h>
-#include <mem.h>
-#include <tool.h>
-
-#define TGA_ERR( ) LOG("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
-
-extern void *bootpng_ptr;
-extern uint64_t bootpng_size;
+#define TGA_ERR( ) fb_printf("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
 
 typedef struct {
 	unsigned char magic1;             // должно быть нулевым
@@ -29,25 +16,21 @@ typedef struct {
 	unsigned char pixeltype;          // должно быть 40
 } __attribute__((packed)) tga_header_t;
 
-unsigned int *tga_parse(unsigned char *ptr, int size) {
+static unsigned int *tga_parse(unsigned char *ptr, int size) {
 	unsigned int *data;
 	int i, j, k, x, y, w = (ptr[13] << 8) + ptr[12], h = (ptr[15] << 8) + ptr[14], o = (ptr[11] << 8) + ptr[10];
 	int m = ((ptr[1] ? (ptr[7] >> 3) * ptr[5] : 0) + 18);
 
 	if (w < 1 || h < 1) return NULL;
 
-	data = (unsigned int *)mem_alloc((w * h + 2) * sizeof(unsigned int));
-	if (!data) {
-		LOG("Ошибка декодирования TGA на строчке: %u, %x, %u kb\n", __LINE__, data,
-		    ((w * h + 2) * sizeof(unsigned int)) / 1024);
-		return NULL;
-	}
+	data = (unsigned int *)alloc((w * h + 2) * sizeof(unsigned int));
+	if (!data) { return NULL; }
 
 	switch (ptr[2]) {
 		case 1:
 			if (ptr[6] != 0 || ptr[4] != 0 || ptr[3] != 0 || (ptr[7] != 24 && ptr[7] != 32)) {
 				TGA_ERR( );
-				mem_free(data);
+				free(data);
 				return NULL;
 			}
 			for (y = i = 0; y < h; y++) {
@@ -62,7 +45,7 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 		case 2:
 			if (ptr[5] != 0 || ptr[6] != 0 || ptr[1] != 0 || (ptr[16] != 24 && ptr[16] != 32)) {
 				TGA_ERR( );
-				mem_free(data);
+				free(data);
 				return NULL;
 			}
 			for (y = i = 0; y < h; y++) {
@@ -77,7 +60,7 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 		case 9:
 			if (ptr[6] != 0 || ptr[4] != 0 || ptr[3] != 0 || (ptr[7] != 24 && ptr[7] != 32)) {
 				TGA_ERR( );
-				mem_free(data);
+				free(data);
 				return NULL;
 			}
 			y = i = 0;
@@ -113,7 +96,7 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 		case 10:
 			if (ptr[5] != 0 || ptr[6] != 0 || ptr[1] != 0 || (ptr[16] != 24 && ptr[16] != 32)) {
 				TGA_ERR( );
-				mem_free(data);
+				free(data);
 				return NULL;
 			}
 			y = i = 0;
@@ -148,7 +131,7 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 			break;
 		default: {
 			TGA_ERR( );
-			mem_free(data);
+			free(data);
 			return NULL;
 		}
 	}
@@ -156,17 +139,25 @@ unsigned int *tga_parse(unsigned char *ptr, int size) {
 	data[1] = h;
 	return data;
 }
-void main( ) {
-	for (uint64_t i = 512; i > 1; i--) { pause( ); }
-	LOG("Загрузка завершена! 1\n");
-	unsigned int *res = tga_parse((uint8_t *)bootpng_ptr, bootpng_size);
-	LOG("Загрузка завершена! 2 %x\n", res);
 
-	tga_header_t *head = (tga_header_t *)bootpng_ptr;
+static void *handler(uint64_t func) {
+	switch (func) {
+		case 0: return &tga_parse;
 
-	if (res != NULL) { LOG("Размер экрана загрузки: %ux%u \n", res[0], res[1]); }
-	LOG("Размер экрана загрузки: %ux%u \n", head->h, head->w);
-	mem_dump_memory( );
+		default: return NULL;
+	}
+}
 
-	fb_print_buf(0, 0, head->w, head->h, (uint32_t *)(res + 2));
+module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+	init_env(env);
+	return (module_info_t){ .name = (char *)"[MEDIA][TGA]",
+		                    .message = (char *)"Отрисовка TGA изображений",
+		                    .type = 0,
+		                    .data_size = 0,
+		                    .data = (void *)0,
+		                    .err_code = 0,
+		                    .module_id = 0,
+		                    .irq = 0,
+		                    .irq_handler = 0,
+		                    .get_func = handler };
 }
