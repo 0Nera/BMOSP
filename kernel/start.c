@@ -35,9 +35,17 @@ void _start( ) {
 	mod_init( );
 
 	fb_set_text_color(0x00FF00);
-	fb_printf("Готово! Для выхода из симуляции удерживайте: ESCAPE ");
-	fb_set_text_color(0xFF0000);
-	fb_printf("(Требуется модуль ps2.ko)\n");
+	fb_printf("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
+
+	module_info_t *mod = mod_find("[KEYBOARD]");
+
+	if (mod == NULL) {
+		fb_set_text_color(0xFF0000);
+		fb_printf("\tТребуется модуль ps2.ko!\n");
+	} else {
+		fb_printf("\nОбнаружен модуль клавиатуры: %s\n", mod->name);
+	}
+
 	fb_set_text_color(0x00D000);
 
 	asm volatile("sti");
