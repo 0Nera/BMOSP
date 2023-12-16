@@ -142,7 +142,7 @@ static unsigned int *tga_parse(unsigned char *ptr, int size) {
 
 static void *handler(uint64_t func) {
 	switch (func) {
-		case 0: return &tga_parse;
+		case 0: return tga_parse;
 
 		default: return NULL;
 	}
@@ -150,6 +150,7 @@ static void *handler(uint64_t func) {
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
+
 	return (module_info_t){ .name = (char *)"[MEDIA][TGA]",
 		                    .message = (char *)"Отрисовка TGA изображений",
 		                    .type = 0,

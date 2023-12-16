@@ -82,6 +82,8 @@ static inline void scan( ) {
 
 				uint16_t device_id = get_device_id(bus, slot, function);
 				uint16_t class_id = get_class_id(bus, slot, function);
+
+				/*
 				uint16_t status = pci_read_word(bus, slot, function, 0x6);
 				uint32_t mem_addr_0 = pci_read_word(bus, slot, function, 0x1C);
 				uint32_t mem_addr_1 = pci_read_word(bus, slot, function, 0x24);
@@ -91,18 +93,20 @@ static inline void scan( ) {
 				uint32_t io_addr_1 = pci_read_word(bus, slot, function, 0x34);
 				uint32_t io_lim_0 = pci_read_word(bus, slot, function, 0x30);
 				uint32_t io_lim_1 = pci_read_word(bus, slot, function, 0x38);
+				*/
 
 				char *name = find_vendor(vendor);
-				fb_printf("[%u] %x [%s], устройство: %x, класс: %u, "
-				          "%u.%u.%u\n",
-				          devices, vendor, name, device_id, class_id, bus, slot, function);
-				fb_printf("\t\\->%s", get_class_name(class_id));
+				fb_printf("[%u] %x [%s], устройство: %x, %u.%u.%u | ", devices, vendor, name, device_id, bus, slot,
+				          function);
+				fb_printf("%s\n", get_class_name(class_id));
+
+				/*
 				fb_printf(" | 0x%x : 0x%x", mem_addr_0, mem_lim_0);
 				fb_printf(" | 0x%x : 0x%x", mem_addr_1, mem_lim_1);
 				fb_printf(" | 0x%x : 0x%x", io_addr_0, io_lim_0);
 				fb_printf(" | 0x%x : 0x%x", io_addr_1, io_lim_1);
 				fb_printf(" | 0x%x\n", status);
-
+				*/
 				devices++;
 			}
 		}

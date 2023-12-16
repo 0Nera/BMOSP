@@ -17,7 +17,7 @@ static inline void virt_exit( ) {
 static void handler( ) {
 	fb_printf("Получено прерывание, обработка\n");
 
-	while (!(inb(0x64) & 1)) {}
+	while (!(inb(0x64) & 1)) { asm volatile("pause"); }
 
 	uint64_t byte = inb(0x60);
 
