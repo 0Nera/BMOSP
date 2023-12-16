@@ -208,7 +208,6 @@ static void *alloc_align(size_t size, size_t alignment) {
 void *mem_alloc(size_t size) {
 	mem_check_dynamic_memory( );
 	void *data = alloc_align(size, 1);
-	tool_memset(data, 0, size);
 	return data;
 }
 
