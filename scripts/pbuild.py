@@ -13,7 +13,7 @@ if "^.M" in output:
 
 ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-red-zone -mcmodel=kernel -MMD -MP"
 WARN_FLAGS = "-Wall -Wextra -nostdlib"
-STANDART_FLAGS = f"-std=gnu11 -DKERNEL_GIT_TAG=\\\"{__VERSION}\\\" -DNO_DEBUG=1" #
+STANDART_FLAGS = f"-std=gnu11 -DKERNEL_GIT_TAG=\\\"{__VERSION}\\\"" # -DNO_DEBUG=1
 PROTECT_FLAGS = "-O0 -g -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 PROTECT_FLAGS += " -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"

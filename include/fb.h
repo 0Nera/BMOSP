@@ -35,7 +35,7 @@ enum colors {
 
 #ifndef NO_DEBUG
 #define LOG(...)                                                                                                       \
-	fb_printf("[%u]%s() (%s:%d) ", GET_TICK_BIG, __func__, __FILE__, __LINE__);                                        \
+	fb_printf("[%4u]%s() (%s:%d) ", GET_TICK_BIG, __func__, __FILE__, __LINE__);                                       \
 	fb_printf(__VA_ARGS__)
 #else
 #define LOG(...)
