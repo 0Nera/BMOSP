@@ -112,6 +112,7 @@ void scroll_fb( ) {
 
 // Вывод одного символа
 static void fb_putchar(char c) {
+	if (c == '\0') { return; }
 	if (c == '\t') {
 		pos_x += FONT_6X8_SLIM_CHAR_WIDTH * 4;
 	} else if (c == '\n') {

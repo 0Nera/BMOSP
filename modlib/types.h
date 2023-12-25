@@ -10,6 +10,9 @@
 #define TYPES_H
 
 #define NULL ((void *)0)
+#define bool _Bool
+#define false 0
+#define true 1
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

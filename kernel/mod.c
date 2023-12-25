@@ -116,6 +116,7 @@ void mod_init( ) {
 		module_list[modules_count].name = ret.name;
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
+		module_list[modules_count].get_func = ret.get_func;
 
 		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
 		if (ret.irq != 0) {
