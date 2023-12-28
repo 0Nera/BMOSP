@@ -15,6 +15,8 @@
 #include <tool.h>
 #include <version.h>
 
+char (*getc)( );
+
 // Точка входа
 void _start( ) {
 	asm volatile("cli");
@@ -42,13 +44,19 @@ void _start( ) {
 	if (mod == NULL) {
 		fb_set_text_color(0xFF0000);
 		fb_printf("\tТребуется модуль ps2.ko!\n");
+		getc = NULL;
 	} else {
 		fb_printf("\nОбнаружен модуль клавиатуры: %s\n", mod->name);
+		getc = mod->get_func(1);
 	}
 
 	fb_set_text_color(0x00D000);
 
 	asm volatile("sti");
 
-	for (;;) { asm volatile("hlt"); }
+	for (;;) {
+		asm volatile("hlt");
+
+		if (getc) { fb_printf("%c", getc( )); }
+	}
 }

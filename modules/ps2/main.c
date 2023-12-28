@@ -86,7 +86,7 @@ static void handler( ) {
 	while (!(inb(0x64) & 1)) { asm volatile("pause"); }
 
 	uint8_t scancode = inb(0x60);
-	char c = ' \0';
+	char c = '\0';
 
 	if (scancode == 0xE0) {
 		current_state = PREFIX_STATE;
@@ -100,20 +100,19 @@ static void handler( ) {
 	}
 
 	if (is_shift(scancode) != 0) {
-		keyboard_buffer->shift_pressed = is_shift(scancode);
+		keyboard_buffer.shift_pressed = is_shift(scancode);
 		after_interrupt( );
 		return;
 	}
 
 	if (is_ctrl(scancode) != 0) {
-		keyboard_buffer->ctrl_pressed = is_ctrl(scancode);
+		keyboard_buffer.ctrl_pressed = is_ctrl(scancode);
 		after_interrupt( );
 		return;
 	}
 
 	if (current_state == PREFIX_STATE) { current_state = NORMAL_STATE; }
 
-	
 	if (ru) {
 		if (keyboard_buffer.shift_pressed) {
 			c = ru_chars_shifted[scancode];
