@@ -12,6 +12,14 @@
 
 #include <stdint.h>
 
+#define STACK_SIZE 8192 // 1MB
+
+typedef struct task {
+	uint64_t id;
+	struct frame *state;
+	struct task *next;
+} __attribute__((packed)) task_t;
+
 struct frame {
 	uint64_t rbp;
 	uint64_t rbx;
@@ -40,6 +48,8 @@ struct frame {
 typedef void (*int_entry_t)(struct frame *state);
 
 void arch_init( );
+void task_init( );
+void task_switch(struct frame *state);
 void cpu_init( );
 void gdt_init( );
 void pic_init( );
@@ -72,6 +82,16 @@ static inline uint16_t inw(uint16_t port) {
 
 static inline void io_wait( ) {
 	outb(0x80, 0);
+}
+
+static inline void print_stack_trace( ) {
+	uint64_t *rsp;
+	asm volatile("movq %%rsp, %0;" : "=g"(rsp));
+
+	while (rsp) {
+		// fb_printf("%x\n", *rsp);
+		rsp = (uint64_t *)(*rsp);
+	}
 }
 
 #endif // arch.h

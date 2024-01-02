@@ -16,7 +16,15 @@
 #include <version.h>
 
 char (*getc)( );
+extern task_t* current_task;
 
+// Пример функции, которую будем выполнять в разных потоках
+static void test_task(void* arg) {
+	fb_printf("\n\t\t[%u]\n", current_task->id);
+	for (;;) {}
+}
+
+char* msg = "123!!!!";
 // Точка входа
 void _start( ) {
 	asm volatile("cli");
@@ -33,13 +41,14 @@ void _start( ) {
 	fb_printf("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 	fb_set_text_color(0x00D000);
 
+	task_init( );
 	pit_init( );
-	mod_init( );
+	// mod_init( );
 
 	fb_set_text_color(0x00FF00);
 	fb_printf("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 
-	module_info_t *mod = mod_find("[KEYBOARD]");
+	module_info_t* mod = mod_find("[KEYBOARD]");
 
 	if (mod == NULL) {
 		fb_set_text_color(0xFF0000);
@@ -51,6 +60,16 @@ void _start( ) {
 	}
 
 	fb_set_text_color(0x00D000);
+
+	// Создаем новый поток и передаем ему аргумент
+	fb_printf("\tСоздаем новый поток и передаем ему аргумент\n");
+	task_t* thread1 = task_new_thread(&test_task, &msg);
+	// Создаем новый поток и передаем ему аргумент
+	fb_printf("\tСоздаем новый поток и передаем ему аргумент\n");
+	task_t* thread2 = task_new_thread(test_task, &msg);
+
+	// Переключаем контекст на первый поток
+	// task_switch(thread1->state);
 
 	asm volatile("sti");
 
