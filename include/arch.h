@@ -14,10 +14,16 @@
 
 #define STACK_SIZE 8192 // 1MB
 
-typedef struct task {
-	uint64_t id;
-	struct frame *state;
-	struct task *next;
+typedef struct thread {
+	uint64_t id;         // Идентификатор задачи
+	uint64_t priority;   // Приоритет задачи
+	void *entry_point;   // Точка входа в задачу
+	uint64_t status;     // Состояние задачи
+	void *stack;         // Указатель на стек
+	void *rsp;           // Указатель на RSP
+	uint64_t stack_size; // Размер стека задачи
+	struct task *next;   // Следующий поток
+	struct task *last;   // Предыдущий поток
 } __attribute__((packed)) task_t;
 
 struct frame {
