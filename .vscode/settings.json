@@ -19,6 +19,9 @@
 		"stdbool.h": "c",
 		"stdint.h": "c",
 		"types.h": "c",
-		"random": "c"
+		"random": "c",
+		"6x8_slim_font.h": "c",
+		"log.h": "c",
+		"mem.h": "c"
 	}
 }

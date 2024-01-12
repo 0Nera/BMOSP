@@ -65,6 +65,8 @@ void idt_set_int(uint8_t vector, int_entry_t handler);
 uint64_t arch_get_tick_b( );
 uint64_t arch_get_tick_l( );
 uint64_t arch_get_tick( );
+void com_write_byte(uint8_t byte);
+void com_write_bytes(char *c, uint64_t n);
 
 static inline void outb(uint16_t port, uint8_t val) {
 	asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
@@ -92,12 +94,15 @@ static inline void io_wait( ) {
 
 static inline void print_stack_trace( ) {
 	uint64_t *rsp;
-	asm volatile("movq %%rsp, %0;" : "=g"(rsp));
+	asm volatile("movq %%rsp, %0" : "=g"(rsp));
 
 	while (rsp) {
 		// fb_printf("%x\n", *rsp);
 		rsp = (uint64_t *)(*rsp);
 	}
 }
+
+#define GET_TICK_BIG arch_get_tick_b( )
+#define GET_TICK_lOW arch_get_tick_l( )
 
 #endif // arch.h

@@ -7,7 +7,7 @@
  */
 
 #include <arch.h>
-#include <fb.h>
+#include <log.h>
 
 void pic_init( ) {
 	outb(0x20, 0x11);

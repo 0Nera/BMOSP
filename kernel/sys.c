@@ -6,6 +6,7 @@
  */
 
 #include <fb.h>
+#include <log.h>
 #include <mem.h>
 #include <mod.h>
 #include <stdint.h>
@@ -61,7 +62,7 @@ static time_t sys_get_time( ) {
 }
 
 env_t *sys_install(env_t *module) {
-	module->fb_printf = &fb_printf;
+	module->fb_printf = &log_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
 	module->free_framebuffer = &sys_free_framebuffer;
 	module->alloc = &mem_alloc;

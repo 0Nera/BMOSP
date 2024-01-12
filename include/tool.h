@@ -18,7 +18,7 @@
 #define assert(check)                                                                                                  \
 	do {                                                                                                               \
 		if (!(check)) {                                                                                                \
-			fb_printf("\nassert() failed in %s() (%s:%d)\n", __func__, __FILE__, __LINE__);                            \
+			LOG("\nassert() ошибка в %s() (%s:%d)\n", __func__, __FILE__, __LINE__);                                   \
 			for (;;) asm volatile("hlt");                                                                              \
 		}                                                                                                              \
 	} while (0)

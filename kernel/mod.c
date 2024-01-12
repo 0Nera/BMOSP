@@ -9,6 +9,7 @@
 
 #include <fb.h>
 #include <limine.h>
+#include <log.h>
 #include <mod.h>
 #include <sys.h>
 #include <tool.h>
@@ -35,7 +36,7 @@ static void *elf_entry(elf64_header_t *module_bin) {
 	// LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
 
 	if (elf_header->e_type != 2) {
-		fb_printf("\t\tОшибка! Модуль неправильно собран!\n");
+		LOG("\t\tОшибка! Модуль неправильно собран!\n");
 		for (;;) {}
 	}
 
@@ -45,13 +46,13 @@ static void *elf_entry(elf64_header_t *module_bin) {
 
 void mod_list_show( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
-		fb_printf("Имя: %s\n", module_list[i].name);
-		fb_printf("Описание модуля: %s\n", module_list[i].message);
-		fb_printf("Тип модуля: %u\n", module_list[i].type);
-		fb_printf("Код ошибки модуля: %u\n", module_list[i].err_code);
+		LOG("Имя: %s\n", module_list[i].name);
+		LOG("Описание модуля: %s\n", module_list[i].message);
+		LOG("Тип модуля: %u\n", module_list[i].type);
+		LOG("Код ошибки модуля: %u\n", module_list[i].err_code);
 		if (module_list[i].data_size) {
-			fb_printf("Размер данных: %u\n", module_list[i].data_size);
-			fb_printf("Адрес данных: 0x%x\n", module_list[i].data);
+			LOG("Размер данных: %u\n", module_list[i].data_size);
+			LOG("Адрес данных: 0x%x\n", module_list[i].data);
 		}
 	}
 }
@@ -101,7 +102,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
+		module_info_t (*module_init)(env_t * env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);

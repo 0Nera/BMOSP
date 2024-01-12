@@ -12,8 +12,6 @@
 #include <stdint.h>
 #include <tool.h>
 
-extern void task_switch(struct frame *state);
-
 void pit_set_interval(int hz) {
 	int divisor = 1193180 / hz; // Вычисляем делитель
 	outb(0x43, 0x34);           // Устанавливаем байт команды 0x34
@@ -22,6 +20,5 @@ void pit_set_interval(int hz) {
 }
 
 void pit_init( ) {
-	idt_set_int(32, task_switch);
 	pit_set_interval(1);
 }

@@ -8,6 +8,7 @@
 
 #include <fb.h>
 #include <lock.h>
+#include <log.h>
 #include <stdint.h>
 #include <tool.h>
 

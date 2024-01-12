@@ -41,6 +41,18 @@ void tool_strcpy(char *dest, char *src) {
 	dest[i] = '\0';
 }
 
+void tool_strcat(char *str1, const char *str2) {
+	while (*str1 != '\0') { str1++; }
+
+	while (*str2 != '\0') {
+		*str1 = *str2;
+		str1++;
+		str2++;
+	}
+
+	*str1 = '\0';
+}
+
 uint64_t tool_starts_with(const char *str, const char *prefix) {
 	uint64_t str_len = tool_strlen(str);
 	uint64_t prefix_len = tool_strlen(prefix);

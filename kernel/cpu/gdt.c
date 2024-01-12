@@ -8,6 +8,7 @@
 
 #include <arch.h>
 #include <fb.h>
+#include <log.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <tool.h>

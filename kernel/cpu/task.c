@@ -7,7 +7,7 @@
  */
 
 #include <arch.h>
-#include <fb.h>
+#include <log.h>
 #include <mem.h>
 
 static volatile uint64_t next_thread_id = 0;
@@ -37,7 +37,7 @@ void task_switch(struct frame *state) {
 		current_task = kernel_task;
 	}
 
-	fb_printf("%u\n", current_task->id);
+	LOG("%u\n", current_task->id);
 
 	asm volatile("mov %0, %%rsp" ::"a"(current_task->rsp));
 	asm volatile("popf");
@@ -96,7 +96,14 @@ task_t *task_new_thread(void (*func)(void *), void *arg) {
 	return new_task;
 }
 
+void notask_switch( ) {
+	asm volatile("nop");
+}
+
 void task_init( ) {
+	LOG("Потоки не инициализированы\n");
+	idt_set_int(32, notask_switch);
+	return;
 	uint64_t rsp;
 	uint64_t cr3;
 
@@ -114,6 +121,5 @@ void task_init( ) {
 	current_task = kernel_task;
 	last_task = kernel_task;
 
-	idt_set_int(32, task_switch);
 	LOG("Потоки инициализированы\n");
 }
