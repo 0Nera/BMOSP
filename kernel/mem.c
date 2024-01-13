@@ -250,14 +250,14 @@ void mem_init( ) {
 	mmmap_count = memmap_response->entry_count;
 	struct limine_memmap_entry **mmaps = memmap_response->entries;
 
-	LOG("Записей в карте памяти: %u\n", memmap_response->entry_count);
+	// LOG("Записей в карте памяти: %u\n", memmap_response->entry_count);
 
 	// Обработка каждой записи в карте памяти
 	for (uint64_t i = 0; i < mmmap_count; i++) {
 		available += mmaps[i]->length;
 
-		// LOG("\t%d: 0x%x\tдлина: 0x%x\tтип: %s\n", i + 1,
-		// mmaps[i]->base, mmaps[i]->length, memory_types[mmaps[i]->type]);
+		// LOG("\t%d: 0x%x\tдлина: 0x%x\tтип: %s\n", i + 1, mmaps[i]->base, mmaps[i]->length,
+		//     memory_types[mmaps[i]->type]);
 		if (mmaps[i]->type == LIMINE_MEMMAP_FRAMEBUFFER) {
 			LOG("На видеопамять BIOS/UEFI выделено: %u мегабайт + %u "
 			    "килобайт\n",
@@ -296,21 +296,17 @@ void mem_init( ) {
 		for (uint64_t t = 0; t < mmaps[i]->length; t += BLOCK_SIZE) { mem_frame_free((void *)mmaps[i]->base + t, 1); }
 	}
 
-	// LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
-	//  LOG("Размер битовой карты: %u\n", bitmap_size);
+	LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
+	// LOG("Размер битовой карты: %u\n", bitmap_size);
 	alloc_init(mem_frame_alloc(1), BLOCK_SIZE);
-	// LOG("%u мегабайт выделено в динамичную память\n", (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
+	LOG("%u мегабайт выделено в динамичную память\n", (256 * 16 * BLOCK_SIZE + BLOCK_SIZE) / 1024 / 1024);
 
 	// Выделяем по 4 мегабайта в аллокатор динамичной памяти
-	for (int64_t i = 0; i < 16; i += 4) {
-		// fb_printf("%d/%u\n", i, 16);
-		mem_add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE);
-	}
+	for (int64_t i = 0; i < 16; i += 8) { mem_add_block(mem_frame_alloc(1024), 1024 * BLOCK_SIZE); }
 	mem_merge_all_blocks( );
 	// mem_dump_memory( );
-	// LOG("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n", (bitmap_available * BLOCK_SIZE) / 1024 /
-	// 1024,
-	//     available / 1024 / 1024);
+	LOG("%u МБ объем доступной памяти, %u МБ объем виртуальной памяти\n", (bitmap_available * BLOCK_SIZE) / 1024 / 1024,
+	    available / 1024 / 1024);
 
-	// LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
+	LOG("%u / %u блоков доступно\n", bitmap_available, bitmap_limit);
 }

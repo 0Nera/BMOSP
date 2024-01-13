@@ -14,12 +14,14 @@
 #include <stdint.h>
 #include <tool.h>
 
-static char start_buffer[4096];
+static char start_buffer[8192];
 static char *log_buffer;
 static uint64_t fb_pos_x = 4;
 static uint64_t fb_pos_y = 0;
 static uint64_t buf_pos = 0;
-static uint64_t buf_max = 4096;
+static uint64_t buf_max = 8192;
+
+void redraw_screen( );
 
 // Получение кода символа в таблице
 static inline uint32_t analyze(char glyth) {
@@ -33,7 +35,7 @@ static void print_char(uint64_t x, uint64_t y, char glyth) {
 	}
 }
 
-static void fb_putchar(char c) {
+static void log_fb_putchar(char c) {
 	if (c == '\0' || fb_init_status < 1) { return; }
 	if (c == '\t') {
 		fb_pos_x += FONT_6X8_SLIM_CHAR_WIDTH * 4;
@@ -46,10 +48,24 @@ static void fb_putchar(char c) {
 			fb_pos_y = 4;
 			fb_pos_y += FONT_6X8_SLIM_CHAR_HEIGHT + 1;
 		}
-		if (fb_pos_y >= SCREEN_HEIGHT - FONT_6X8_SLIM_CHAR_HEIGHT) { fb_pos_y -= FONT_6X8_SLIM_CHAR_HEIGHT; }
+		if (fb_pos_y >= SCREEN_HEIGHT - FONT_6X8_SLIM_CHAR_HEIGHT) {
+			fb_pos_y -= FONT_6X8_SLIM_CHAR_HEIGHT - 1;
+			for (uint64_t i = 0; i < buf_max - 1; i++) { log_buffer[i] = log_buffer[i + 1]; }
+			redraw_screen( );
+		}
 		print_char(fb_pos_x, fb_pos_y, c);
 		fb_pos_x += FONT_6X8_SLIM_CHAR_WIDTH;
 	}
+}
+
+void redraw_screen( ) {
+	// Перерисовка экрана
+	for (uint64_t i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) { SCREEN_BUFFER[i] = DARK_GREEN; }
+
+	fb_pos_x = 4;
+	fb_pos_y = 0;
+
+	for (uint64_t i = 0; i < buf_pos; i++) { log_fb_putchar(log_buffer[i]); }
 }
 
 void log_putchar(char c) {
@@ -63,17 +79,12 @@ void log_putchar(char c) {
 		for (uint64_t i = 0; i < buf_max - 1; i++) { log_buffer[i] = log_buffer[i + 1]; }
 
 		if (fb_init_status < 1) { return; }
-
-		// Перерисовка экрана
-		for (uint64_t i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) { SCREEN_BUFFER[i] = DARK_GREEN; }
-
-		fb_pos_x = 4;
-		fb_pos_y = 0;
-
-		for (uint64_t i = 0; i < buf_pos; i++) { fb_putchar(log_buffer[i]); }
+		redraw_screen( );
 	} else {
-		fb_putchar(c);
 		buf_pos++;
+
+		if (fb_init_status < 1) { return; }
+		log_fb_putchar(c);
 	}
 }
 
