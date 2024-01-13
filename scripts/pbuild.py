@@ -115,7 +115,10 @@ def check_os():
 	if using_distro:
 		linux_distro = distro.like()
 	else:
-		linux_distro = platform.linux_distribution()[0]
+		try:
+			linux_distro = platform.linux_distribution()[0]
+		except Exception as E:
+			return 1
 	if linux_distro.lower() in ['debian', 'ubuntu', 'astra']:
 		return 1
 	return 0
