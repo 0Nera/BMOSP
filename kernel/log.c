@@ -21,6 +21,9 @@ static uint64_t fb_pos_y = 0;
 static uint64_t buf_pos = 0;
 static uint64_t buf_max = 8192;
 
+#define FONT_WIDTH 6 + 1
+#define FONT_HEIGHT 8 + 1
+
 void redraw_screen( );
 
 // Получение кода символа в таблице
@@ -35,24 +38,35 @@ static void print_char(uint64_t x, uint64_t y, char glyth) {
 	}
 }
 
+void log_dump_buffer( ) {
+	for (uint64_t i = 0; i < buf_pos; i++) { com_write_byte(log_buffer[i]); }
+}
+
 static void log_fb_putchar(char c) {
 	if (c == '\0' || fb_init_status < 1) { return; }
 	if (c == '\t') {
 		fb_pos_x += FONT_6X8_SLIM_CHAR_WIDTH * 4;
 	} else if (c == '\n') {
-		// Новая строка
 		fb_pos_x = 4;
 		fb_pos_y += FONT_6X8_SLIM_CHAR_HEIGHT + 1;
 	} else {
 		if (fb_pos_x >= SCREEN_WIDTH) {
-			fb_pos_y = 4;
+			fb_pos_x = 4;
 			fb_pos_y += FONT_6X8_SLIM_CHAR_HEIGHT + 1;
 		}
-		if (fb_pos_y >= SCREEN_HEIGHT - FONT_6X8_SLIM_CHAR_HEIGHT) {
-			fb_pos_y -= FONT_6X8_SLIM_CHAR_HEIGHT - 1;
+
+		if (fb_pos_y + FONT_6X8_SLIM_CHAR_HEIGHT >= SCREEN_HEIGHT) {
+			// Дошли до нижнего края экрана
+			while (log_buffer[0] != '\n') {
+				for (uint64_t i = 0; i < buf_max - 1; i++) { log_buffer[i] = log_buffer[i + 1]; }
+				buf_pos--;
+			}
 			for (uint64_t i = 0; i < buf_max - 1; i++) { log_buffer[i] = log_buffer[i + 1]; }
+			buf_pos--;
 			redraw_screen( );
+			return;
 		}
+
 		print_char(fb_pos_x, fb_pos_y, c);
 		fb_pos_x += FONT_6X8_SLIM_CHAR_WIDTH;
 	}
@@ -95,9 +109,6 @@ void log_printf(char *str, ...) {
 	tool_format(&log_putchar, str, args);
 	va_end(args);
 }
-
-#define FONT_WIDTH 6 + 1
-#define FONT_HEIGHT 8 + 1
 
 void log_init_mem( ) {
 	if (fb_init_status < 1) {
