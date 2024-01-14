@@ -1,26 +1,26 @@
-1002;AMD
-1022;AMD
-106B;Apple Inc.
-10DE;NVIDIA
-10EC;Realtek
-10FA;Truevision
-1234;Technical
-1274;Ensoniq
-1344;Micron
-1462;MSI
-15AD;VMware
-1AF4;Red Hat
-1B36;Red Hat
-1D6B;Linux Foundation
-1FFF;MCST
-2646;Kingston Technology
-5143;Qualcomm
-8086;Intel
-80EE;VirtualBox
-8800;5553535
-BEEF;Tasty and point
-8966;SynapseOS
-C0A9;Micron/Crucial
-CAFE;TR&D
-DADA;Are you mentally healthy?
-DEAD;Page Fault inc.
+1002;AMD 
+1022;AMD 
+106B;Apple Inc. 
+10DE;NVIDIA 
+10EC;Realtek 
+10FA;Truevision 
+1234;Technical 
+1274;Ensoniq 
+1344;Micron 
+1462;MSI 
+15AD;VMware 
+1AF4;Red Hat 
+1B36;Red Hat 
+1D6B;Linux Foundation 
+1FFF;MCST 
+2646;Kingston Technology 
+5143;Qualcomm 
+8086;Intel 
+80EE;VirtualBox 
+8800;5553535 
+BEEF;Tasty and point 
+8966;SynapseOS 
+C0A9;Micron/Crucial 
+CAFE;TR&D 
+DADA;Are you mentally healthy? 
+DEAD;Page Fault inc. 
