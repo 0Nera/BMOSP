@@ -10,6 +10,8 @@
 #include <log.h>
 #include <mem.h>
 
+#if 0
+
 static volatile uint64_t next_thread_id = 0;
 static task_t *last_task = NULL;
 static task_t *kernel_task = NULL;
@@ -96,6 +98,8 @@ task_t *task_new_thread(void (*func)(void *), void *arg) {
 	return new_task;
 }
 
+#endif
+
 void notask_switch( ) {
 	asm volatile("nop");
 }
@@ -103,6 +107,8 @@ void notask_switch( ) {
 void task_init( ) {
 	LOG("Потоки не инициализированы\n");
 	idt_set_int(32, notask_switch);
+
+#if 0
 	return;
 	uint64_t rsp;
 	uint64_t cr3;
@@ -122,4 +128,5 @@ void task_init( ) {
 	last_task = kernel_task;
 
 	LOG("Потоки инициализированы\n");
+#endif
 }
