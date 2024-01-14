@@ -14,7 +14,7 @@
 
 #define STACK_SIZE 8192 // 1MB
 
-typedef struct thread {
+typedef struct task {
 	uint64_t id;         // Идентификатор задачи
 	uint64_t priority;   // Приоритет задачи
 	void *entry_point;   // Точка входа в задачу

@@ -125,5 +125,5 @@ void log_init_mem( ) {
 }
 
 void log_init( ) {
-	log_buffer = &start_buffer;
+	log_buffer = (char *)&start_buffer;
 }
