@@ -6,16 +6,16 @@
 
 Автор идеи, главный разработчик
 
-* aren@synapseos.ru
-* https://t.me/nera00
-* https://vk.com/0nera
-* https://github.com/0nera
-* https://0nera.ru
+* <aren@synapseos.ru>
+* <https://t.me/nera00>
+* <https://vk.com/0nera>
+* <https://github.com/0nera>
+* <https://0nera.ru>
 
 ## Основные участники
 
-__Тут могло быть ваше имя__
+* __Тут могло быть ваше имя__
 
 ## Другие участники
 
-__Тут могло быть ваше имя__
+* __Тут могло быть ваше имя__
