@@ -26,20 +26,35 @@ static void wait_irq( ) {
 	kbd_free = false;
 }
 
-static char getc( ) {
+static char getkey( ) {
 	wait_irq( );
 	return c_char;
+}
+
+static char getc( ) {
+__repeat:
+	wait_irq( );
+	if (c_char >= '0' && c_char <= '9') { return c_char; }
+
+	if (c_char >= 'A' && c_char <= 'Z') { return c_char; }
+
+	if (c_char >= 'a' && c_char <= 'z') { return c_char; }
+
+	if (c_char >= 'А' && c_char <= 'Я') { return c_char; }
+
+	if (c_char >= 'а' && c_char <= 'я') { return c_char; }
+
+	goto __repeat;
 }
 
 static void *__get_func(uint64_t func) {
 	switch (func) {
 		case 0: return wait_irq;
-		case 1: return getc;
+		case 1: return getkey;
+		case 2: return getc;
 		default: return NULL;
 	}
 }
-
-static uint8_t keyboard_to_ascii(uint8_t key) {}
 
 static void after_interrupt( ) {
 	uint8_t status = inb(0x61) | 1;
@@ -49,34 +64,17 @@ static void after_interrupt( ) {
 static int is_shift(uint8_t scancode) {
 	switch (scancode) {
 		case 0x2A: // Левый SHIFT
-			return 1;
 		case 0x36: // Правый SHIFT
 			return 1;
-		case 0xAA: // Левый SHIFT отпущен
-			return -1;
-		case 0xB6: // Правый SHIFT отпущен
-			return -1;
 		default: // Другой символ
 			return 0;
 	}
 }
 
 static int is_ctrl(uint8_t scancode) {
-	if (current_state == PREFIX_STATE) {
-		switch (scancode) {
-			case 0x1D: // Правый CTRL
-				return 1;
-			case 0x9D: // Правый CTRL отпущен
-				return -1;
-			default: // Другой символ
-				return 0;
-		}
-	}
 	switch (scancode) {
-		case 0x1D: // Левый CTRL
+		case 0x1D: // Левый или правый CTRL
 			return 1;
-		case 0x9D: // Левый CTRL отпущен
-			return -1;
 		default: // Другой символ
 			return 0;
 	}
@@ -99,14 +97,26 @@ static void handler( ) {
 		return;
 	}
 
-	if (is_shift(scancode) != 0) {
-		keyboard_buffer.shift_pressed = is_shift(scancode);
+	if (scancode == 0xAA || scancode == 0xB6) { // Отпущена клавиша SHIFT
+		keyboard_buffer.shift_pressed = 0;
 		after_interrupt( );
 		return;
 	}
 
-	if (is_ctrl(scancode) != 0) {
-		keyboard_buffer.ctrl_pressed = is_ctrl(scancode);
+	if (scancode == 0x9D) { // Отпущена клавиша CTRL
+		keyboard_buffer.ctrl_pressed = 0;
+		after_interrupt( );
+		return;
+	}
+
+	if (is_shift(scancode)) { // Нажата клавиша SHIFT
+		keyboard_buffer.shift_pressed = 1;
+		after_interrupt( );
+		return;
+	}
+
+	if (is_ctrl(scancode)) { // Нажата клавиша CTRL
+		keyboard_buffer.ctrl_pressed = 1;
 		after_interrupt( );
 		return;
 	}
@@ -114,13 +124,13 @@ static void handler( ) {
 	if (current_state == PREFIX_STATE) { current_state = NORMAL_STATE; }
 
 	if (ru) {
-		if (keyboard_buffer.shift_pressed) {
+		if (keyboard_buffer.shift_pressed && !keyboard_buffer.ctrl_pressed) {
 			c = ru_chars_shifted[scancode];
 		} else {
 			c = ru_chars_lower[scancode];
 		}
 	} else {
-		if (keyboard_buffer.shift_pressed) {
+		if (keyboard_buffer.shift_pressed && !keyboard_buffer.ctrl_pressed) {
 			c = en_chars_shifted[scancode];
 		} else {
 			c = en_chars_lower[scancode];
@@ -133,7 +143,6 @@ static void handler( ) {
 	switch (scancode) {
 		case 0x01: virt_exit( ); break; // Клавиша "ESCAPE"
 		case 0x4F:                      // Клавиша "END"
-			asm volatile("int $32");
 			break;
 		default: break;
 	}
@@ -143,6 +152,10 @@ static void handler( ) {
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	current_state = NORMAL_STATE;
+	keyboard_buffer.ctrl_pressed = 0;
+	keyboard_buffer.shift_pressed = 0;
+	fb_printf("\t\t[%u][%c]\n", 27, 27);
+
 	return (module_info_t){ .name = (char *)"[KEYBOARD]",
 		                    .message = (char *)"PS/2 драйвер",
 		                    .type = 0,
