@@ -120,7 +120,7 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 
 	while (file != NULL) {
 		for (size_t i = 0; i < depth + 1; i++) { fb_printf("\t"); }
-		fb_printf("- %s.%s\n", file->name, file->type);
+		fb_printf("- %s.%s | %8u килобайт\n", file->name, file->type, (file->size + 1024) / 1024);
 		file = file->next;
 	}
 
@@ -138,8 +138,17 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	folder_t *cache_f = create_folder("cache", root_folder);
 	folder_t *docs_f = create_folder("docs", root_folder);
+	folder_t *media_f = create_folder("media", root_folder);
 
-	create_file("readme", "text", root_folder);
+	file_t *readme = create_file("readme", "txt", root_folder);
+	write_file(readme, "БМПОС 2023-2024", 21);
+
+	module_info_t *boot_tga = get_module("[BOOTIMG]");
+
+	if (boot_tga != NULL) {
+		file_t *boot_img = create_file("boot", "tga", media_f);
+		write_file(boot_img, boot_tga->data, boot_tga->data_size);
+	}
 
 	print_folder_contents(root_folder, 0);
 
@@ -147,8 +156,8 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.name = (char *)"[FS][IMFS]",
 		.message = (char *)"IMFS (in memory filesystem) - файловая система работающая исключительно в ОЗУ.",
 		.type = 0,
-		.data_size = 0,
-		.data = (void *)0,
+		.data_size = sizeof(file_t),
+		.data = (void *)root_folder,
 		.err_code = 0,
 		.module_id = 0,
 		.irq = 0,
