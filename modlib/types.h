@@ -27,6 +27,11 @@ typedef long long int64_t;
 typedef uint64_t size_t;
 
 typedef struct {
+	uint32_t *address;
+	uint64_t width;
+	uint64_t height;
+	uint64_t pitch;
+	uint16_t bpp;
 	int reserved;
 } framebuffer_t;
 

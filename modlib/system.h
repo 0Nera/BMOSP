@@ -15,6 +15,14 @@ static void *(*alloc)(uint64_t size);
 static void (*free)(void *ptr);
 static void (*fb_printf)(char *str, ...);
 static module_info_t *(*get_module)(char *module_id);
+static framebuffer_t (*alloc_framebuffer)( );
+static void (*free_framebuffer)(framebuffer_t *frame);
+static void (*exit)(int code);
+static int (*get_error)( );
+static sys_info_t *(*get_info)( );
+static uint64_t (*new_thread)(uint64_t func);
+static int (*delete_thread)(uint64_t thread_id);
+static time_t (*get_time)( );
 static uint64_t offset;
 
 #include <modstd.h>
@@ -25,6 +33,14 @@ static inline void init_env(env_t *loader_env) {
 	alloc = loader_env->alloc;
 	free = loader_env->free;
 	get_module = loader_env->get_module;
+	alloc_framebuffer = loader_env->alloc_framebuffer;
+	free_framebuffer = loader_env->free_framebuffer;
+	exit = loader_env->exit;
+	get_error = loader_env->get_error;
+	get_info = loader_env->get_info;
+	new_thread = loader_env->new_thread;
+	delete_thread = loader_env->delete_thread;
+	get_time = loader_env->get_time;
 }
 
 static void *realloc(void *addr, size_t size) {
