@@ -14,3 +14,4 @@ _sdk/
 *.zip
 *.log
 *.lck
+configs/media/*
