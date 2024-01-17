@@ -25,6 +25,7 @@ static unsigned int *tga_parse(unsigned char *ptr, int size) {
 
 	data = (unsigned int *)alloc((w * h + 2) * sizeof(unsigned int));
 	if (!data) { return NULL; }
+	memset(data, 0, (w * h + 2) * sizeof(unsigned int));
 
 	switch (ptr[2]) {
 		case 1:
@@ -150,6 +151,29 @@ static void *handler(uint64_t func) {
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
+
+	module_info_t *boot_tga = get_module("[BOOTIMG]");
+
+	if (boot_tga != NULL) {
+		return;
+		
+		framebuffer_t screen = alloc_framebuffer( );
+		uint32_t *screen_buf = screen.address;
+
+		uint32_t *img = tga_parse(boot_tga->data, boot_tga->data_size);
+		uint32_t width = img[0];
+		uint32_t height = img[1];
+		uint32_t *img_data = (uint32_t *)img + 2;
+		for (uint32_t w = 0; w < width; w++) {
+			for (uint32_t h = 0; h < height; h++) {
+				if (*img_data == 0x013220) {
+					*img_data++;
+					continue;
+				}
+				screen_buf[w * height + h] = *img_data++;
+			}
+		}
+	}
 
 	return (module_info_t){ .name = (char *)"[MEDIA][TGA]",
 		                    .message = (char *)"Отрисовка TGA изображений",
