@@ -118,12 +118,12 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
 	module_info_t *pci_data = get_module("[PCI][ADAPTER]");
-	num_vendors = pci_data->data_size - 1;
 
 	if (pci_data == NULL) {
 		fb_printf("Адаптер PCI данных не найден!\n");
 		num_vendors = 0;
 	} else {
+		num_vendors = pci_data->data_size - 1;
 		fb_printf("Записей в базе PCI: %u\n", pci_data->data_size);
 		vendor_list = (vendor_t **)pci_data->data;
 	}
