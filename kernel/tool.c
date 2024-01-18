@@ -160,9 +160,15 @@ int is_digit(char c) {
 	return 0;
 }
 
-int char_to_digit(char c) {
-	if (is_digit(c)) { return (int)(c - '0'); }
+int64_t char_to_digit(char c) {
+	if (is_digit(c)) { return (int64_t)(c - '0'); }
 	return -1;
+}
+
+uint64_t tool_uint_pow(uint64_t d, uint64_t n) {
+	uint64_t result = 1;
+	for (uint64_t i = 0; i < n; i++) { result *= d; }
+	return result;
 }
 
 // Функция для форматированного вывода
@@ -170,18 +176,25 @@ void tool_format(void (*putc)(char c), const char *format_string, va_list args) 
 	while (*format_string != '\0') {
 		if (*format_string == '%') {
 			char buf[48];
+			uint64_t i_temp = 0;
 			uint64_t point = 0;
 			char *arg_s;
 			int64_t arg_d = 0;
 			uint64_t arg_u = 0;
-			uint64_t width = 0;
+			int64_t width = 0;
 
 			format_string++;
 
-			if (is_digit(*format_string)) {
-				width = char_to_digit(*format_string);
+			while (is_digit(*format_string)) {
+				arg_u += char_to_digit(*format_string);
+
+				if (is_digit(*(format_string + 1))) { arg_u *= 10; }
+
 				format_string++;
+				i_temp++;
 			}
+
+			width = arg_u;
 
 			if (*format_string == '\0') {
 				break; // Неожиданный конец строки формата
@@ -192,6 +205,13 @@ void tool_format(void (*putc)(char c), const char *format_string, va_list args) 
 				case 'c': putc(va_arg(args, int)); break;
 				case 's':
 					arg_s = va_arg(args, char *);
+
+					if (width) { width -= tool_strlen(arg_s); }
+
+					while (width > 0) {
+						putc(' ');
+						width--;
+					}
 					// Вывод каждого символа строки
 					while (*arg_s != '\0') {
 						putc(*arg_s);
