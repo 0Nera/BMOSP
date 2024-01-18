@@ -24,7 +24,7 @@ void log_printf(char *str, ...);
 
 #ifndef NO_DEBUG
 #define LOG(...)                                                                                                       \
-	log_printf("[%4u]%s() (%s:%d) ", GET_TICK_BIG, __func__, __FILE__, __LINE__);                                      \
+	log_printf("[%6u]%12s() (%18s:%3u) ", GET_TICK_BIG, __func__, __FILE__, __LINE__);                                 \
 	log_printf(__VA_ARGS__)
 #else
 #define LOG(...)
