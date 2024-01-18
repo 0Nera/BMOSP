@@ -176,7 +176,6 @@ void tool_format(void (*putc)(char c), const char *format_string, va_list args) 
 	while (*format_string != '\0') {
 		if (*format_string == '%') {
 			char buf[48];
-			uint64_t i_temp = 0;
 			uint64_t point = 0;
 			char *arg_s;
 			int64_t arg_d = 0;
@@ -191,7 +190,6 @@ void tool_format(void (*putc)(char c), const char *format_string, va_list args) 
 				if (is_digit(*(format_string + 1))) { arg_u *= 10; }
 
 				format_string++;
-				i_temp++;
 			}
 
 			width = arg_u;
@@ -208,14 +206,14 @@ void tool_format(void (*putc)(char c), const char *format_string, va_list args) 
 
 					if (width) { width -= tool_strlen(arg_s); }
 
-					while (width > 0) {
-						putc(' ');
-						width--;
-					}
 					// Вывод каждого символа строки
 					while (*arg_s != '\0') {
 						putc(*arg_s);
 						arg_s++;
+					}
+					while (width > 0) {
+						putc(' ');
+						width--;
 					}
 					break;
 				case 'd':
