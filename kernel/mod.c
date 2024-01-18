@@ -20,7 +20,7 @@ static volatile struct limine_module_request module_request = { .id = LIMINE_MOD
 
 static struct limine_module_response *module_response;
 uint64_t modules_count = 0;
-module_info_t module_list[MOD_MAX];
+module_info_t *module_list = NULL;
 static char *graphics_module_message = "Графический модуль-объект";
 static char *other_module_message = "Неизвестный тип модуля";
 
@@ -37,7 +37,7 @@ static void *elf_entry(elf64_header_t *module_bin) {
 
 	if (elf_header->e_type != 2) {
 		LOG("\t\tОшибка! Модуль неправильно собран!\n");
-		for (;;) {}
+		for (;;) { asm volatile("pause"); }
 	}
 
 	// Возвращаем указатель на точку входа
@@ -69,14 +69,22 @@ void mod_init( ) {
 	uint64_t module_count = module_response->module_count;
 	struct limine_file *module_ptr = (struct limine_file *)0;
 
+	if (module_count > 0) {
+		module_list = (module_info_t *)mem_alloc(module_count * sizeof(module_info_t));
+		if (module_list == NULL) {
+			LOG("Ошибка выделения памяти для массива module_list\n");
+			return;
+		}
+	}
+
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
 
-		LOG("[%d] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path, module_ptr->cmdline, module_ptr->address,
+		LOG("[%u] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path, module_ptr->cmdline, module_ptr->address,
 		    module_ptr->size);
 
-		if (modules_count >= MOD_MAX) {
-			LOG("Модуль не обработан. Максимум %u модулей!\n", MOD_MAX);
+		if (modules_count >= module_count) {
+			LOG("Модуль не обработан. Максимум %u модулей!\n", module_count);
 			break;
 		}
 
@@ -118,7 +126,6 @@ void mod_init( ) {
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
 		module_list[modules_count].get_func = ret.get_func;
-
 		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
 		if (ret.irq != 0) {
 			if (ret.irq_handler != 0) {
@@ -131,4 +138,48 @@ void mod_init( ) {
 		modules_count++;
 	}
 	LOG("Модулей обработано: %u\n", modules_count);
+}
+
+void mod_add(module_info_t module) {
+	if (modules_count == 0) {
+		module_list = (module_info_t *)mem_alloc(sizeof(module_info_t));
+		if (module_list == NULL) {
+			LOG("Ошибка выделения памяти для массива module_list\n");
+			return;
+		}
+	} else {
+		module_info_t *new_module_list =
+		    (module_info_t *)mem_realloc(module_list, (modules_count + 1) * sizeof(module_info_t));
+		if (new_module_list == NULL) {
+			LOG("Ошибка выделения памяти для массива module_list\n");
+			return;
+		}
+		module_list = new_module_list;
+	}
+
+	module_list[modules_count] = module;
+	modules_count++;
+}
+
+void mod_del(module_info_t *module) {
+	if (modules_count == 0) {
+		LOG("Модуль не найден\n");
+		return;
+	}
+
+	for (uint64_t i = 0; i < modules_count; i++) {
+		if (&module_list[i] == module) {
+			for (uint64_t j = i; j < modules_count - 1; j++) { module_list[j] = module_list[j + 1]; }
+			modules_count--;
+			module_list = (module_info_t *)mem_realloc(module_list, modules_count * sizeof(module_info_t));
+			if (module_list == NULL) {
+				LOG("Ошибка выделения памяти для массива module_list\n");
+				return;
+			}
+			LOG("Модуль удален\n");
+			return;
+		}
+	}
+
+	LOG("Модуль не найден\n");
 }
