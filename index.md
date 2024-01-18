@@ -101,43 +101,7 @@
 
 ## Сборка из исходного кода
 
-### Ubuntu 18.04+
-
-```bash
-sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix
-git clone https://git.synapseos.ru/Aren/BMOSP.git
-cd BMOSP/
-chmod +x build.sh
-./build.sh
-```
-
-### ArchLinux
-
-```bash
-yay -S clang-format
-sudo pacman -S python3 git qemu-system-x86
-git clone https://git.synapseos.ru/Aren/BMOSP.git
-cd BMOSP/
-chmod +x build.sh
-./build.sh
-```
-
-## Запуск
-
-### Qemu
-
-Стандартная конфигурация
-
-```bash
-qemu-system-x86_64 -cpu max -m 1G -smp 1 -bios ovmf/OVMF.fd -hda bmosp.hdd  -name "БМПОС"
-```
-
-Или
-
-```bash
-chmod +x run.sh
-./run.sh
-```
+* [Сборка и запуск](./BUILD)
 
 ## Предупреждение
 
