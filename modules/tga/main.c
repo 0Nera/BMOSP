@@ -155,7 +155,7 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	module_info_t *boot_tga = get_module("[BOOTIMG]");
 
 	if (boot_tga != NULL) {
-		#if 0
+#if 0
 		framebuffer_t screen = alloc_framebuffer( );
 		uint32_t *screen_buf = screen.address;
 
@@ -173,7 +173,7 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 				screen_buf[w * height + h] = *img_data++;
 			}
 		}
-		#endif
+#endif
 	}
 
 	return (module_info_t){ .name = (char *)"[MEDIA][TGA]",

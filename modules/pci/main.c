@@ -96,9 +96,9 @@ static inline void scan( ) {
 				*/
 
 				char *name = find_vendor(vendor);
-				fb_printf("[%4u] %4x [%s], устройство: %x, %u.%u.%u | ", devices, vendor, name, device_id, bus, slot,
+				fb_printf("[%4u] %4x [%10s], устройство: %x, %u.%u.%u | ", devices, vendor, name, device_id, bus, slot,
 				          function);
-				fb_printf("%s", get_class_name(class_id));
+				fb_printf("%32s", get_class_name(class_id));
 
 				/*
 				fb_printf(" | %8x : %8x", mem_addr_0, mem_lim_0);
