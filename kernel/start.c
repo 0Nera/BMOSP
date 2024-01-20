@@ -15,6 +15,8 @@
 #include <tool.h>
 #include <version.h>
 
+uint64_t full_init = 0;
+
 // Точка входа
 void _start( ) {
 	asm volatile("cli");
@@ -36,6 +38,8 @@ void _start( ) {
 	mod_init( );
 
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
+
+	full_init = 1;
 
 	asm volatile("sti");
 

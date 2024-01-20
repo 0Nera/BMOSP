@@ -33,20 +33,24 @@ static void encode_idt_entry(uint8_t vector, void *handler, uint8_t flags) {
 static void exception_handler(struct frame state) {
 	LOG("\nПОЛУЧЕНО ИСКЛЮЧЕНИЕ: %s\n", exception_names[state.int_number]);
 
-	LOG("  RAX=%x  RBX=%x\n"
-	    "  RCX=%x  RDX=%x\n"
-	    "  RSI=%x  RDI=%x\n"
-	    "  RBP=%x  RSP=%x\n"
-	    "  R08=%x  R09=%x\n"
-	    "  R10=%x  R11=%x\n"
-	    "  R12=%x  R13=%x\n"
-	    "  R14=%x  R15=%x\n"
-	    "  RIP=%x  RFLAGS=%x\n"
-	    "  CS=%x SS=%x\n"
-	    "  ERR=%x  INT=%u",
+	uint64_t cr3;
+	asm volatile("mov %%cr3, %0" : "=r"(cr3));
+
+	LOG("\tRAX=%x  RBX=%x\n"
+	    "\tRCX=%x  RDX=%x\n"
+	    "\tRSI=%x  RDI=%x\n"
+	    "\tRBP=%x  RSP=%x\n"
+	    "\tR08=%x  R09=%x\n"
+	    "\tR10=%x  R11=%x\n"
+	    "\tR12=%x  R13=%x\n"
+	    "\tR14=%x  R15=%x\n"
+	    "\tRIP=%x  RFLAGS=%x\n"
+	    "\tCS=%x SS=%x\n"
+	    "\tERR=%x  INT=%u\n",
 	    state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi, state.rbp, state.rsp, state.r8, state.r9,
 	    state.r10, state.r11, state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags, state.cs, state.ss,
 	    state.err, state.int_number);
+	LOG("\tCR3=%x\n", cr3);
 
 	asm volatile("cli; hlt");
 }

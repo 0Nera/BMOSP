@@ -13,6 +13,8 @@
 #include <stdarg.h>
 #include <stdint.h>
 
+#define UNUSED(x) (void)(x)
+
 #define abs(x) ((x) < 0 ? -(x) : (x))
 
 #define assert(check)                                                                                                  \
