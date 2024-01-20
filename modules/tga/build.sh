@@ -11,7 +11,7 @@ fi
 
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o tga.o
-$CC $ARCH_FLAGS -T ../link.ld -Wl,--entry=init,--build-id=none tga.o -o tga.ko
+$CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld tga.o -L../../modlib/lib/ -lmod -o tga.ko
 
 cp boot.jpg ../bin/
 cp boot.tga ../bin/

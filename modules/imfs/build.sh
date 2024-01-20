@@ -11,7 +11,7 @@ fi
 
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o imfs.o
-$CC $ARCH_FLAGS -T ../link.ld -Wl,--entry=init,--build-id=none imfs.o -o imfs.ko
+$CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld imfs.o -L../../modlib/lib/ -lmod -o imfs.ko
 
 cp imfs.ko ../bin/
 echo "Сборка завершена, файл: imfs.ko"

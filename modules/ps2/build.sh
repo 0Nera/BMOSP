@@ -12,7 +12,7 @@ fi
 
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o ps2.o
-$CC $ARCH_FLAGS -T ../link.ld -Wl,--entry=init,--build-id=none ps2.o -o ps2.ko
+$CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld ps2.o -L../../modlib/lib/ -lmod -o ps2.ko
 
 cp ps2.ko ../bin/
 

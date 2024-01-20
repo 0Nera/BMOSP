@@ -11,7 +11,7 @@ fi
 
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o simd.o
-$CC $ARCH_FLAGS -T ../link.ld -Wl,--entry=init,--build-id=none simd.o -o simd.ko
+$CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld simd.o -L../../modlib/lib/ -lmod -o simd.ko
 
 cp simd.ko ../bin/
 echo "Сборка завершена, файл: simd.ko"

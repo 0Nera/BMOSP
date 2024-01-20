@@ -1,5 +1,10 @@
 #!/bin/sh
 
+cd modlib/lib/
+chmod +x build.sh
+./build.sh
+cd ../..
+
 cd modules/
 mkdir -p bin
 dos2unix */*.sh

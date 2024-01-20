@@ -11,6 +11,6 @@ fi
 
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o cpubench.o
-$CC $ARCH_FLAGS -T ../link.ld -Wl,--entry=init,--build-id=none cpubench.o -o cpubench.ko
+$CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld cpubench.o -L../../modlib/lib/ -lmod -o cpubench.ko
 cp cpubench.ko ../bin/
 echo "Сборка завершена, файл: cpubench.ko"
