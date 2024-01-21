@@ -60,14 +60,34 @@ void mem_dump_memory( ) {
 
 	while (curr) {
 		if (curr->next) {
-			LOG("->0x%x | %u килобайт | %s | 0x%x\n", &curr->data, (curr->size) / 1024,
+			LOG("->0x%x | %u мегабайт | %s | 0x%x\n", &curr->data, (curr->size) / 1024 / 1024,
 			    curr->free ? memory_types[0] : memory_types[1], curr->next);
 		} else {
-			LOG("->0x%x | %u килобайт | %s | Это последний блок\n", &curr->data, (curr->size) / 1024,
+			LOG("->0x%x | %u мегабайт | %s | Это последний блок\n", &curr->data, (curr->size) / 1024 / 1024,
 			    curr->free ? memory_types[0] : memory_types[1]);
 		}
 		curr = curr->next;
 	}
+}
+
+void mem_get_stat( ) {
+	size_t free_mem = 0;
+	size_t used_mem = 0;
+
+	struct mem_entry *current_entry = first_node;
+
+	while (current_entry) {
+		if (current_entry->free) {
+			free_mem += current_entry->size;
+		} else {
+			used_mem += current_entry->size;
+		}
+
+		current_entry = current_entry->next;
+	}
+
+	LOG("Свободно: %u мегабайт\n", free_mem / 1024 / 1024);
+	LOG("Занято: %u мегабайт\n", used_mem / 1024 / 1024);
 }
 
 void mem_check_dynamic_memory( ) {
@@ -250,7 +270,7 @@ void mem_init( ) {
 	mmmap_count = memmap_response->entry_count;
 	struct limine_memmap_entry **mmaps = memmap_response->entries;
 
-	// LOG("Записей в карте памяти: %u\n", memmap_response->entry_count);
+	LOG("Записей в карте памяти: %u\n", memmap_response->entry_count);
 
 	// Обработка каждой записи в карте памяти
 	for (uint64_t i = 0; i < mmmap_count; i++) {

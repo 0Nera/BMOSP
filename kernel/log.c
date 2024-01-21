@@ -14,12 +14,12 @@
 #include <stdint.h>
 #include <tool.h>
 
-static char start_buffer[8192];
+static char start_buffer[1024];
 static char *log_buffer;
 static uint64_t fb_pos_x = 4;
 static uint64_t fb_pos_y = 0;
 static uint64_t buf_pos = 0;
-static uint64_t buf_max = 8192;
+static uint64_t buf_max = 1024;
 
 #define FONT_WIDTH 6 + 1
 #define FONT_HEIGHT 8 + 1
@@ -120,8 +120,10 @@ void log_init_mem( ) {
 	    (((SCREEN_WIDTH - 4) / FONT_WIDTH) * (SCREEN_HEIGHT / FONT_HEIGHT)) / 1024);
 
 	log_buffer = mem_alloc(((SCREEN_WIDTH - 4) / FONT_WIDTH) * (SCREEN_HEIGHT / FONT_HEIGHT));
-	tool_memcpy(log_buffer, start_buffer, 4096);
+	tool_memcpy(log_buffer, start_buffer, buf_max);
 	buf_max = ((SCREEN_WIDTH - 4) / FONT_WIDTH) * (SCREEN_HEIGHT / FONT_HEIGHT);
+	LOG("Размер буффера: %u символов\n", buf_max);
+	redraw_screen( );
 }
 
 void log_init( ) {
