@@ -80,7 +80,8 @@ static int is_ctrl(uint8_t scancode) {
 	}
 }
 
-static void handler( ) {
+static void handler(struct frame *state) {
+	(void)state;
 	while (!(inb(0x64) & 1)) { asm volatile("pause"); }
 
 	uint8_t scancode = inb(0x60);
@@ -143,6 +144,7 @@ static void handler( ) {
 	switch (scancode) {
 		case 0x01: virt_exit( ); break; // Клавиша "ESCAPE"
 		case 0x4F:                      // Клавиша "END"
+			fb_printf("END?\n");
 			break;
 		default: break;
 	}

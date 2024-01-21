@@ -20,6 +20,7 @@ static uint64_t fb_pos_x = 4;
 static uint64_t fb_pos_y = 0;
 static uint64_t buf_pos = 0;
 static uint64_t buf_max = 1024;
+static lock_t log_lock = LOCK_INIT;
 
 #define FONT_WIDTH 6 + 1
 #define FONT_HEIGHT 8 + 1
@@ -104,13 +105,16 @@ void log_putchar(char c) {
 
 // Вывод текстового сообщения
 void log_printf(char *str, ...) {
+	LOCK(log_lock);
 	va_list args;
 	va_start(args, str);
 	tool_format(&log_putchar, str, args);
+	lock_release(log_lock);
 	va_end(args);
 }
 
 void log_init_mem( ) {
+	LOCK(log_lock);
 	if (fb_init_status < 1) {
 		LOG("Нет доступных фреймбуфферов для вывода\n");
 		return;
@@ -124,6 +128,7 @@ void log_init_mem( ) {
 	buf_max = ((SCREEN_WIDTH - 4) / FONT_WIDTH) * (SCREEN_HEIGHT / FONT_HEIGHT);
 	LOG("Размер буффера: %u символов\n", buf_max);
 	redraw_screen( );
+	lock_release(log_lock);
 }
 
 void log_init( ) {

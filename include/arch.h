@@ -10,6 +10,7 @@
 #ifndef ARCH_H
 #define ARCH_H
 
+#include <lock.h>
 #include <stdint.h>
 
 #define STACK_SIZE 8192 // 8 килобайт на стек
@@ -52,6 +53,8 @@ struct frame {
 } __attribute__((packed));
 
 typedef void (*int_entry_t)(struct frame *state);
+
+extern lock_t task_lock;
 
 void arch_init( );
 void task_init( );

@@ -17,6 +17,7 @@ static task_t *kernel_task = NULL;
 task_t *current_task = NULL;
 uint32_t *test_buf = NULL;
 extern uint64_t full_init;
+lock_t task_lock;
 
 void task_switch_asm(task_t *, task_t *);
 

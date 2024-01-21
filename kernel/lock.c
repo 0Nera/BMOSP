@@ -13,19 +13,21 @@
 #include <tool.h>
 
 // Если не заблокировано - блокируем
-int lock_swap(lock_t *lock) {
-	return __sync_bool_compare_and_swap(&lock->lock, 0, 1);
+int lock_swap(lock_t lock) {
+	if (lock.lock) { return 0; }
+	lock.lock = 1;
+	return 1;
 }
 
 // Запрос блокировки ресурса
-void lock_acquire(lock_t *lock) {
+void lock_acquire(lock_t lock) {
 	uint64_t count = 0;
 
 	for (;;) {
 		if (lock_swap(lock)) { break; }
 		count++;
 		if (count > 1000000) {
-			LOG("%s блокировка зависла", lock->file);
+			LOG("%s:%u блокировка зависла", lock.func, lock.line);
 			assert(0);
 		}
 
@@ -34,6 +36,6 @@ void lock_acquire(lock_t *lock) {
 }
 
 // Запрос разблокировки ресурса
-void lock_release(lock_t *lock) {
-	__sync_bool_compare_and_swap(&lock->lock, 1, 0);
+void lock_release(lock_t lock) {
+	lock.lock = 0;
 }
