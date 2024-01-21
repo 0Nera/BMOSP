@@ -39,6 +39,8 @@ void _start( ) {
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 
 	mod_init( );
+	mod_after_init( );
+
 	pit_init( );
 	task_init( );
 
@@ -48,6 +50,5 @@ void _start( ) {
 
 	asm volatile("sti");
 
-	// mod_after_init( );
 	for (;;) { asm volatile("hlt"); }
 }

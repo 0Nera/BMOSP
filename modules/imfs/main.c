@@ -147,7 +147,9 @@ static void main( ) {
 	module_info_t *mod_list = mod_list_get(&mod_count);
 
 	for (uint64_t i = 0; i < mod_count; i++) {
-		add_file(mod_list[i].name, "", mod_f, mod_list[i].data, mod_list[i].data_size);
+		if (mod_list[i].data_size) {
+			add_file(mod_list[i].name, "datafile", mod_f, mod_list[i].data, mod_list[i].data_size);
+		}
 	}
 	print_folder_contents(root_folder, 0);
 }

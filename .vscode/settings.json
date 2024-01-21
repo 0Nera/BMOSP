@@ -22,6 +22,7 @@
 		"random": "c",
 		"6x8_slim_font.h": "c",
 		"log.h": "c",
-		"mem.h": "c"
+		"mem.h": "c",
+		"lock.h": "c"
 	}
 }
