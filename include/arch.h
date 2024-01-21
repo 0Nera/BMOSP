@@ -12,14 +12,14 @@
 
 #include <stdint.h>
 
-#define STACK_SIZE 8192 // 1MB
+#define STACK_SIZE 8192 // 8 килобайт на стек
 
 typedef struct task {
 	uint64_t rax, rbx, rcx, rdx;
 	uint64_t rsi, rdi, rsp, rbp;
+	uint64_t cr3;
 
 	uint64_t id;
-	uint64_t ret;
 	void *stack;
 
 	struct task *last;
@@ -56,6 +56,7 @@ typedef void (*int_entry_t)(struct frame *state);
 void arch_init( );
 void task_init( );
 void task_switch(struct frame *state);
+uint64_t task_new_thread(void (*func)(void *));
 void cpu_init( );
 void gdt_init( );
 void pic_init( );

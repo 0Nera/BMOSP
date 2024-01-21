@@ -17,6 +17,11 @@
 
 uint64_t full_init = 0;
 
+void finally( ) {
+	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
+	for (;;) { asm volatile("hlt"); }
+}
+
 // Точка входа
 void _start( ) {
 	asm volatile("cli");
@@ -33,17 +38,16 @@ void _start( ) {
 
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 
-	task_init( );
-	pit_init( );
 	mod_init( );
+	pit_init( );
+	task_init( );
 
-	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
+	task_new_thread(finally);
 
 	full_init = 1;
 
 	asm volatile("sti");
 
-	mod_after_init( );
-
+	// mod_after_init( );
 	for (;;) { asm volatile("hlt"); }
 }
