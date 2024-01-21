@@ -22,10 +22,10 @@ void _start( ) {
 	asm volatile("cli");
 
 	log_init( );
-	fb_init( );
-	arch_init( );
 	mem_init( );
+	fb_init( );
 	log_init_mem( );
+	arch_init( );
 
 	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
 	    "версии %u.%u.%u %s***\n",
@@ -42,6 +42,8 @@ void _start( ) {
 	full_init = 1;
 
 	asm volatile("sti");
+
+	mod_after_init( );
 
 	for (;;) { asm volatile("hlt"); }
 }

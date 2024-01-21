@@ -50,6 +50,7 @@ void mod_list_show( ) {
 		LOG("Описание модуля: %s\n", module_list[i].message);
 		LOG("Тип модуля: %u\n", module_list[i].type);
 		LOG("Код ошибки модуля: %u\n", module_list[i].err_code);
+
 		if (module_list[i].data_size) {
 			LOG("Размер данных: %u\n", module_list[i].data_size);
 			LOG("Адрес данных: 0x%x\n", module_list[i].data);
@@ -57,15 +58,28 @@ void mod_list_show( ) {
 	}
 }
 
+void mod_after_init( ) {
+	for (uint64_t i = 0; i < modules_count; i++) {
+		if (module_list[i].after_init != 0) { module_list[i].after_init( ); }
+	}
+}
+
+module_info_t *mod_list_get(uint64_t *count) {
+	*count = modules_count;
+	return module_list;
+}
+
 module_info_t *mod_find(char *tag) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (tool_starts_with(module_list[i].name, tag)) { return &module_list[i]; }
 	}
+
 	return (module_info_t *)NULL;
 }
 
 void mod_init( ) {
 	module_response = module_request.response;
+
 	uint64_t module_count = module_response->module_count;
 	struct limine_file *module_ptr = (struct limine_file *)0;
 
@@ -126,7 +140,10 @@ void mod_init( ) {
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
 		module_list[modules_count].get_func = ret.get_func;
+		module_list[modules_count].after_init = ret.after_init;
+
 		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
+
 		if (ret.irq != 0) {
 			if (ret.irq_handler != 0) {
 				LOG("Установлен обработчик прерывания [%u] по адресу 0x%x в модуле %s\n", ret.irq, ret.irq_handler,
@@ -143,6 +160,7 @@ void mod_init( ) {
 void mod_add(module_info_t module) {
 	if (modules_count == 0) {
 		module_list = (module_info_t *)mem_alloc(sizeof(module_info_t));
+
 		if (module_list == NULL) {
 			LOG("Ошибка выделения памяти для массива module_list\n");
 			return;
@@ -150,10 +168,12 @@ void mod_add(module_info_t module) {
 	} else {
 		module_info_t *new_module_list =
 		    (module_info_t *)mem_realloc(module_list, (modules_count + 1) * sizeof(module_info_t));
+
 		if (new_module_list == NULL) {
 			LOG("Ошибка выделения памяти для массива module_list\n");
 			return;
 		}
+
 		module_list = new_module_list;
 	}
 
@@ -170,12 +190,15 @@ void mod_del(module_info_t *module) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (&module_list[i] == module) {
 			for (uint64_t j = i; j < modules_count - 1; j++) { module_list[j] = module_list[j + 1]; }
+
 			modules_count--;
 			module_list = (module_info_t *)mem_realloc(module_list, modules_count * sizeof(module_info_t));
+
 			if (module_list == NULL) {
 				LOG("Ошибка выделения памяти для массива module_list\n");
 				return;
 			}
+
 			LOG("Модуль удален\n");
 			return;
 		}

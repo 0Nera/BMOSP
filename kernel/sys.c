@@ -71,6 +71,7 @@ env_t *sys_install(env_t *module) {
 	module->get_error = &sys_get_error;
 	module->get_info = &sys_get_info;
 	module->get_module = &sys_get_module;
+	module->mod_list_get = &mod_list_get;
 	module->new_thread = &sys_new_thread;
 	module->delete_thread = &sys_delete_thread;
 	module->get_time = &sys_get_time;

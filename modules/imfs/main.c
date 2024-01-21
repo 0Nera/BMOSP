@@ -22,6 +22,10 @@ typedef struct folder_t {
 } folder_t;
 
 folder_t *root_folder = NULL;
+folder_t *cache_f = NULL;
+folder_t *docs_f = NULL;
+folder_t *media_f = NULL;
+folder_t *mod_f = NULL;
 
 folder_t *create_folder(char *name, folder_t *parent) {
 	folder_t *folder = alloc(sizeof(folder_t));
@@ -72,6 +76,12 @@ void write_file(file_t *file, void *data, size_t size) {
 	file->size += size;
 }
 
+file_t *add_file(char *name, char *type, folder_t *folder, void *data, size_t size) {
+	file_t *file = create_file(name, type, folder);
+	write_file(file, data, size);
+	return file;
+}
+
 void read_file(file_t *file, char *buffer, size_t size) {
 	memcpy(buffer, file->data, size);
 }
@@ -120,7 +130,7 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 
 	while (file != NULL) {
 		for (size_t i = 0; i < depth + 1; i++) { fb_printf("\t"); }
-		fb_printf("- %s.%s | %8u килобайт\n", file->name, file->type, (file->size + 1024) / 1024);
+		fb_printf("- %8s %4s | %8u килобайт\n", file->name, file->type, (file->size + 1024) / 1024);
 		file = file->next;
 	}
 
@@ -132,25 +142,27 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 	}
 }
 
+static void main( ) {
+	uint64_t mod_count = 0;
+	module_info_t *mod_list = mod_list_get(&mod_count);
+
+	for (uint64_t i = 0; i < mod_count; i++) {
+		add_file(mod_list[i].name, "", mod_f, mod_list[i].data, mod_list[i].data_size);
+	}
+	print_folder_contents(root_folder, 0);
+}
+
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	create_folder("", NULL);
 
-	folder_t *cache_f = create_folder("cache", root_folder);
-	folder_t *docs_f = create_folder("docs", root_folder);
-	folder_t *media_f = create_folder("media", root_folder);
+	cache_f = create_folder("cache", root_folder);
+	docs_f = create_folder("docs", root_folder);
+	media_f = create_folder("media", root_folder);
+	mod_f = create_folder("mod", root_folder);
 
 	file_t *readme = create_file("readme", "txt", root_folder);
 	write_file(readme, "БМПОС 2023-2024", 21);
-
-	module_info_t *boot_tga = get_module("[BOOTIMG]");
-
-	if (boot_tga != NULL) {
-		file_t *boot_img = create_file("boot", "tga", media_f);
-		write_file(boot_img, boot_tga->data, boot_tga->data_size);
-	}
-
-	print_folder_contents(root_folder, 0);
 
 	return (module_info_t){
 		.name = (char *)"[FS][IMFS]",
@@ -162,6 +174,7 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.module_id = 0,
 		.irq = 0,
 		.irq_handler = 0,
-		.get_func = 0
+		.get_func = 0,
+		.after_init = main
 	};
 }

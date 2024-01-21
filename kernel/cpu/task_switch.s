@@ -9,11 +9,10 @@ task_switch_asm:
 	movq %rdi, 40(%rdi)
 	movq %rsp, 48(%rdi)
 	movq %rbp, 56(%rdi)
-	movq %cr3, %rax
 	movq %rax, 64(%rdi)
 
 	movq 64(%rsi), %rax
-	movq %rax, %cr3
+	movq %rax, 64(%rdi)
 	movq 56(%rsi), %rbp
 	movq 48(%rsi), %rsp
 	movq 40(%rsi), %rdi

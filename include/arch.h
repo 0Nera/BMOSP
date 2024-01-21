@@ -17,7 +17,6 @@
 typedef struct task {
 	uint64_t rax, rbx, rcx, rdx;
 	uint64_t rsi, rdi, rsp, rbp;
-	uint64_t cr3;
 
 	uint64_t id;
 	uint64_t ret;

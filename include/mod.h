@@ -35,7 +35,9 @@ typedef struct {
 } elf64_header_t;
 
 void mod_init( );
+void mod_after_init( );
 void mod_list_show( );
 module_info_t *mod_find(char *tag);
+module_info_t *mod_list_get(uint64_t *count);
 
 #endif // mod.h

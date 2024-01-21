@@ -100,11 +100,12 @@ typedef struct {
 	uint8_t irq;
 	int_entry_t irq_handler;
 	void *(*get_func)(uint64_t id);
+	void (*after_init)( );
 } __attribute__((packed)) module_info_t;
 
 typedef struct {
 	uint64_t offset;
-	void (*fb_printf)(char *str, ...);
+	void (*fb_printf)(char *str, ...); // Временная функция
 	framebuffer_t (*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
 	void *(*alloc)(uint64_t size);
@@ -113,6 +114,7 @@ typedef struct {
 	int (*get_error)( );
 	sys_info_t *(*get_info)( );
 	module_info_t *(*get_module)(char *module_id);
+	module_info_t *(*mod_list_get)(uint64_t *count);
 	uint64_t (*new_thread)(uint64_t func);
 	int (*delete_thread)(uint64_t thread_id);
 	time_t (*get_time)( );

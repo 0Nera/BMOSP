@@ -86,5 +86,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		                    .module_id = 0,
 		                    .irq = 0,
 		                    .irq_handler = 0,
-		                    .get_func = 0 };
+		                    .get_func = 0,
+		                    .after_init = 0 };
 }

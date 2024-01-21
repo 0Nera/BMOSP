@@ -22,7 +22,7 @@ void task_switch_asm(task_t *, task_t *);
 void task_switch(struct frame *state) {
 	UNUSED(state);
 
-	LOG("Смена потоков\n");
+	// LOG("Смена потоков\n");
 	asm volatile("cli");
 
 	task_t *next = current_task->next;
@@ -30,7 +30,7 @@ void task_switch(struct frame *state) {
 
 	current_task = next;
 
-	LOG("Смена потоков 2\n");
+	// LOG("Смена потоков 2\n");
 	task_switch_asm(last, next);
 	asm volatile("sti");
 }
@@ -56,7 +56,6 @@ uint64_t task_new_thread(void (*func)(void *), void *arg) {
 	new_task->rsp = (uint64_t)new_task->stack + STACK_SIZE - sizeof(uint64_t) * 2;
 
 	new_task->stack = stack;
-	new_task->cr3 = cr3;
 	new_task->id = next_thread_id++;
 
 	new_task->last = current_task;
@@ -74,9 +73,7 @@ uint64_t task_new_thread(void (*func)(void *), void *arg) {
 }
 
 void dummy(uint64_t n) {
-	for (;;) {
-		asm volatile("hlt");
-	}
+	for (;;) { asm volatile("hlt"); }
 }
 
 void task_init( ) {
@@ -93,7 +90,6 @@ void task_init( ) {
 	tool_memset(kernel_task, 0, sizeof(task_t));
 
 	kernel_task->id = next_thread_id++;
-	kernel_task->cr3 = cr3;
 	kernel_task->rsp = rsp;
 
 	current_task = kernel_task;
@@ -103,7 +99,7 @@ void task_init( ) {
 
 	last_task = kernel_task;
 
-	task_new_thread(dummy, 2 + 2);
+	// task_new_thread(dummy, 2 + 2);
 
 	LOG("Потоки инициализированы\n");
 }

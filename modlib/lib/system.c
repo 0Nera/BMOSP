@@ -13,6 +13,7 @@ void *(*alloc)(uint64_t size);
 void (*free)(void *ptr);
 void (*fb_printf)(char *str, ...);
 module_info_t *(*get_module)(char *module_id);
+module_info_t *(*mod_list_get)(uint64_t *count);
 framebuffer_t (*alloc_framebuffer)( );
 void (*free_framebuffer)(framebuffer_t *frame);
 void (*exit)(int code);
@@ -29,6 +30,7 @@ void init_env(env_t *loader_env) {
 	alloc = loader_env->alloc;
 	free = loader_env->free;
 	get_module = loader_env->get_module;
+	mod_list_get = loader_env->mod_list_get;
 	alloc_framebuffer = loader_env->alloc_framebuffer;
 	free_framebuffer = loader_env->free_framebuffer;
 	exit = loader_env->exit;
