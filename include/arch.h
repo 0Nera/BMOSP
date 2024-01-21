@@ -20,6 +20,8 @@ typedef struct task {
 	uint64_t rsi, rdi, rsp, rbp;
 	uint64_t cr3;
 
+	uint64_t cpu_time;
+	uint64_t cpu_time_expired;
 	uint64_t id;
 	void *stack;
 

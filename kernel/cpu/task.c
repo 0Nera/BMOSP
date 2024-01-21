@@ -23,10 +23,19 @@ void task_switch_asm(task_t *, task_t *);
 
 void task_switch(struct frame *state) {
 	UNUSED(state);
-
 	asm volatile("cli");
+
 	task_t *next = current_task->next;
 	task_t *last = current_task;
+
+	if (current_task->cpu_time_expired) {
+		current_task->cpu_time_expired--;
+		outb(0x20, 0x20);
+		task_switch_asm(current_task, current_task);
+		return;
+	}
+
+	current_task->cpu_time_expired = current_task->cpu_time;
 
 	current_task = next;
 
@@ -55,6 +64,7 @@ uint64_t task_new_thread(void (*func)(void *)) {
 	stack[--stack_top] = (uint64_t)0;
 
 	new_task->rsp = (uint64_t)new_task->stack + sizeof(uint64_t) * stack_top;
+	new_task->cpu_time = 500;
 	new_task->id = next_thread_id++;
 	new_task->cr3 = cr3;
 
@@ -89,6 +99,7 @@ void task_init( ) {
 	kernel_task->id = next_thread_id++;
 	kernel_task->rsp = rsp;
 	kernel_task->cr3 = cr3;
+	kernel_task->cpu_time = 1000;
 
 	current_task = kernel_task;
 
