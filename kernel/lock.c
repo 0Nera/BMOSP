@@ -37,5 +37,5 @@ void lock_acquire(lock_t lock) {
 
 // Запрос разблокировки ресурса
 void lock_release(lock_t lock) {
-	lock.lock = 0;
+	if (lock.lock) { lock.lock = 0; }
 }

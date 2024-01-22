@@ -31,15 +31,14 @@ void _start( ) {
 	fb_init( );
 	log_init_mem( );
 	arch_init( );
+	mod_init( );
+	mod_after_init( );
 
 	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
 	    "версии %u.%u.%u %s***\n",
 	    VERSION_MAJOR, VERSION_MINOR, VERSION_BUILD, KERNEL_GIT_TAG);
 
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
-
-	mod_init( );
-	mod_after_init( );
 
 	pit_init( );
 	task_init( );

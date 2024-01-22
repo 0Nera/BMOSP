@@ -7,7 +7,7 @@
  */
 
 #include <arch.h>
-#include <fb.h>
+#include <log.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <tool.h>
@@ -20,5 +20,6 @@ void pit_set_interval(int hz) {
 }
 
 void pit_init( ) {
+	LOG("PIT установлен\n");
 	pit_set_interval(1);
 }

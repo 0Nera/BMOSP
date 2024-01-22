@@ -143,15 +143,19 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 }
 
 static void main( ) {
-	uint64_t mod_count = 0;
-	module_info_t *mod_list = mod_list_get(&mod_count);
-
-	for (uint64_t i = 0; i < mod_count; i++) {
-		if (mod_list[i].data_size) {
+	uint64_t *mod_count = alloc(sizeof(uint64_t));
+	module_info_t *mod_list = mod_list_get(mod_count);
+	fb_printf("Модулей: %u\n", *mod_count);
+	for (uint64_t i = 0; i < *mod_count; i++) {
+		if (mod_list[i].data_size > 0) {
+			fb_printf("Модуль: %s\n", mod_list[i].name);
 			add_file(mod_list[i].name, "datafile", mod_f, mod_list[i].data, mod_list[i].data_size);
 		}
 	}
+	fb_printf("Модулей: %u\n", *mod_count);
 	print_folder_contents(root_folder, 0);
+	free(mod_count);
+	fb_printf("Модулей: %u\n", *mod_count);
 }
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
@@ -170,8 +174,8 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.name = (char *)"[FS][IMFS]",
 		.message = (char *)"IMFS (in memory filesystem) - файловая система работающая исключительно в ОЗУ.",
 		.type = 0,
-		.data_size = sizeof(file_t),
-		.data = (void *)root_folder,
+		.data_size = 0,
+		.data = (void *)0,
 		.err_code = 0,
 		.module_id = 0,
 		.irq = 0,

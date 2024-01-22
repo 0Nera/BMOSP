@@ -7,7 +7,7 @@ static int ru = 1;
 static char c_char = '\0';
 static key_event_t keyboard_buffer;
 
-static inline void virt_exit( ) {
+static void virt_exit( ) {
 	fb_printf("Выход для Bochs\n");
 	outw(0xB004, 0x2000);
 
@@ -87,6 +87,17 @@ static void handler(struct frame *state) {
 	uint8_t scancode = inb(0x60);
 	char c = '\0';
 
+	switch (scancode) {
+		case 0x01:
+			fb_printf("ВЫХОД\n");
+			virt_exit( );
+			break; // Клавиша "ESCAPE"
+		case 0x4F: // Клавиша "END"
+			fb_printf("END?\n");
+			break;
+		default: break;
+	}
+
 	if (scancode == 0xE0) {
 		current_state = PREFIX_STATE;
 		after_interrupt( );
@@ -140,14 +151,6 @@ static void handler(struct frame *state) {
 
 	c_char = c;
 	kbd_free = true;
-
-	switch (scancode) {
-		case 0x01: virt_exit( ); break; // Клавиша "ESCAPE"
-		case 0x4F:                      // Клавиша "END"
-			fb_printf("END?\n");
-			break;
-		default: break;
-	}
 	after_interrupt( );
 }
 
@@ -161,8 +164,8 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	return (module_info_t){ .name = (char *)"[KEYBOARD]",
 		                    .message = (char *)"PS/2 драйвер",
 		                    .type = 0,
-		                    .data_size = MAX_KEY_BUFFER_SIZE,
-		                    .data = (void *)&keyboard_buffer,
+		                    .data_size = 0,
+		                    .data = (void *)0,
 		                    .err_code = 0,
 		                    .module_id = 0,
 		                    .irq = 33,

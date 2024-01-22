@@ -90,10 +90,16 @@ void task_init( ) {
 	uint64_t rsp;
 	uint64_t cr3;
 
+	LOG("Создание потока ядра\n");
 	asm volatile("mov %%rsp, %0" : "=r"(rsp));
 	asm volatile("mov %%cr3, %0" : "=r"(cr3));
 
-	kernel_task = mem_alloc(sizeof(task_t));
+	LOG("Настройка потока ядра\n");
+	mem_dump_memory( );
+	task_t *new_task = mem_alloc(sizeof(task_t));
+	LOG("%x\n", new_task);
+	kernel_task = new_task;
+
 	tool_memset(kernel_task, 0, sizeof(task_t));
 
 	kernel_task->id = next_thread_id++;
@@ -108,7 +114,7 @@ void task_init( ) {
 
 	last_task = kernel_task;
 
-	task_new_thread(dummy);
+	LOG("Создание потока dummy\n");
 	task_new_thread(dummy);
 
 	test_buf = mem_alloc(8 * 8 * sizeof(uint32_t));
