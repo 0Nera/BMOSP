@@ -40,12 +40,16 @@ void _start( ) {
 
 	LOG("\t\t\t\t *** Дата сборки: %s %s ***\n", __DATE__, __TIME__);
 
+	time_t time = rtc_get_time( );
+	LOG("Время: %2u:%2u.%2u, %2u.%2u.%2u\n", time.hours, time.minutes, time.second, time.day, time.month, time.year);
+
 	pit_init( );
 	task_init( );
 
 	task_new_thread(finally);
 
 	full_init = 1;
+	task_f_init = 1;
 
 	asm volatile("sti");
 

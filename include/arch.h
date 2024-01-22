@@ -12,6 +12,7 @@
 
 #include <lock.h>
 #include <stdint.h>
+#include <sys.h>
 
 #define STACK_SIZE 8192 // 8 килобайт на стек
 
@@ -57,10 +58,11 @@ struct frame {
 typedef void (*int_entry_t)(struct frame *state);
 
 extern lock_t task_lock;
+extern uint64_t task_f_init;
 
 void arch_init( );
 void task_init( );
-void task_switch(struct frame *state);
+void task_switch( );
 uint64_t task_new_thread(void (*func)(void *));
 void cpu_init( );
 void gdt_init( );
@@ -73,6 +75,7 @@ uint64_t arch_get_tick_l( );
 uint64_t arch_get_tick( );
 void com_write_byte(uint8_t byte);
 void com_write_bytes(char *c, uint64_t n);
+time_t rtc_get_time( );
 
 static inline void outb(uint16_t port, uint8_t val) {
 	asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
