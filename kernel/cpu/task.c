@@ -17,12 +17,12 @@ static task_t *kernel_task = NULL;
 task_t *current_task = NULL;
 uint32_t *test_buf = NULL;
 extern uint64_t full_init;
+uint64_t task_f_init = 0;
 lock_t task_lock;
 
 void task_switch_asm(task_t *, task_t *);
 
-void task_switch(struct frame *state) {
-	UNUSED(state);
+void task_switch( ) {
 	asm volatile("cli");
 
 	task_t *next = current_task->next;
@@ -80,7 +80,7 @@ uint64_t task_new_thread(void (*func)(void *)) {
 
 void dummy( ) {
 	LOG("\t\tПривет! Я поток: %u\n", current_task->id);
-	for (;;) { asm volatile("hlt"); }
+	for (;;) { task_switch( ); }
 }
 
 void task_init( ) {

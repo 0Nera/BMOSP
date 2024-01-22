@@ -57,10 +57,6 @@ static int sys_delete_thread(uint64_t thread_id) {
 	return thread_id;
 }
 
-static time_t sys_get_time( ) {
-	return (time_t){ .year = 2023, .month = 10, .day = 31, .second = 1 };
-}
-
 env_t *sys_install(env_t *module) {
 	module->fb_printf = &log_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
@@ -74,7 +70,7 @@ env_t *sys_install(env_t *module) {
 	module->mod_list_get = &mod_list_get;
 	module->new_thread = &sys_new_thread;
 	module->delete_thread = &sys_delete_thread;
-	module->get_time = &sys_get_time;
+	module->get_time = &rtc_get_time;
 
 	return module;
 }

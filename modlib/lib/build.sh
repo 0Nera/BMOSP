@@ -1,13 +1,7 @@
 #/bin/sh
-
 CC="gcc"
 AR="ar"
 ARCH_FLAGS="-ffreestanding -O0 -g -fPIC -static -nostdlib "
-
-if [ -d "../../sdk" ]; then
-	CC="../../sdk/bin/x86_64-elf-gcc"
-	AR="../../sdk/bin/x86_64-elf-ar"
-fi
 
 mkdir -p bin
 
