@@ -65,6 +65,7 @@ uint64_t task_new_thread(void (*func)(void *)) {
 
 	new_task->rsp = (uint64_t)new_task->stack + sizeof(uint64_t) * stack_top;
 	new_task->cpu_time = 500;
+	new_task->cpu_time_expired = new_task->cpu_time;
 	new_task->id = next_thread_id++;
 	new_task->cr3 = cr3;
 
@@ -105,7 +106,8 @@ void task_init( ) {
 	kernel_task->id = next_thread_id++;
 	kernel_task->rsp = rsp;
 	kernel_task->cr3 = cr3;
-	kernel_task->cpu_time = 1000;
+	kernel_task->cpu_time = 100;
+	kernel_task->cpu_time_expired = kernel_task->cpu_time;
 
 	current_task = kernel_task;
 
