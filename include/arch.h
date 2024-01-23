@@ -14,7 +14,7 @@
 #include <stdint.h>
 #include <sys.h>
 
-#define STACK_SIZE 8192 // 8 килобайт на стек
+#define STACK_SIZE 16 * 1024 // 16 килобайт на стек
 
 typedef struct task {
 	uint64_t rax, rbx, rcx, rdx;
