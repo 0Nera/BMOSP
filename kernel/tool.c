@@ -66,6 +66,24 @@ uint64_t tool_starts_with(const char *str, const char *prefix) {
 	return 1;
 }
 
+uint64_t tool_str_contains(const char *str, const char *substr) {
+	uint64_t str_len = tool_strlen(str);
+	uint64_t substr_len = tool_strlen(substr);
+
+	if (substr_len > str_len) { return 0; }
+
+	for (uint64_t i = 0; i <= str_len - substr_len; i++) {
+		uint64_t j;
+		for (j = 0; j < substr_len; j++) {
+			if (str[i + j] != substr[j]) { break; }
+		}
+
+		if (j == substr_len) { return 1; }
+	}
+
+	return 0;
+}
+
 // Функция для переворачивания строки
 void tool_reverse_str(char *str) {
 	int len = 0;

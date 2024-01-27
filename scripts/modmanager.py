@@ -71,9 +71,9 @@ def handle_module_actions(module_list):
         choice = input("[MOD]: ")
         if choice == "1":
             print("Доступные модули:")
-            for i, module in enumerate(module_list, start=1):
+            for i, module in enumerate(module_list, start=0):
                 print(f"{i}. {module['name']}")
-            module_index = int(input("Введите номер модуля: ")) - 1
+            module_index = int(input("Введите номер модуля: "))
             install_selected_module(module_list, module_index)
         elif choice == "2":
             print("Установленные модули:")
@@ -87,20 +87,14 @@ def handle_module_actions(module_list):
         elif choice == "3":
             break
 
-def parse_arguments():
-    parser = argparse.ArgumentParser(description="Менеджер модулей")
-    parser.add_argument("-r", "--refresh", action="store_true", help="Обновить список модулей")
-    return parser.parse_args()
 
 def main():
-    args = parse_arguments()
 
-    if args.refresh:
-        with open(module_path) as file:
-            repositories = json.load(file)
-        for repo in repositories:
-            repo_list_url = repo['list']
-            update_module_list(repo_list_url[0])
+    with open(module_path) as file:
+        repositories = json.load(file)
+    for repo in repositories:
+        repo_list_url = repo['list']
+        update_module_list(repo_list_url[0])
 
     with open(module_path) as file:
         module_list = json.load(file)

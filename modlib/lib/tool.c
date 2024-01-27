@@ -214,6 +214,24 @@ size_t count_chars(char *str, char c) {
 	return count;
 }
 
+uint64_t str_contains(const char *str, const char *substr) {
+	uint64_t str_len = strlen(str);
+	uint64_t substr_len = strlen(substr);
+
+	if (substr_len > str_len) { return 0; }
+
+	for (uint64_t i = 0; i <= str_len - substr_len; i++) {
+		uint64_t j;
+		for (j = 0; j < substr_len; j++) {
+			if (str[i + j] != substr[j]) { break; }
+		}
+
+		if (j == substr_len) { return 1; }
+	}
+
+	return 0;
+}
+
 void memcpy(void *dest, void *src, size_t n) {
 	char *d = (char *)dest;
 	char *s = (char *)src;
