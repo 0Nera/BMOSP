@@ -22,6 +22,7 @@ int strcmp(const char *s1, const char *s2);
 char *trstr(char *str, char sym);
 char *strdup(char *str);
 size_t count_chars(char *str, char c);
+uint64_t str_contains(const char *str, const char *substr);
 void memcpy(void *dest, void *src, size_t n);
 void *memset(void *ptr, uint8_t n, size_t size);
 void *memmove(void *dest, void *src, size_t n);

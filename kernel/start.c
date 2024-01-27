@@ -19,6 +19,7 @@ uint64_t full_init = 0;
 
 void finally( ) {
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
+	mod_after_init( );
 	for (;;) {
 		task_switch( );
 		asm volatile("hlt");
@@ -35,7 +36,6 @@ void _start( ) {
 	log_init_mem( );
 	arch_init( );
 	mod_init( );
-	mod_after_init( );
 
 	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
 	    "версии %u.%u.%u %s***\n",

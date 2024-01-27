@@ -64,6 +64,7 @@ void arch_init( );
 void task_init( );
 void task_switch( );
 uint64_t task_new_thread(void (*func)(void *));
+void task_del_current( );
 void cpu_init( );
 void gdt_init( );
 void pic_init( );

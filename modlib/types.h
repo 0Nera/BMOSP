@@ -118,7 +118,7 @@ typedef struct {
 	module_info_t *(*get_module)(char *module_id);
 	module_info_t *(*mod_list_get)(uint64_t *count);
 	uint64_t (*new_thread)(uint64_t func);
-	int (*delete_thread)(uint64_t thread_id);
+	void (*delete_thread)( );
 	time_t (*get_time)( );
 } __attribute__((packed)) env_t;
 

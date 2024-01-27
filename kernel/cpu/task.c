@@ -79,9 +79,19 @@ uint64_t task_new_thread(void (*func)(void *)) {
 	return new_task->id;
 }
 
-void dummy( ) {
-	LOG("\t\tПривет! Я поток: %u\n", current_task->id);
-	for (;;) { task_switch( ); }
+void task_del_current( ) {
+	LOG("Удаление потока ID: %u\n", current_task->id);
+	task_t *prev = current_task->last;
+	task_t *next = current_task->next;
+
+	prev->next = next;
+	next->last = prev;
+
+	mem_free(current_task->stack);
+	mem_free(current_task);
+
+	current_task = next;
+	task_switch( );
 }
 
 void task_init( ) {
@@ -115,11 +125,6 @@ void task_init( ) {
 	current_task->next = current_task;
 
 	last_task = kernel_task;
-
-	LOG("Создание потока dummy\n");
-	task_new_thread(dummy);
-
-	test_buf = mem_alloc(8 * 8 * sizeof(uint32_t));
 
 	LOG("Потоки инициализированы\n");
 }

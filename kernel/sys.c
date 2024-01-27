@@ -49,14 +49,6 @@ static module_info_t *sys_get_module(char *module_id) {
 	return (module_info_t *)mod_find(module_id);
 }
 
-static uint64_t sys_new_thread(uint64_t func) {
-	return func;
-}
-
-static int sys_delete_thread(uint64_t thread_id) {
-	return thread_id;
-}
-
 env_t *sys_install(env_t *module) {
 	module->fb_printf = &log_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
@@ -68,8 +60,8 @@ env_t *sys_install(env_t *module) {
 	module->get_info = &sys_get_info;
 	module->get_module = &sys_get_module;
 	module->mod_list_get = &mod_list_get;
-	module->new_thread = &sys_new_thread;
-	module->delete_thread = &sys_delete_thread;
+	module->new_thread = &task_new_thread;
+	module->delete_thread = &task_del_current;
 	module->get_time = &rtc_get_time;
 
 	return module;

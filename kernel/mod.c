@@ -62,8 +62,7 @@ void mod_after_init( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (module_list[i].after_init != 0) {
 			LOG("%s.after_init( );\n", module_list[i].name);
-			module_list[i].after_init( );
-			LOG("%s.after_init( );\n", module_list[i].name);
+			task_new_thread(module_list[i].after_init);
 		}
 	}
 }
@@ -75,7 +74,7 @@ module_info_t *mod_list_get(uint64_t *count) {
 
 module_info_t *mod_find(char *tag) {
 	for (uint64_t i = 0; i < modules_count; i++) {
-		if (tool_starts_with(module_list[i].name, tag)) { return &module_list[i]; }
+		if (tool_str_contains(module_list[i].name, tag)) { return &module_list[i]; }
 	}
 
 	return (module_info_t *)NULL;
@@ -128,7 +127,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
+		module_info_t (*module_init)(env_t * env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);

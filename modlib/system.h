@@ -23,7 +23,7 @@ extern void (*exit)(int code);
 extern int (*get_error)( );
 extern sys_info_t *(*get_info)( );
 extern uint64_t (*new_thread)(uint64_t func);
-extern int (*delete_thread)(uint64_t thread_id);
+extern void (*delete_thread)( );
 extern time_t (*get_time)( );
 extern uint64_t offset;
 

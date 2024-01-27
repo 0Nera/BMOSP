@@ -20,7 +20,7 @@ void (*exit)(int code);
 int (*get_error)( );
 sys_info_t *(*get_info)( );
 uint64_t (*new_thread)(uint64_t func);
-int (*delete_thread)(uint64_t thread_id);
+void (*delete_thread)( );
 time_t (*get_time)( );
 uint64_t offset;
 
