@@ -1,3 +1,11 @@
+/**
+ * com.c
+ * последовательный порт
+ *
+ * Функционал получения и записи информации в последовательный порт
+ *
+ */
+
 #include <arch.h>
 
 static inline int com_is_transmit_empty(uint16_t com) {
