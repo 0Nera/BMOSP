@@ -167,7 +167,7 @@ char *strchr(char *str, char c) {
 	return NULL;
 }
 
-int strcmp(const char *s1, const char *s2) {
+int strcmp(char *s1, char *s2) {
 	while (*s1 == *s2) {
 		if (*s1 == '\0') { return 0; }
 		s1++;
@@ -214,7 +214,7 @@ size_t count_chars(char *str, char c) {
 	return count;
 }
 
-uint64_t str_contains(const char *str, const char *substr) {
+uint64_t str_contains(char *str, char *substr) {
 	uint64_t str_len = strlen(str);
 	uint64_t substr_len = strlen(substr);
 
@@ -247,7 +247,7 @@ void *memset(void *ptr, uint8_t n, size_t size) {
 
 void *memmove(void *dest, void *src, size_t n) {
 	char *d = (char *)dest;
-	const char *s = (const char *)src;
+	char *s = (char *)src;
 
 	if (d > s) {
 		// копирование с конца массива, чтобы предотвратить перекрытие
