@@ -67,6 +67,8 @@ jobs:
 
     - run: |
         echo "Run, Build Application using script"
+        sudo apt update
+        sudo apt upgrade
         sudo apt install clang-format python3 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
         sudo apt install libc6
         chmod +x build.sh
