@@ -36,19 +36,17 @@ def version_build():
 				if build > 999:
 					build = 0
 					minor += 1
-					file.write(f"#define VERSION_MINOR {minor}\n")
-				file.write(f"#define VERSION_BUILD {build}\n")
 			elif line.startswith("#define VERSION_MAJOR"):
 				parts = line.split()
 				major = int(parts[2])
-				file.write(line)
 			elif line.startswith("#define VERSION_MINOR"):
 				parts = line.split()
-				minor = int(parts[2])
-				file.write(line)
+				minor += int(parts[2]) 
 			else:
 				file.write(line)
-
+		file.write(f"#define VERSION_MAJOR {major}\n")
+		file.write(f"#define VERSION_MINOR {minor}\n")
+		file.write(f"#define VERSION_BUILD {build}\n")
 	return [major, minor, build]
 
 def sort_strings(strings):
