@@ -1,7 +1,7 @@
 #/bin/sh
 CC="gcc"
 AR="ar"
-ARCH_FLAGS="-ffreestanding -O0 -g -fPIC -static -nostdlib "
+ARCH_FLAGS="-fno-stack-protector -ffreestanding -O0 -g -fPIC -static -nostdlib "
 
 mkdir -p bin
 
