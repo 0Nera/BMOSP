@@ -20,10 +20,7 @@ uint64_t full_init = 0;
 void finally( ) {
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	mod_after_init( );
-	for (;;) {
-		task_switch( );
-		asm volatile("hlt");
-	}
+	for (;;) { task_switch( ); }
 }
 
 // Точка входа
