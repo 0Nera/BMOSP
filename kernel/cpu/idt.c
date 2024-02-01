@@ -73,7 +73,7 @@ static void exception_handler(struct frame state) {
 	}
 
 	stack_frame_t *stk;
-	stk = state.rbp;
+	stk = (stack_frame_t *)state.rbp;
 
 	LOG("Трассировка стека:\n");
 

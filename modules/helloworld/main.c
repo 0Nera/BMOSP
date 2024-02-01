@@ -1,6 +1,6 @@
 #include <system.h>
 
-static const char name[] = "Привет мир!";
+static const char name[] = "[APP]Привет мир!";
 static const char message[] = "Привет из модуля!";
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {

@@ -80,7 +80,7 @@ static int is_ctrl(uint8_t scancode) {
 	}
 }
 
-static void handler(struct frame *state) {
+void handler(struct frame *state) {
 	(void)state;
 	while (!(inb(0x64) & 1)) { asm volatile("pause"); }
 

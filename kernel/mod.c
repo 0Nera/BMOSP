@@ -127,7 +127,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t * env) =
+		module_info_t (*module_init)(env_t *env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);
@@ -136,7 +136,7 @@ void mod_init( ) {
 
 		sys_install(&main_env);
 
-		uint64_t id = task_new_thread(1, module_list[i].name);
+		uint64_t id = task_new_thread((void *)1, module_list[i].name);
 
 		module_info_t ret = module_init(&main_env);
 		LOG("\t->%s\n", ret.message);

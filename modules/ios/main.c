@@ -36,6 +36,7 @@ static void main( ) {
 		delete_thread( );
 	} else {
 		app_list = realloc(app_list, app_count * sizeof(module_info_t));
+		for (uint64_t i = 0; i < app_count; i++) { fb_printf("%2u.\t%s\n", app_list[i]); }
 		for (;;) { asm volatile("hlt"); }
 	}
 
