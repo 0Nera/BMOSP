@@ -24,6 +24,7 @@ typedef struct task {
 	uint64_t cpu_time;
 	uint64_t cpu_time_expired;
 	uint64_t id;
+	char *id_str;
 	void *stack;
 
 	struct task *last;
@@ -59,12 +60,15 @@ typedef void (*int_entry_t)(struct frame *state);
 
 extern lock_t task_lock;
 extern uint64_t task_f_init;
+extern task_t *current_task;
 
 void arch_init( );
 void task_init( );
+void task_after_init( );
 void task_switch( );
-uint64_t task_new_thread(void (*func)(void *));
+uint64_t task_new_thread(void (*func)(void *), char *name);
 void task_del_current( );
+void task_del(uint64_t id);
 void cpu_init( );
 void pic_init( );
 void pit_init( );

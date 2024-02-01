@@ -7,7 +7,7 @@ static int ru = 1;
 static char c_char = '\0';
 static key_event_t keyboard_buffer;
 
-static void virt_exit( ) {
+void virt_exit( ) {
 	fb_printf("Выход для Bochs\n");
 	outw(0xB004, 0x2000);
 

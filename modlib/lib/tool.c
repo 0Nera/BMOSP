@@ -189,9 +189,7 @@ char *trstr(char *str, char sym) {
 	else
 		left = 0x00U;
 
-	char *res = alloc(size);
-	memcpy(res, str + left, size);
-	return res;
+	return str + left;
 }
 
 char *strdup(char *str) {

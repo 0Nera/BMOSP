@@ -24,7 +24,8 @@ static volatile struct limine_hhdm_request hhdm_request = { .id = LIMINE_HHDM_RE
 struct mem_entry {
 	struct mem_entry *next;
 	bool free;
-	size_t size;
+	uint64_t task_id;
+	uint64_t size;
 	uint8_t data[0];
 };
 
@@ -47,6 +48,9 @@ static uint64_t highest = 0;
 // Количество записей в карте памяти
 static uint64_t mmmap_count = 0;
 
+extern task_t *current_task;
+extern uint64_t full_init;
+
 static const char memory_types[8][82] = { "Доступно",      "Зарезервировано", "ACPI, можно освободить",
 	                                      "ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
 	                                      "Ядро и модули", "Буфер кадра" };
@@ -60,11 +64,11 @@ void mem_dump_memory( ) {
 
 	while (curr) {
 		if (curr->next) {
-			LOG("->0x%x | %u мегабайт | %s | 0x%x\n", &curr->data, (curr->size) / 1024 / 1024,
-			    curr->free ? memory_types[0] : memory_types[1], curr->next);
+			LOG("->0x%x | %u мегабайт | %s | 0x%x | поток %u\n", &curr->data, (curr->size) / 1024 / 1024,
+			    curr->free ? memory_types[0] : memory_types[1], curr->next, curr->task_id);
 		} else {
-			LOG("->0x%x | %u мегабайт | %s | Это последний блок\n", &curr->data, (curr->size) / 1024 / 1024,
-			    curr->free ? memory_types[0] : memory_types[1]);
+			LOG("->0x%x | %u мегабайт | %s | поток %u | Это последний блок\n", &curr->data, (curr->size) / 1024 / 1024,
+			    curr->free ? memory_types[0] : memory_types[1], curr->task_id);
 		}
 		curr = curr->next;
 	}
@@ -153,7 +157,12 @@ static void merge_blocks(mem_entry_t *start) {
 	mem_entry_t *block = start;
 	while (block->next && block->next->free) {
 		block->size += block->next->size + sizeof(mem_entry_t);
-		block->next = block->next->next;
+
+		if (block->next->next) {
+			block->next = block->next->next;
+			continue;
+		}
+		block->next = NULL;
 	}
 }
 
@@ -196,33 +205,37 @@ static void *alloc_align(size_t size, size_t alignment) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-		if (curr->free) {
+		if (curr->free && curr->size >= (alignment + sizeof(mem_entry_t) + size)) {
 			void *addr = curr->data + alignment - 1;
 			addr -= (uintptr_t)addr % alignment + sizeof(mem_entry_t);
 			mem_entry_t *second = (mem_entry_t *)addr;
-			if (curr->size >= (second->data - curr->data + size)) {
-				mem_entry_t *third = (mem_entry_t *)(second->data + size);
 
-				third->size = curr->size - (third->data - curr->data);
-				third->next = curr->next;
-				third->free = 1;
+			mem_entry_t *third = (mem_entry_t *)(second->data + size);
+			tool_memset(third, 0, sizeof(mem_entry_t));
 
-				second->size = size;
-				second->next = third;
-				second->free = 0;
+			third->size = curr->size - (third->data - curr->data);
+			third->next = curr->next;
+			third->free = 1;
 
-				if (curr != second) {
-					curr->next = second;
-					curr->size = (uintptr_t)second - (uintptr_t)curr->data;
-					curr->free = 1;
-				}
+			second->size = size;
+			second->next = third;
+			second->free = 0;
+			second->task_id = 0;
 
-				return second->data;
+			if (full_init) { second->task_id = current_task->id; }
+
+			if (curr != second) {
+				curr->next = second;
+				curr->size = (uintptr_t)second - (uintptr_t)curr->data;
+				curr->free = 1;
 			}
+
+			return second->data;
 		}
 
 		curr = curr->next;
 	}
+
 	return NULL;
 }
 
