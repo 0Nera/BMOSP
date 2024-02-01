@@ -1,40 +1,42 @@
-# Сборка и запуск
+# Сборка из исходного кода
 
-Для сборки нужен gcc собранный под архитектуру x86_64. Clang не рекомендуется для использования. Рекомендованная ОС: `Ubuntu 20 и новее`.
+## Установка SDK
 
-## Сборка из исходного кода
-
-Понадобится Python версии 3.7 и новее. Для сборки на Windows используйте WSL или виртуальную машину.
-
-### Ubuntu 18.04+
+Перед сборкой рекомендуем установить готовый пакет SDK вместе с libc6
 
 ```bash
-sudo apt install clang-format python3 git qemu-system-x86 gdisk dos2unix xorriso
+sudo apt update
+sudo apt install unzip
+./scripts/get_sdk.sh
+```
+
+## Ubuntu 18.04+
+
+```bash
+sudo apt install clang-format python3 git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso libc6 gcc make curl
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
 ./build.sh
 ```
 
-### Astra Linux
+## Astra Linux
 
 На текущий момент доступна только сборка ISO образов
 В qemu недоступен флаг `-cpu max`, просто уберите его при запуске
 
 ```bash
-sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso
+sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso libc6 gcc make curl
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 python3.7 pbuild.py
 ```
 
-### ArchLinux
-
-Модули грузятся с ошибкой
+## ArchLinux
 
 ```bash
 yay -S clang-format
-sudo pacman -S python3 git qemu-system-x86 xorriso
+sudo pacman -S python3 git qemu-system-x86 qemu-system-gui xorriso libc6 gcc make curl
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
@@ -43,17 +45,15 @@ chmod +x build.sh
 
 ## Запуск
 
-Помимо использования VirtualBox, Qemu, VMware и других эмуляторов допускается запись hdd (raw) образа на флэшку в режиме dd.
+## Qemu
 
-### Qemu
-
-Стандартная конфигурация загрузки с HDD
+Стандартная конфигурация загрузки с HDD под x86_64(AMD64) UEFI
 
 ```bash
 qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -bios ovmf/OVMF.fd -hda bmosp.hdd
 ```
 
-Стандартная конфигурация загрузки с ISO образа
+Стандартная конфигурация загрузки с ISO образа под x86_64(AMD64) UEFI
 
 ```bash
 qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1 -cdrom bmosp.iso -boot d --no-reboot
@@ -68,5 +68,6 @@ chmod +x run.sh
 
 ## Предупреждение
 
-Использовать на свой страх и риск. Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
+Использовать на свой страх и риск.
+Система расчитана на работу в эмулируемой среде Qemu под процессоры x86_64.
 Мы не несем ответственности за нанесенный ущерб.
