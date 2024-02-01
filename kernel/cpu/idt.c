@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <tool.h>
 
+extern task_t *current_task;
+
 static inline void idt_load( ) {
 	asm volatile("lidt %0" : : "m"(idtr));
 }
@@ -52,7 +54,19 @@ static void exception_handler(struct frame state) {
 	    state.err, state.int_number);
 	LOG("\tCR3=%x\n", cr3);
 
-	asm volatile("cli; hlt");
+	mem_dump_memory( );
+
+	LOG("Поток вызвавший исключение: %u, [%s]\n", current_task->id, current_task->id_str);
+
+	task_t *t = current_task->next;
+
+	while (t && t != current_task) {
+		LOG("\tID: %u, [%s]\n", t->id, t->id_str);
+		t = t->next;
+	}
+
+	asm volatile("cli");
+	asm volatile("hlt");
 }
 
 void isr_generic(struct frame state) {
