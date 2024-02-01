@@ -15,6 +15,7 @@ static void main( ) {
 	if (app_list == NULL) {
 		fb_printf("Ошибка выделения памяти для app_list!\n");
 		delete_thread( );
+		for (;;) { asm volatile("hlt"); }
 	}
 
 	app_count = 0;

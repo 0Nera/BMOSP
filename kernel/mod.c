@@ -62,7 +62,7 @@ void mod_after_init( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (module_list[i].after_init != 0) {
 			LOG("%s.after_init( );\n", module_list[i].name);
-			task_new_thread(module_list[i].after_init);
+			task_new_thread(module_list[i].after_init, module_list[i].name);
 		}
 	}
 }
@@ -136,14 +136,22 @@ void mod_init( ) {
 
 		sys_install(&main_env);
 
-		module_info_t ret = module_init(&main_env);
+		uint64_t id = task_new_thread(1, module_list[i].name);
 
+		module_info_t ret = module_init(&main_env);
 		LOG("\t->%s\n", ret.message);
+
+		task_del(id);
+
 		module_list[modules_count].name = ret.name;
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
 		module_list[modules_count].get_func = ret.get_func;
 		module_list[modules_count].after_init = ret.after_init;
+
+		if (module_list[modules_count].after_init) {
+			task_new_thread(module_list[modules_count].after_init, module_list[modules_count].name);
+		}
 
 		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
 

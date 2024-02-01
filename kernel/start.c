@@ -25,7 +25,8 @@ void finally( ) {
 
 void dummy( ) {
 	LOG("Поток %u\n", dum++);
-	task_del(current_task->id);
+	task_del_current( );
+	for (;;) { asm volatile("hlt"); }
 }
 
 // Точка входа
@@ -39,6 +40,7 @@ void _start( ) {
 	arch_init( );
 	pit_init( );
 	task_init( );
+	task_f_init = 1;
 	mod_init( );
 
 	LOG("\t\t\t\t *** Базовая Модульная Платформа Операционных Систем "
@@ -53,16 +55,8 @@ void _start( ) {
 	task_new_thread(finally, "fin");
 
 	full_init = 1;
-	task_f_init = 1;
 
 	task_after_init( );
-
-	for (uint64_t i = 0; i < 6; i++) {
-		char *buf = mem_alloc(32);
-		tool_strcpy(buf, "dum");
-		tool_uint_to_str(i, 10, buf + 3);
-		task_new_thread(dummy, buf);
-	}
 
 	asm volatile("sti");
 

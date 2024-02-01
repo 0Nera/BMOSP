@@ -142,14 +142,6 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 	}
 }
 
-static void main( ) {
-	uint64_t *mod_count = alloc(sizeof(uint64_t));
-	module_info_t *mod_list = mod_list_get(mod_count);
-	fb_printf("Модулей: %u\n", *mod_count);
-	free(mod_count);
-	delete_thread( );
-}
-
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	create_folder("", NULL);
@@ -173,6 +165,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		.irq = 0,
 		.irq_handler = 0,
 		.get_func = 0,
-		.after_init = main
+		.after_init = 0
 	};
 }

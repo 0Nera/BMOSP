@@ -96,6 +96,7 @@ void task_del(uint64_t id) {
 		}
 	}
 
+	LOG("Удаление потока ID: %u, %s\n", current_task->id, current_task->id_str);
 	task_t *prev = task->last;
 	task_t *next = task->next;
 
@@ -123,7 +124,7 @@ void task_del_current( ) {
 	mem_free(current_task);
 
 	current_task = next;
-	task_switch( );
+	if (full_init) { task_switch( ); }
 }
 
 void task_after_init( ) {

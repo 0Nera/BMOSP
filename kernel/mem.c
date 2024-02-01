@@ -222,7 +222,7 @@ static void *alloc_align(size_t size, size_t alignment) {
 			second->free = 0;
 			second->task_id = 0;
 
-			if (full_init) { second->task_id = current_task->id; }
+			if (task_f_init) { second->task_id = current_task->id; }
 
 			if (curr != second) {
 				curr->next = second;
