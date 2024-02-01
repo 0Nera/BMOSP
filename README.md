@@ -12,7 +12,7 @@
 
 Философия БМПОС - "всё есть модуль".
 
-![Скриншот вывода ядра в эмуляторе Qemu](https://0nera.github.io/BMOSP/assets/0_0.1.367.png)
+![Скриншот вывода ядра в эмуляторе Qemu](https://git.synapseos.ru/Aren/BMOSP/raw/branch/pages/assets/0_0.2.0.png)
 
 ## Список задач
 
