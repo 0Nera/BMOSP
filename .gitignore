@@ -1,4 +1,3 @@
-
 limine/
 iso_root/*
 bin/*
@@ -10,3 +9,6 @@ output/*
 *.hdd
 *.iso
 *.ko
+*.a
+modules/
+serial.log
