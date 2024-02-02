@@ -22,7 +22,7 @@ static void main( ) {
 
 	for (uint64_t i = 0; i < *mod_count; i++) {
 		if (str_contains(mod_list[i].name, "[APP]")) {
-			fb_printf("%u. %s\n", app_count, mod_list[i].name);
+			//fb_printf("%u. %s\n", app_count, mod_list[i].name);
 			app_list[app_count] = mod_list[i];
 			app_count++;
 		}
@@ -36,7 +36,7 @@ static void main( ) {
 		delete_thread( );
 	} else {
 		app_list = realloc(app_list, app_count * sizeof(module_info_t));
-		for (uint64_t i = 0; i < app_count; i++) { fb_printf("%2u.\t%s\n", app_list[i]); }
+		for (uint64_t i = 0; i < app_count; i++) { fb_printf("%2u.\t%s\n", i, app_list[i].name); }
 		for (;;) { asm volatile("hlt"); }
 	}
 
