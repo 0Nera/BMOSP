@@ -8,9 +8,6 @@ static char c_char = '\0';
 static key_event_t keyboard_buffer;
 
 void virt_exit( ) {
-	fb_printf("Выход для Bochs\n");
-	outw(0xB004, 0x2000);
-
 	fb_printf("Выход для Qemu\n");
 	outw(0x604, 0x2000);
 
@@ -80,8 +77,7 @@ static int is_ctrl(uint8_t scancode) {
 	}
 }
 
-void handler(struct frame *state) {
-	(void)state;
+static void handler( ) {
 	while (!(inb(0x64) & 1)) { asm volatile("pause"); }
 
 	uint8_t scancode = inb(0x60);
@@ -169,6 +165,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 		                    .err_code = 0,
 		                    .module_id = 0,
 		                    .irq = 33,
-		                    .irq_handler = handler,
+		                    .irq_handler = &handler,
 		                    .get_func = __get_func };
 }

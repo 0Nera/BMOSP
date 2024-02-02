@@ -22,7 +22,7 @@ static void main( ) {
 
 	for (uint64_t i = 0; i < *mod_count; i++) {
 		if (str_contains(mod_list[i].name, "[APP]")) {
-			//fb_printf("%u. %s\n", app_count, mod_list[i].name);
+			// fb_printf("%u. %s\n", app_count, mod_list[i].name);
 			app_list[app_count] = mod_list[i];
 			app_count++;
 		}

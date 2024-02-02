@@ -33,7 +33,7 @@ static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
 
-	// LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
+	LOG("(uint64_t)elf_header->e_entry = 0x%x, тип = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
 
 	if (elf_header->e_type != 2) {
 		LOG("\t\tОшибка! Модуль неправильно собран!\n");
@@ -92,6 +92,7 @@ void mod_init( ) {
 			LOG("Ошибка выделения памяти для массива module_list\n");
 			return;
 		}
+		LOG("module_list = 0x%x\n", module_list);
 	}
 
 	for (uint64_t i = 0; i < module_count; i++) {
