@@ -6,7 +6,7 @@
  *
  */
 
-#include <LOG.h>
+#include <log.h>
 #include <arch.h>
 
 typedef struct __attribute__((packed)) {
