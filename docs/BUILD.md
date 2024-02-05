@@ -13,7 +13,7 @@ sudo apt install unzip
 ## Ubuntu 18.04+
 
 ```bash
-sudo apt install clang-format python3 git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso libc6 gcc make curl
+sudo apt install clang-format python3 git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso libc6 gcc make curl mtools
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 chmod +x build.sh
@@ -26,21 +26,10 @@ chmod +x build.sh
 В qemu недоступен флаг `-cpu max`, просто уберите его при запуске
 
 ```bash
-sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso libc6 gcc make curl
+sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso libc6 gcc make curl mtools
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
 python3.7 pbuild.py
-```
-
-## ArchLinux
-
-```bash
-yay -S clang-format
-sudo pacman -S python3 git qemu-system-x86 qemu-system-gui xorriso libc6 gcc make curl
-git clone https://git.synapseos.ru/Aren/BMOSP.git
-cd BMOSP/
-chmod +x build.sh
-./build.sh
 ```
 
 ## Запуск

@@ -100,42 +100,6 @@ def check_limine():
 	subprocess.run(["make"])
 	os.chdir("..")
 
-
-
-def check_os():
-	import platform
-	using_distro = False
-	try:
-		import distro
-		using_distro = True
-	except ImportError:
-		pass
-	if using_distro:
-		linux_distro = distro.like()
-	else:
-		try:
-			linux_distro = platform.linux_distribution()[0]
-		except Exception as E:
-			return 1
-	if linux_distro.lower() in ['debian', 'ubuntu', 'astra']:
-		return 1
-	return 0
-
-def check_tools():
-	required_tools = ["gcc", "g++", "xorriso", "make", "mtools", "curl"]
-	missing_tools = []
-
-	for tool in required_tools:
-		if shutil.which(tool) is None:
-			missing_tools.append(tool)
-
-	if len(missing_tools) > 0:
-		if check_os():
-			subprocess.run(["sudo", "apt", "install"] + missing_tools)
-			return
-		subprocess.run(["sudo", "pacman", "-S"] + missing_tools)
-
-
 def create_hdd(IMAGE_NAME):
 	os.system(f"rm -f {IMAGE_NAME}.hdd".format())
 	os.system(f"dd if=/dev/zero bs=1M count=0 seek=4 of={IMAGE_NAME}.hdd")
@@ -191,10 +155,6 @@ if __name__ == "__main__":
 		print("Установка Limine")
 		check_limine()
 
-	print("Проверка зависимостей")
-
-	check_tools()
-	
 	major, minor, build = version_build()
 	
 	print("Сборка модульного ядра")
