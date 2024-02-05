@@ -7,14 +7,9 @@ static int ru = 1;
 static char c_char = '\0';
 static key_event_t keyboard_buffer;
 
-void virt_exit( ) {
-	fb_printf("Выход для Qemu\n");
+static void virt_exit( ) {
 	outw(0x604, 0x2000);
-
-	fb_printf("Выход для Virtualbox\n");
 	outw(0x4004, 0x3400);
-
-	fb_printf("Выход для облачного гипервизора\n");
 	outw(0x600, 0x34);
 }
 
@@ -155,7 +150,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	current_state = NORMAL_STATE;
 	keyboard_buffer.ctrl_pressed = 0;
 	keyboard_buffer.shift_pressed = 0;
-	fb_printf("\t\t[%u][%c]\n", 27, 27);
 
 	return (module_info_t){ .name = (char *)"[KEYBOARD]",
 		                    .message = (char *)"PS/2 драйвер",
