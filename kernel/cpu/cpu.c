@@ -61,22 +61,22 @@ static void do_amd( ) {
 	LOG("cpu_family = [%u]\n", cpu_family);
 }
 
-static void do_intel() {
+static void do_intel( ) {
 	uint32_t eax, ebx, ecx, edx;
 	uint32_t cpu_model;
 	uint32_t cpu_family;
 	uint32_t cpu_brand_id;
 
-    cpuid(0, &eax, &ebx, &ecx, &edx);
+	cpuid(0, &eax, &ebx, &ecx, &edx);
 
-    cpu_brand_id = ebx;
-    cpu_family = ((eax >> 8) & 0xFF) + ((eax >> 20) & 0xFF);
-    cpu_model = ((eax >> 4) & 0xF) | ((eax >> 12) & 0xF0);
+	cpu_brand_id = ebx;
+	cpu_family = ((eax >> 8) & 0xFF) + ((eax >> 20) & 0xFF);
+	cpu_model = ((eax >> 4) & 0xF) | ((eax >> 12) & 0xF0);
 
-    LOG("Используется процессор Intel\n");
-    LOG("cpu_brand_id = [%u]\n", cpu_brand_id);
-    LOG("cpu_family = [%u]\n", cpu_family);
-    LOG("cpu_model = [%u]\n", cpu_model);
+	LOG("Используется процессор Intel\n");
+	LOG("cpu_brand_id = [%u]\n", cpu_brand_id);
+	LOG("cpu_family = [%u]\n", cpu_family);
+	LOG("cpu_model = [%u]\n", cpu_model);
 }
 
 static void brandname( ) {

@@ -56,7 +56,7 @@ void ios_main( ) {
 		fb_printf("Запуск %s...\n", app_list[select].name);
 		int (*app)( ) = (int (*)( ))app_list[select].data;
 		int ret = (*app)( );
-		fb_printf("Приложение %s завершилось с кодом: %d\n", app_list[select].name, ret);
+		fb_printf("\nПриложение %s завершилось с кодом: %d\n", app_list[select].name, ret);
 	}
 }
 
