@@ -1,8 +1,8 @@
 .global load_gdt
 load_gdt:
 		cli
-		lgdt (%rdi)
-		movw $0x30, %ax
+		lgdt (%rdi)		# Загружаем GDT
+		movw $0x30, %ax # Обновляем GDT
 		mov %ax, %ds
 		mov %ax, %es
 		mov %ax, %fs

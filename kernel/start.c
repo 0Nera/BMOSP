@@ -16,18 +16,6 @@
 #include <version.h>
 
 uint64_t full_init = 0;
-uint64_t dum = 0;
-
-void finally( ) {
-	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
-	for (;;) { asm volatile("hlt"); }
-}
-
-void dummy( ) {
-	LOG("Поток %u\n", dum++);
-	task_del_current( );
-	for (;;) { asm volatile("hlt"); }
-}
 
 // Точка входа
 void _start( ) {
@@ -52,12 +40,11 @@ void _start( ) {
 	time_t time = rtc_get_time( );
 	LOG("Время: %u:%u.%u, %u.%u.%u\n", time.hours, time.minutes, time.second, time.day, time.month, time.year);
 
-	task_new_thread(finally, "fin");
-
 	full_init = 1;
 
 	task_after_init( );
 
+	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	asm volatile("sti");
 
 	for (;;) { asm volatile("hlt"); }

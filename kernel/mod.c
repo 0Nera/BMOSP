@@ -33,7 +33,7 @@ static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
 
-	// LOG("(uint64_t)elf_header->e_entry = 0x%x, type = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
+	LOG("(uint64_t)elf_header->e_entry = 0x%x, тип = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
 
 	if (elf_header->e_type != 2) {
 		LOG("\t\tОшибка! Модуль неправильно собран!\n");
@@ -92,6 +92,7 @@ void mod_init( ) {
 			LOG("Ошибка выделения памяти для массива module_list\n");
 			return;
 		}
+		LOG("module_list = 0x%x\n", module_list);
 	}
 
 	for (uint64_t i = 0; i < module_count; i++) {
@@ -146,14 +147,13 @@ void mod_init( ) {
 		module_list[modules_count].name = ret.name;
 		module_list[modules_count].message = ret.message;
 		module_list[modules_count].data_size = ret.data_size;
+		module_list[modules_count].data = ret.data;
 		module_list[modules_count].get_func = ret.get_func;
 		module_list[modules_count].after_init = ret.after_init;
 
 		if (module_list[modules_count].after_init) {
 			task_new_thread(module_list[modules_count].after_init, module_list[modules_count].name);
 		}
-
-		if (ret.data_size != 0) { module_list[modules_count].data = ret.data; }
 
 		if (ret.irq != 0) {
 			if (ret.irq_handler != 0) {

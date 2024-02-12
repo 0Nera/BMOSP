@@ -61,6 +61,24 @@ static void do_amd( ) {
 	LOG("cpu_family = [%u]\n", cpu_family);
 }
 
+static void do_intel( ) {
+	uint32_t eax, ebx, ecx, edx;
+	uint32_t cpu_model;
+	uint32_t cpu_family;
+	uint32_t cpu_brand_id;
+
+	cpuid(0, &eax, &ebx, &ecx, &edx);
+
+	cpu_brand_id = ebx;
+	cpu_family = ((eax >> 8) & 0xFF) + ((eax >> 20) & 0xFF);
+	cpu_model = ((eax >> 4) & 0xF) | ((eax >> 12) & 0xF0);
+
+	LOG("Используется процессор Intel\n");
+	LOG("cpu_brand_id = [%u]\n", cpu_brand_id);
+	LOG("cpu_family = [%u]\n", cpu_family);
+	LOG("cpu_model = [%u]\n", cpu_model);
+}
+
 static void brandname( ) {
 	uint32_t eax, ebx, ecx, edx;
 	char brand_string[49];
@@ -86,15 +104,13 @@ static void brandname( ) {
 	}
 
 	if (manufacturer[0] == 0x68747541) { do_amd( ); }
-}
-
-void cpu_idle( ) {
-	if (acpi_msrs_support) { LOG("Температура: %d (в QEMU/KVM всегда 0)\n", get_cpu_temperature_intel( )); }
+	if (manufacturer[0] == 0x756E6547) { do_intel( ); }
 }
 
 void cpu_init( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
+
 	if ((edx >> 22) & 1) {
 		acpi_msrs_support = true;
 		LOG("Встроенный терморегулятор MSRS для ACPI\n");
