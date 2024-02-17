@@ -122,7 +122,7 @@ def create_iso(IMAGE_NAME):
 	shutil.copytree("modules/bin", "iso_root/mod")
 	os.system(f"cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/")
 	os.system(f"cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/")
-	os.system(f"xorriso -as mkisofs -b limine/limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine/limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o {IMAGE_NAME}.iso")
+	os.system(f"xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o {IMAGE_NAME}.iso")
 	os.system(f"./limine/limine bios-install {IMAGE_NAME}.iso")
 
 if __name__ == "__main__":

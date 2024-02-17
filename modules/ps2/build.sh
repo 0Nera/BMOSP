@@ -3,7 +3,7 @@ echo "Название: PS/2"
 echo "Лицензия: Публичное достояние"
 
 
-CC="gcc"
+CC=${CC:-gcc}
 ARCH_FLAGS="-fno-stack-protector -ffreestanding -O0 -g -fPIC -static -nostdlib "
 
 if [ -d "../../sdk" ]; then

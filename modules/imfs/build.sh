@@ -2,7 +2,7 @@
 echo "Название: IMFS"
 echo "Лицензия: CC BY-NC 4.0"
 
-CC="gcc"
+CC=${CC:-gcc}
 ARCH_FLAGS="-fno-stack-protector -ffreestanding -O0 -g -fPIC -static -nostdlib "
 
 if [ -d "../../sdk" ]; then
