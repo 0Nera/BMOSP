@@ -71,6 +71,7 @@ static struct gdt_desc gdt_descs[] = { { 0 },
 	                                     .base_hi = 0x00 } };
 
 extern void load_gdt(uint64_t gdtr);
+void paging_init( );
 
 uint64_t rdtsc( ) {
 	unsigned int lo, hi;
@@ -111,4 +112,5 @@ void arch_init( ) {
 	pic_init( );
 	idt_init( );
 	cpu_init( );
+	paging_init( );
 }
