@@ -117,12 +117,14 @@ def create_iso(IMAGE_NAME):
 	os.system(f"rm -f {IMAGE_NAME}.iso")
 	os.system(f"rm -rf iso_root")
 	os.system(f"mkdir -p iso_root")
-	os.system(f"cp -v kernel.elf configs/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/")
+	os.system(f"cp -v kernel.elf configs/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin" \
+		   " limine/limine-uefi-cd.bin iso_root/")
 	os.system(f"mkdir -p iso_root/EFI/BOOT")
 	shutil.copytree("modules/bin", "iso_root/mod")
 	os.system(f"cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/")
 	os.system(f"cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/")
-	os.system(f"xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o {IMAGE_NAME}.iso")
+	os.system(f"xorriso -as mkisofs -b limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table"\
+		   f" --efi-boot limine-uefi-cd.bin -efi-boot-part --efi-boot-image --protective-msdos-label iso_root -o {IMAGE_NAME}.iso")
 	os.system(f"./limine/limine bios-install {IMAGE_NAME}.iso")
 
 if __name__ == "__main__":
