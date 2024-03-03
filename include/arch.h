@@ -105,16 +105,6 @@ static inline void io_wait( ) {
 	outb(0x80, 0);
 }
 
-static inline void print_stack_trace( ) {
-	uint64_t *rsp;
-	asm volatile("movq %%rsp, %0" : "=g"(rsp));
-
-	while (rsp) {
-		// fb_printf("%x\n", *rsp);
-		rsp = (uint64_t *)(*rsp);
-	}
-}
-
 #define GET_TICK_BIG arch_get_tick_b( )
 #define GET_TICK_lOW arch_get_tick_l( )
 

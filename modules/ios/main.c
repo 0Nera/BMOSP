@@ -20,7 +20,7 @@ void ios_main( ) {
 	module_info_t *kbd_mod = get_module("[KEYBOARD]");
 
 	if (kbd_mod == NULL) {
-		fb_printf("Клавиатура не найдена!\n");
+		log_printf("Клавиатура не найдена!\n");
 		delete_thread( );
 		for (;;) { asm volatile("hlt"); }
 	}
@@ -28,47 +28,47 @@ void ios_main( ) {
 	getc = kbd_mod->get_func(2);
 
 	while (1) {
-		fb_printf("Доступные программы:\n");
-		for (uint64_t i = 0; i < app_count; i++) { fb_printf(" %2u. %s\n", i, app_list[i].name); }
-		fb_printf(" %2u. Выход\n", app_count + 1);
+		log_printf("Доступные программы:\n");
+		for (uint64_t i = 0; i < app_count; i++) { log_printf(" %2u. %s\n", i, app_list[i].name); }
+		log_printf(" %2u. Выход\n", app_count + 1);
 
-		fb_printf("[IOS]>");
+		log_printf("[IOS]>");
 
 		char c = '\0';
 
 		do { c = getc( ); } while (!is_digit(c));
 
-		fb_printf(" %c\n", c);
+		log_printf(" %c\n", c);
 
 		int select = char_to_digit(c);
 
 		if (select == app_count + 1) {
-			fb_printf("Выход\n");
+			log_printf("Выход\n");
 			delete_thread( );
 			for (;;) { asm volatile("hlt"); }
 		}
 
 		if (select > app_count - 1) {
-			fb_printf("Ошибка! %u не входит в список\n");
+			log_printf("Ошибка! %u не входит в список\n");
 			continue;
 		}
 
-		fb_printf("Запуск %s...\n", app_list[select].name);
+		log_printf("Запуск %s...\n", app_list[select].name);
 		int (*app)( ) = (int (*)( ))app_list[select].data;
 		int ret = (*app)( );
-		fb_printf("\nПриложение %s завершилось с кодом: %d\n", app_list[select].name, ret);
+		log_printf("\nПриложение %s завершилось с кодом: %d\n", app_list[select].name, ret);
 	}
 }
 
 static void main( ) {
-	fb_printf("IOS (input-output shell) - оболочка ввода-вывода\n");
+	log_printf("IOS (input-output shell) - оболочка ввода-вывода\n");
 	mod_count = alloc(sizeof(uint64_t));
 	mod_list = mod_list_get(mod_count);
 
 	app_list = alloc((*mod_count) * sizeof(module_info_t));
 
 	if (app_list == NULL) {
-		fb_printf("Ошибка выделения памяти для app_list!\n");
+		log_printf("Ошибка выделения памяти для app_list!\n");
 		delete_thread( );
 		for (;;) { asm volatile("hlt"); }
 	}
@@ -77,7 +77,7 @@ static void main( ) {
 
 	for (uint64_t i = 0; i < *mod_count; i++) {
 		if (str_contains(mod_list[i].name, "[APP]")) {
-			// fb_printf("%u. %s\n", app_count, mod_list[i].name);
+			// log_printf("%u. %s\n", app_count, mod_list[i].name);
 			app_list[app_count] = mod_list[i];
 			app_count++;
 		}
@@ -86,7 +86,7 @@ static void main( ) {
 	free(mod_count);
 
 	if (app_count < 1) {
-		fb_printf("Модулей-программ не обнаружено!\n");
+		log_printf("Модулей-программ не обнаружено!\n");
 		free(app_list);
 		delete_thread( );
 	} else {

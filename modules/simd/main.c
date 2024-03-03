@@ -14,20 +14,20 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	if ((edx >> 0) & 1) {
 		asm volatile("finit");
-		fb_printf("FPU(x87) поддерживается!\n");
+		log_printf("FPU(x87) поддерживается!\n");
 	}
 
-	if ((edx >> 23) & 1) { fb_printf("MMX поддерживается!\n"); }
+	if ((edx >> 23) & 1) { log_printf("MMX поддерживается!\n"); }
 
 	if ((edx >> 25) & 1) {
-		fb_printf("SSE2 поддерживается!\n");
-		fb_printf("Адрес региона fxsave 0x%x\n", &fxsave_region);
+		log_printf("SSE2 поддерживается!\n");
+		log_printf("Адрес региона fxsave 0x%x\n", &fxsave_region);
 		asm volatile(" fxsave %0 " ::"m"(fxsave_region));
 		uint32_t sse_version = (ecx >> 25) & 0x7;
-		fb_printf("SSE%u включен\n", sse_version);
+		log_printf("SSE%u включен\n", sse_version);
 	}
 
-	if ((ecx >> 28) & 1) { fb_printf("AVX поддерживается!\n"); }
+	if ((ecx >> 28) & 1) { log_printf("AVX поддерживается!\n"); }
 
 	return (module_info_t){ .name = (char *)"SIMD",
 		                    .message = (char *)"SIMD инструкции",

@@ -1,6 +1,9 @@
 #!/bin/sh
 
+dos2unix *.sh
+
 cd modlib/lib/
+dos2unix build.sh
 chmod +x build.sh
 ./build.sh
 cd ../..

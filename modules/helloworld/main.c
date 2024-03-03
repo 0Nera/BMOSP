@@ -4,13 +4,13 @@ static const char name[] = "[APP]Привет мир!";
 static const char message[] = "Привет из модуля!";
 
 static int app_main( ) {
-	fb_printf("[%s]\n", message);
+	log_printf("[%s]\n", message);
 	return 2 + 2;
 }
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
-	fb_printf("[%s]\n", message);
+	log_printf("[%s]\n", message);
 	return (module_info_t){ .name = (char *)&name,
 		                    .message = (char *)&message,
 		                    .type = 0,

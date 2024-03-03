@@ -50,7 +50,7 @@ static module_info_t *sys_get_module(char *module_id) {
 }
 
 env_t *sys_install(env_t *module) {
-	module->fb_printf = &log_printf;
+	module->log_printf = &log_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
 	module->free_framebuffer = &sys_free_framebuffer;
 	module->alloc = &mem_alloc;
