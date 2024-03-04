@@ -10,33 +10,33 @@ static inline void L1_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L1 кэш недоступен\n");
+		log_printf("L1 кэш недоступен\n");
 		return;
 	}
-	fb_printf("L1: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", ecx & 0xFF, (ecx >> 12) & 0x07,
-	          (ecx >> 16) & 0xFFff);
+	log_printf("L1: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", ecx & 0xFF, (ecx >> 12) & 0x07,
+	           (ecx >> 16) & 0xFFff);
 }
 
 static inline void L2_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L2 кэш недоступен\n");
+		log_printf("L2 кэш недоступен\n");
 		return;
 	}
-	fb_printf("L2: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", ecx & 0xFF, (ecx >> 12) & 0x0F,
-	          (ecx >> 16) & 0xFFFF);
+	log_printf("L2: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", ecx & 0xFF, (ecx >> 12) & 0x0F,
+	           (ecx >> 16) & 0xFFFF);
 }
 
 static inline void L3_cache_size( ) {
 	uint32_t eax, ebx, ecx, edx;
 	cpuid(0x80000006, &eax, &ebx, &ecx, &edx);
 	if ((edx & 0xFF) == 0) {
-		fb_printf("L3 кэш недоступен\n");
+		log_printf("L3 кэш недоступен\n");
 		return;
 	}
-	fb_printf("L3: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", edx & 0xFF, (edx >> 12) & 0x0F,
-	          (edx >> 16) & 0xFFFF);
+	log_printf("L3: Размер строки: %u B, Тип ассоциации: %u, Размер кэша: %u КБ\n", edx & 0xFF, (edx >> 12) & 0x0F,
+	           (edx >> 16) & 0xFFFF);
 }
 
 static void cpu_info( ) {
@@ -49,12 +49,12 @@ static void cpu_info( ) {
 	uint8_t node_id = ecx & 0xFF;
 	uint8_t nodes_per_processor = ((ecx >> 8) & 3) + 1;
 
-	fb_printf("Топология процессора:\n");
-	fb_printf("  Идентификатор APIC: %u\n", apic_id);
-	fb_printf("  Идентификатор вычислительной единицы: %u\n", compute_unit_id);
-	fb_printf("  Ядра на вычислительную единицу: %u\n", cores_per_compute_unit);
-	fb_printf("  Идентификатор узла: %u\n", node_id);
-	fb_printf("  Узлы на процессор: %u\n", nodes_per_processor);
+	log_printf("Топология процессора:\n");
+	log_printf("  Идентификатор APIC: %u\n", apic_id);
+	log_printf("  Идентификатор вычислительной единицы: %u\n", compute_unit_id);
+	log_printf("  Ядра на вычислительную единицу: %u\n", cores_per_compute_unit);
+	log_printf("  Идентификатор узла: %u\n", node_id);
+	log_printf("  Узлы на процессор: %u\n", nodes_per_processor);
 }
 
 module_info_t __attribute__((section(".minit"))) init(env_t *env) {
@@ -65,9 +65,9 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 
 	if (ecx & (1 << 31)) {
-		fb_printf("Запуск на эмуляторе\n");
+		log_printf("Запуск на эмуляторе\n");
 	} else {
-		fb_printf("Запуск на физическом процессоре\n");
+		log_printf("Запуск на физическом процессоре\n");
 	}
 
 	L1_cache_size( );

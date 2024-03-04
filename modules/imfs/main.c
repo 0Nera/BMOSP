@@ -123,14 +123,14 @@ void delete_folder(folder_t *folder) {
 }
 
 void print_folder_contents(folder_t *folder, size_t depth) {
-	for (size_t i = 0; i < depth; i++) { fb_printf("\t"); }
-	fb_printf("- %s/\n", folder->name);
+	for (size_t i = 0; i < depth; i++) { log_printf("\t"); }
+	log_printf("- %s/\n", folder->name);
 
 	file_t *file = folder->files;
 
 	while (file != NULL) {
-		for (size_t i = 0; i < depth + 1; i++) { fb_printf("\t"); }
-		fb_printf("- %8s %4s | %8u килобайт\n", file->name, file->type, (file->size + 1024) / 1024);
+		for (size_t i = 0; i < depth + 1; i++) { log_printf("\t"); }
+		log_printf("- %8s %4s | %8u килобайт\n", file->name, file->type, (file->size + 1024) / 1024);
 		file = file->next;
 	}
 

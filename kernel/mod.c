@@ -29,6 +29,7 @@ static env_t main_env;
 void *bootpng_ptr;
 uint64_t bootpng_size;
 
+// Получение адреса точки входа
 static void *elf_entry(elf64_header_t *module_bin) {
 	// Приводим заголовок ELF файла к типу elf64_header_t
 	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
@@ -44,6 +45,7 @@ static void *elf_entry(elf64_header_t *module_bin) {
 	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
 }
 
+// Вывод списка модулей в отладчик
 void mod_list_show( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		LOG("Имя: %s\n", module_list[i].name);
@@ -58,6 +60,7 @@ void mod_list_show( ) {
 	}
 }
 
+// Запуск модулей имеющих дополнительную точку входа
 void mod_after_init( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (module_list[i].after_init != 0) {
@@ -67,11 +70,13 @@ void mod_after_init( ) {
 	}
 }
 
+// Запуск модулей имеющих дополнительную точку входа
 module_info_t *mod_list_get(uint64_t *count) {
 	*count = modules_count;
 	return module_list;
 }
 
+// Поиск модуля по тегу
 module_info_t *mod_find(char *tag) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (tool_str_contains(module_list[i].name, tag)) { return &module_list[i]; }
@@ -128,7 +133,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t * env) =
+		module_info_t (*module_init)(env_t *env) =
 		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);
@@ -168,6 +173,7 @@ void mod_init( ) {
 	LOG("Модулей обработано: %u\n", modules_count);
 }
 
+// Добавление модуля
 void mod_add(module_info_t module) {
 	if (modules_count == 0) {
 		module_list = (module_info_t *)mem_alloc(sizeof(module_info_t));
@@ -192,6 +198,7 @@ void mod_add(module_info_t module) {
 	modules_count++;
 }
 
+// Удаление модуля
 void mod_del(module_info_t *module) {
 	if (modules_count == 0) {
 		LOG("Модуль не найден\n");

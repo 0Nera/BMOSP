@@ -80,11 +80,11 @@ static void handler( ) {
 
 	switch (scancode) {
 		case 0x01:
-			fb_printf("ВЫХОД\n");
+			log_printf("ВЫХОД\n");
 			virt_exit( );
 			break; // Клавиша "ESCAPE"
 		case 0x4F: // Клавиша "END"
-			fb_printf("END?\n");
+			log_printf("END?\n");
 			break;
 		default: break;
 	}

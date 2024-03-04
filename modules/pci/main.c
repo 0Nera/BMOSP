@@ -96,18 +96,18 @@ static inline void scan( ) {
 				*/
 
 				char *name = find_vendor(vendor);
-				fb_printf("[%4u] %4x [%10s], устройство: %x, %u.%u.%u | ", devices, vendor, name, device_id, bus, slot,
-				          function);
-				fb_printf("%32s", get_class_name(class_id));
+				log_printf("[%4u] %4x [%10s], устройство: %x, %u.%u.%u | ", devices, vendor, name, device_id, bus, slot,
+				           function);
+				log_printf("%32s", get_class_name(class_id));
 
 				/*
-				fb_printf(" | %8x : %8x", mem_addr_0, mem_lim_0);
-				fb_printf(" | %8x : %8x", mem_addr_1, mem_lim_1);
-				fb_printf(" | %8x : %8x", io_addr_0, io_lim_0);
-				fb_printf(" | %8x : %8x", io_addr_1, io_lim_1);
+				log_printf(" | %8x : %8x", mem_addr_0, mem_lim_0);
+				log_printf(" | %8x : %8x", mem_addr_1, mem_lim_1);
+				log_printf(" | %8x : %8x", io_addr_0, io_lim_0);
+				log_printf(" | %8x : %8x", io_addr_1, io_lim_1);
 				*/
 
-				fb_printf(" | %4x\n", status);
+				log_printf(" | %4x\n", status);
 				devices++;
 			}
 		}
@@ -120,11 +120,11 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	module_info_t *pci_data = get_module("[PCI][ADAPTER]");
 
 	if (pci_data == NULL) {
-		fb_printf("Адаптер PCI данных не найден!\n");
+		log_printf("Адаптер PCI данных не найден!\n");
 		num_vendors = 0;
 	} else {
 		num_vendors = pci_data->data_size - 1;
-		fb_printf("Записей в базе PCI: %u\n", pci_data->data_size);
+		log_printf("Записей в базе PCI: %u\n", pci_data->data_size);
 		vendor_list = (vendor_t **)pci_data->data;
 	}
 

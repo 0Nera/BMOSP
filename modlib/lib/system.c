@@ -11,7 +11,7 @@
 
 void *(*alloc)(uint64_t size);
 void (*free)(void *ptr);
-void (*fb_printf)(char *str, ...);
+void (*log_printf)(char *str, ...);
 module_info_t *(*get_module)(char *module_id);
 module_info_t *(*mod_list_get)(uint64_t *count);
 framebuffer_t (*alloc_framebuffer)( );
@@ -26,7 +26,7 @@ uint64_t offset;
 
 void init_env(env_t *loader_env) {
 	offset = loader_env->offset;
-	fb_printf = loader_env->fb_printf;
+	log_printf = loader_env->log_printf;
 	alloc = loader_env->alloc;
 	free = loader_env->free;
 	get_module = loader_env->get_module;

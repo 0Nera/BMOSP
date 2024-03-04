@@ -14,7 +14,7 @@
 
 extern void *(*alloc)(uint64_t size);
 extern void (*free)(void *ptr);
-extern void (*fb_printf)(char *str, ...);
+extern void (*log_printf)(char *str, ...);
 extern module_info_t *(*get_module)(char *module_id);
 extern module_info_t *(*mod_list_get)(uint64_t *count);
 extern framebuffer_t (*alloc_framebuffer)( );

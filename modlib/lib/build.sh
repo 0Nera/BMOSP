@@ -1,6 +1,6 @@
 #/bin/sh
-CC="gcc"
-AR="ar"
+CC=${CC:-gcc}
+AR=${AR:-ar}
 ARCH_FLAGS="-fno-stack-protector -ffreestanding -O0 -g -fPIC -static -nostdlib "
 
 mkdir -p bin

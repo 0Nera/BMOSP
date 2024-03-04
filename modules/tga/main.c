@@ -1,6 +1,6 @@
 #include <system.h>
 
-#define TGA_ERR( ) fb_printf("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
+#define TGA_ERR( ) log_printf("Ошибка декодирования TGA на строчке: %u\n", __LINE__);
 
 typedef struct {
 	unsigned char magic1;             // должно быть нулевым

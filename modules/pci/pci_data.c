@@ -55,7 +55,7 @@ static vendor_t **parse_file(char *str, uint64_t num_vendors, uint64_t size) {
 static void print_vendors(uint64_t num_vendors, vendor_t **vendor_list) {
 	for (uint64_t i = 0; i < num_vendors; i++) {
 		vendor_t *vendor = vendor_list[i];
-		fb_printf("ID: 0x%x, Name: %s\n", vendor->id, vendor->name);
+		log_printf("ID: 0x%x, Name: %s\n", vendor->id, vendor->name);
 	}
 }
 
@@ -64,10 +64,10 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 
 	module_info_t *pci_data = get_module("[PCI][DATA][VENDORS]");
 
-	if (pci_data == NULL) { fb_printf("База PCI не найдена!\n"); }
+	if (pci_data == NULL) { log_printf("База PCI не найдена!\n"); }
 
 	uint64_t num_vendors = count_chars(pci_data->data, ';');
-	fb_printf("Количество вендоров: %u\n", num_vendors);
+	log_printf("Количество вендоров: %u\n", num_vendors);
 
 	vendor_t **vendor_list = parse_file(pci_data->data, num_vendors, pci_data->data_size);
 	// print_vendors(num_vendors, vendor_list);
