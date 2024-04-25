@@ -29,22 +29,6 @@ static env_t main_env;
 void *bootpng_ptr;
 uint64_t bootpng_size;
 
-// Получение адреса точки входа
-static void *elf_entry(elf64_header_t *module_bin) {
-	// Приводим заголовок ELF файла к типу elf64_header_t
-	elf64_header_t *elf_header = (elf64_header_t *)module_bin;
-
-	LOG("(uint64_t)elf_header->e_entry = 0x%x, тип = %u\n", (uint64_t)elf_header->e_entry, elf_header->e_type);
-
-	if (elf_header->e_type != 2) {
-		LOG("\t\tОшибка! Модуль неправильно собран!\n");
-		for (;;) { asm volatile("pause"); }
-	}
-
-	// Возвращаем указатель на точку входа
-	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
-}
-
 // Вывод списка модулей в отладчик
 void mod_list_show( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
@@ -133,8 +117,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) =
-		    (module_info_t(*)(env_t * env)) elf_entry((elf64_header_t *)module_ptr->address);
+		module_info_t (*module_init)(env_t *env) = (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);
 
