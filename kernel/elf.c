@@ -76,6 +76,10 @@ void *elf_entry(void *module_bin) {
 	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
 }
 
+void import_test( ) {
+	LOG("123");
+}
+
 void *elf_parse(elf64_header_t *head) {
 	elf64_section_header_t *symtab = NULL;
 
@@ -85,7 +89,7 @@ void *elf_parse(elf64_header_t *head) {
 		return -1;
 	}
 
-	LOG("Точка входа: 0x%x\n", head->e_entry);
+	// LOG("Точка входа: 0x%x\n", head->e_entry);
 
 	elf64_section_header_t *symtab_section = NULL;
 	char *string_table = NULL;
@@ -106,7 +110,30 @@ void *elf_parse(elf64_header_t *head) {
 		int num_symbols = symtab_section->sh_size / symtab_section->sh_entsize;
 		for (int i = 0; i < num_symbols; i++) {
 			elf64_sym_t *sym = elf64_get_symval(head, symtab_section - elf64_sheader(head), i);
-			if (sym) { LOG("%6u %8x %6x %s\n", i, sym->st_value, sym->st_size, string_table + sym->st_name); }
+			if (sym) {
+				LOG("%6u %8x %6x %18s ", i, sym->st_value, sym->st_size, string_table + sym->st_name);
+				switch (ELF64_ST_TYPE(sym->st_info)) {
+					case STT_NOTYPE: log_printf("без типа\n"); break;
+					case STT_OBJECT:
+						log_printf("объект данных\n");
+						if (!(string_table + sym->st_name)) { break; }
+						// log_printf("%u\n", tool_strcmp(string_table + sym->st_name, "import_test"));
+						if (tool_strcmp(string_table + sym->st_name, "import_test") == 0) {
+							log_printf("0x%x\n", head + sym->st_value);
+							void (*imp)( ) = (void *)head + sym->st_value;
+							*imp = &import_test;
+						}
+						break;
+					case STT_FUNC: log_printf("объект кода\n"); break;
+					case STT_SECTION: log_printf("символ раздела\n"); break;
+					case STT_FILE: log_printf("имя файла\n"); break;
+					case STT_COMMON: log_printf("общий объект данных\n"); break;
+					case STT_TLS: log_printf("объект данных локального потока\n"); break;
+					case STT_NUM: log_printf("количество определенных типов\n"); break;
+					case STT_GNU_IFUNC: log_printf("объект непрямого кода\n"); break;
+					default: log_printf("???\n"); break;
+				}
+			}
 		}
 	} else {
 		LOG("Таблица символов не найдена!\n");
