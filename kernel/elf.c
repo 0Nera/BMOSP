@@ -77,12 +77,12 @@ void *elf_entry(void *module_bin) {
 }
 
 void *elf_parse(elf64_header_t *head) {
-	elf64_section_header_t *symtab = NULL;
+	//	elf64_section_header_t *symtab = NULL;
 
 	if (head->e_ident[0] != ELFMAG0 || head->e_ident[1] != ELFMAG1 || head->e_ident[2] != ELFMAG2 ||
 	    head->e_ident[3] != ELFMAG3) {
 		LOG("Ошибка: Неправильный формат!\n");
-		return -1;
+		return (void *)-1;
 	}
 
 	LOG("Точка входа: 0x%x\n", head->e_entry);
