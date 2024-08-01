@@ -9,6 +9,7 @@
 #include <mod.h>
 #include <stdint.h>
 
+
 elf64_header_t *elf64_get_header(void *data) {
 	return (elf64_header_t *)(data);
 }
@@ -70,10 +71,12 @@ void *elf_entry(void *module_bin) {
 		LOG("\t\tОшибка! Модуль неправильно собран!\n");
 		for (;;) { asm volatile("pause"); }
 	}
-	elf_parse((elf64_header_t *)module_bin);
+	void *h = elf_parse((elf64_header_t *)module_bin);
+
+	if (h == NULL) { return NULL; }
 
 	// Возвращаем указатель на точку входа
-	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
+	return (void *)((uint64_t)h + (uint64_t)module_bin);
 }
 
 void import_test( ) {
@@ -86,7 +89,7 @@ void *elf_parse(elf64_header_t *head) {
 	if (head->e_ident[0] != ELFMAG0 || head->e_ident[1] != ELFMAG1 || head->e_ident[2] != ELFMAG2 ||
 	    head->e_ident[3] != ELFMAG3) {
 		LOG("Ошибка: Неправильный формат!\n");
-		return -1;
+		return NULL;
 	}
 
 	// LOG("Точка входа: 0x%x\n", head->e_entry);
@@ -121,7 +124,7 @@ void *elf_parse(elf64_header_t *head) {
 						if (tool_strcmp(string_table + sym->st_name, "import_test") == 0) {
 							log_printf("0x%x\n", head + sym->st_value);
 							void (*imp)( ) = (void *)head + sym->st_value;
-							*imp = &import_test;
+							// imp = &import_test;
 						}
 						break;
 					case STT_FUNC: log_printf("объект кода\n"); break;
@@ -139,5 +142,5 @@ void *elf_parse(elf64_header_t *head) {
 		LOG("Таблица символов не найдена!\n");
 	}
 
-	return (void *)0;
+	return (void *)head->e_entry;
 }
