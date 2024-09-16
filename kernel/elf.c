@@ -8,6 +8,7 @@
 
 #include <mod.h>
 #include <stdint.h>
+#include <tool.h>
 
 elf64_header_t *elf64_get_header(void *data) {
 	return (elf64_header_t *)(data);
@@ -52,7 +53,7 @@ unsigned long elf64_hash(unsigned char *name) {
 	while (*name) {
 		h = (h << 4) + *name++;
 		// Проверка на overflow
-		if (g = h & 0xf0000000) h ^= g >> 24;
+		if (g = (h & 0xf0000000)) h ^= g >> 24;
 		// Ограничение хэша
 		h &= 0xffffffff;
 	}
@@ -70,22 +71,28 @@ void *elf_entry(void *module_bin) {
 		LOG("\t\tОшибка! Модуль неправильно собран!\n");
 		for (;;) { asm volatile("pause"); }
 	}
-	elf_parse((elf64_header_t *)module_bin);
+	void *h = elf_parse((elf64_header_t *)module_bin);
+
+	if (h == NULL) { return NULL; }
 
 	// Возвращаем указатель на точку входа
-	return (void *)((uint64_t)elf_header->e_entry + (uint64_t)module_bin);
+	return (void *)((uint64_t)h + (uint64_t)module_bin);
+}
+
+void import_test( ) {
+	LOG("123");
 }
 
 void *elf_parse(elf64_header_t *head) {
-	elf64_section_header_t *symtab = NULL;
+	// elf64_section_header_t *symtab = NULL;
 
 	if (head->e_ident[0] != ELFMAG0 || head->e_ident[1] != ELFMAG1 || head->e_ident[2] != ELFMAG2 ||
 	    head->e_ident[3] != ELFMAG3) {
 		LOG("Ошибка: Неправильный формат!\n");
-		return -1;
+		return NULL;
 	}
 
-	LOG("Точка входа: 0x%x\n", head->e_entry);
+	// LOG("Точка входа: 0x%x\n", head->e_entry);
 
 	elf64_section_header_t *symtab_section = NULL;
 	char *string_table = NULL;
@@ -100,17 +107,59 @@ void *elf_parse(elf64_header_t *head) {
 	}
 
 	if (symtab_section && string_table) {
+#ifdef DEBUG_ELF
 		LOG("\nТаблица символов:\n");
 		LOG("%s %s %s %s\n", "Индекс", "Значение", "Размер", "Наименование");
+#endif
 
 		int num_symbols = symtab_section->sh_size / symtab_section->sh_entsize;
 		for (int i = 0; i < num_symbols; i++) {
 			elf64_sym_t *sym = elf64_get_symval(head, symtab_section - elf64_sheader(head), i);
-			if (sym) { LOG("%6u %8x %6x %s\n", i, sym->st_value, sym->st_size, string_table + sym->st_name); }
+			if (sym) {
+#ifdef DEBUG_ELF
+				LOG("%6u %8x %6x %18s ", i, sym->st_value, sym->st_size, string_table + sym->st_name);
+#endif
+				switch (ELF64_ST_TYPE(sym->st_info)) {
+					case STT_NOTYPE:
+
+#ifdef DEBUG_ELF
+						log_printf("без типа\n");
+#endif
+						break;
+					case STT_OBJECT:
+#ifdef DEBUG_ELF
+						log_printf("объект данных\n");
+#endif
+						if (!(string_table + sym->st_name)) { break; }
+						// log_printf("%u\n", tool_strcmp(string_table + sym->st_name, "import_test"));
+						if (tool_strcmp(string_table + sym->st_name, "import_test") == 0) {
+#ifdef DEBUG_ELF
+							log_printf("0x%x\n", head + sym->st_value);
+#endif
+							// void (*imp)( ) = (void *)head + sym->st_value;
+							//  imp = &import_test;
+						}
+						break;
+#ifdef DEBUG_ELF
+					case STT_FUNC: log_printf("объект кода\n"); break;
+					case STT_SECTION: log_printf("символ раздела\n"); break;
+					case STT_FILE: log_printf("имя файла\n"); break;
+					case STT_COMMON: log_printf("общий объект данных\n"); break;
+					case STT_TLS: log_printf("объект данных локального потока\n"); break;
+					case STT_NUM: log_printf("количество определенных типов\n"); break;
+					case STT_GNU_IFUNC: log_printf("объект непрямого кода\n"); break;
+#endif
+					default:
+#ifdef DEBUG_ELF
+						log_printf("???\n");
+#endif
+						break;
+				}
+			}
 		}
 	} else {
 		LOG("Таблица символов не найдена!\n");
 	}
 
-	return (void *)0;
+	return (void *)head->e_entry;
 }

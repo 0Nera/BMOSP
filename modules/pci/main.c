@@ -114,10 +114,24 @@ static inline void scan( ) {
 	}
 }
 
-module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+module_info_t mod = { .name = (char *)"[PCI]",
+	                  .message = (char *)"PCI драйвер",
+	                  .type = 0,
+	                  .data_size = 0,
+	                  .data = (void *)0,
+	                  .err_code = 0,
+	                  .module_id = 0,
+	                  .irq = 0,
+	                  .irq_handler = 0,
+	                  .get_func = 0,
+	                  .after_init = 0 };
+
+void __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
+	log_printf("pci_data %x\n", 1);
 	module_info_t *pci_data = get_module("[PCI][ADAPTER]");
+	log_printf("pci_data %x\n", pci_data);
 
 	if (pci_data == NULL) {
 		log_printf("Адаптер PCI данных не найден!\n");
@@ -129,15 +143,6 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	}
 
 	scan( );
-	return (module_info_t){ .name = (char *)"[PCI]",
-		                    .message = (char *)"PCI драйвер",
-		                    .type = 0,
-		                    .data_size = 0,
-		                    .data = (void *)0,
-		                    .err_code = 0,
-		                    .module_id = 0,
-		                    .irq = 0,
-		                    .irq_handler = 0,
-		                    .get_func = 0,
-		                    .after_init = 0 };
+	env->ret = &mod;
+	delete_thread( );
 }

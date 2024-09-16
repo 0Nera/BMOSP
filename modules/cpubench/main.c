@@ -57,7 +57,7 @@ static void cpu_info( ) {
 	log_printf("  Узлы на процессор: %u\n", nodes_per_processor);
 }
 
-module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+void __attribute__((section(".minit"))) init(env_t *env) {
 	uint32_t eax, ebx, ecx, edx;
 
 	init_env(env);
@@ -77,15 +77,16 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	cpuid(0x80000000, &eax, &ebx, &ecx, &edx);
 	if (eax >= 0x8000001E) { cpu_info( ); }
 
-	return (module_info_t){ .name = (char *)"CPUBENCH",
-		                    .message = (char *)"Дополнительная информация о процессоре",
-		                    .type = 0,
-		                    .data_size = 0,
-		                    .data = (void *)0,
-		                    .err_code = 0,
-		                    .module_id = 0,
-		                    .irq = 0,
-		                    .irq_handler = 0,
-		                    .get_func = 0,
-		                    .after_init = 0 };
+	env->ret = &((module_info_t){ .name = (char *)"CPUBENCH",
+	                              .message = (char *)"Дополнительная информация о процессоре",
+	                              .type = 0,
+	                              .data_size = 0,
+	                              .data = (void *)0,
+	                              .err_code = 0,
+	                              .module_id = 0,
+	                              .irq = 0,
+	                              .irq_handler = 0,
+	                              .get_func = 0,
+	                              .after_init = 0 });
+	delete_thread( );
 }

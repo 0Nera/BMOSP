@@ -14,9 +14,9 @@ if "^.M" in output:
 ARCH_FLAGS = "-m64 -march=x86-64 -mabi=sysv -mno-red-zone -mcmodel=kernel -MMD -MP"
 WARN_FLAGS = "-Wall -Wextra -nostdlib"
 STANDART_FLAGS = f"-std=gnu11 -DKERNEL_GIT_TAG=\\\"{__VERSION}\\\"" # -DNO_DEBUG=1
-PROTECT_FLAGS = "-O0 -g -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
-PROTECT_FLAGS += " -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx"
-CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251"
+PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
+PROTECT_FLAGS += " -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -ffunction-sections -fdata-sections"
+CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251" #""
 LIBS_FLAGS = "-Ilimine -Iinclude"
 FORMAT_CMD = """find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file"""
 
@@ -91,7 +91,7 @@ def compile_all():
 
 def check_limine():
 	if not os.path.isdir("limine"):
-		subprocess.run(["git", "clone", "https://git.synapseos.ru/Aren/limine.git", "--branch=v5.x-branch-binary", "--depth=1"])
+		subprocess.run(["git", "clone", "https://git.synapseos.ru/mirrors/limine.git", "--branch=v5.x-branch-binary", "--depth=1"])
 	else:
 		os.chdir("limine")
 		subprocess.run(["git", "pull"])
@@ -99,19 +99,6 @@ def check_limine():
 	os.chdir("limine")
 	subprocess.run(["make"])
 	os.chdir("..")
-
-def create_hdd(IMAGE_NAME):
-	os.system(f"rm -f {IMAGE_NAME}.hdd".format())
-	os.system(f"dd if=/dev/zero bs=1M count=0 seek=4 of={IMAGE_NAME}.hdd")
-	os.system(f"sgdisk {IMAGE_NAME}.hdd -n 1:2048 -t 1:ef00")
-	os.system(f"./limine/limine bios-install {IMAGE_NAME}.hdd")
-	os.system(f"mformat -i {IMAGE_NAME}.hdd@@1M")
-	os.system(f"mmd -i {IMAGE_NAME}.hdd@@1M ::/mod ::/EFI ::/EFI/BOOT")
-	os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M kernel.elf configs/limine.cfg limine/limine-bios.sys ::/")
-	os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M modules/bin/* ::/mod")
-	os.system(f"mcopy -i {IMAGE_NAME}.hdd@@1M limine/BOOTX64.EFI limine/BOOTIA32.EFI ::/EFI/BOOT")
-	os.system(f"./limine/limine bios-install {IMAGE_NAME}.hdd")
-
 
 def create_iso(IMAGE_NAME):
 	os.system(f"rm -f {IMAGE_NAME}.iso")
@@ -164,8 +151,5 @@ if __name__ == "__main__":
 
 	print("Создание ISO образа")
 	create_iso("bmosp")
-
-	print("Создание HDD образа")
-	create_hdd("bmosp")
 
 	print(f"Не забудьте сохранить изменения! Номер сборки: {major}.{minor}.{build}")

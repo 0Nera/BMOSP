@@ -19,7 +19,7 @@ jobs:
     
     - name: install limine
       run: |
-        git clone https://git.synapseos.ru/Aren/limine.git --branch=v5.x-branch-binary --depth=1
+        git clone https://git.synapseos.ru/mirrors/limine.git --branch=v5.x-branch-binary --depth=1
         cd limine && make && cd ..
 
     - name: build
@@ -64,7 +64,6 @@ jobs:
         draft: true
         files: |
           ${{ github.workspace }}/rel/kernel.elf
-          ${{ github.workspace }}/rel/bmosp.hdd
           ${{ github.workspace }}/rel/bmosp.iso
           ${{ github.workspace }}/rel/LICENSE
 

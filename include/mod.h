@@ -25,6 +25,24 @@
 #define ELFMAG3 'F'
 #define SHT_SYMTAB 2
 
+#define STT_NOTYPE 0  // Тип символа не указан
+#define STT_OBJECT 1  // Символ является объектом данных
+#define STT_FUNC 2    // Символ является объектом кода
+#define STT_SECTION 3 // Символ связан с разделом
+#define STT_FILE 4    // Имя символа является именем файла
+#define STT_COMMON 5  // Символ является общим объектом данных
+#define STT_TLS 6     // Символ является объектом данных локального потока
+#define STT_NUM 7     // Количество определенных типов.
+#define STT_GNU_IFUNC 10 // Символ является объектом непрямого кода
+
+#define ELF32_ST_BIND(val) (((unsigned char)(val)) >> 4)
+#define ELF32_ST_TYPE(val) ((val)&0xf)
+#define ELF32_ST_INFO(bind, type) (((bind) << 4) + ((type)&0xf))
+
+#define ELF64_ST_BIND(val) ELF32_ST_BIND(val)
+#define ELF64_ST_TYPE(val) ELF32_ST_TYPE(val)
+#define ELF64_ST_INFO(bind, type) ELF32_ST_INFO((bind), (type))
+
 typedef uint64_t elf64_addr_t;   // Адрес
 typedef uint64_t elf64_offset_t; // Смещение
 typedef uint64_t elf64_xword_t;  // Целочисленное длинное слово без знака

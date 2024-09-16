@@ -14,6 +14,7 @@
 #include <tool.h>
 
 static bool acpi_msrs_support = false;
+static char fxsave_region[512] __attribute__((aligned(16)));
 
 static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
 	asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "a"(leaf));
@@ -142,4 +143,21 @@ void cpu_init( ) {
 	if ((edx >> 5) & 1) { LOG("Программный терморегулятор (STC) поддерживается!\n"); }
 
 	brandname( );
+
+	cpuid(1, &eax, &ebx, &ecx, &edx);
+
+	if ((edx >> 0) & 1) {
+		asm volatile("finit");
+		LOG("FPU(x87) поддерживается!\n");
+	}
+
+	if ((edx >> 25) & 1) {
+		LOG("SSE2 поддерживается!\n");
+		LOG("Адрес региона fxsave 0x%x\n", &fxsave_region);
+		asm volatile(" fxsave %0 " ::"m"(fxsave_region));
+		uint32_t sse_version = (ecx >> 25) & 0x7;
+		LOG("SSE%u включен\n", sse_version);
+	}
+
+	if ((ecx >> 28) & 1) { LOG("AVX поддерживается!\n"); }
 }

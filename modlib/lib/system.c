@@ -25,6 +25,9 @@ time_t (*get_time)( );
 uint64_t offset;
 
 void init_env(env_t *loader_env) {
+	if (loader_env == NULL) {
+		for (;;) {}
+	}
 	offset = loader_env->offset;
 	log_printf = loader_env->log_printf;
 	alloc = loader_env->alloc;

@@ -24,7 +24,7 @@ module_info_t *module_list = NULL;
 static char *graphics_module_message = "Графический модуль-объект";
 static char *other_module_message = "Неизвестный тип модуля";
 
-static env_t main_env;
+static env_t *main_env = NULL;
 
 void *bootpng_ptr;
 uint64_t bootpng_size;
@@ -49,7 +49,7 @@ void mod_after_init( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
 		if (module_list[i].after_init != 0) {
 			LOG("%s.after_init( );\n", module_list[i].name);
-			task_new_thread(module_list[i].after_init, module_list[i].name);
+			task_new_thread(module_list[i].after_init, module_list[i].name, NULL);
 		}
 	}
 }
@@ -117,40 +117,28 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t *env) = (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
+		module_info_t (*module_init)(env_t * env) = (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
+
+		if (module_init == NULL) {
+			LOG("Модуль %s неисправен\n", module_ptr->cmdline);
+			continue;
+		}
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);
+		main_env = (env_t *)mem_alloc(sizeof(env_t));
+		tool_memset(main_env, 0, sizeof(env_t));
+		main_env->offset = (uint64_t)module_ptr->address;
 
-		main_env.offset = (uint64_t)module_ptr->address;
+		sys_install(main_env);
 
-		sys_install(&main_env);
-
-		uint64_t id = task_new_thread((void *)1, module_list[i].name);
-
-		module_info_t ret = module_init(&main_env);
-		LOG("\t->%s\n", ret.message);
-
-		task_del(id);
-
-		module_list[modules_count].name = ret.name;
-		module_list[modules_count].message = ret.message;
-		module_list[modules_count].data_size = ret.data_size;
-		module_list[modules_count].data = ret.data;
-		module_list[modules_count].get_func = ret.get_func;
-		module_list[modules_count].after_init = ret.after_init;
-
-		if (module_list[modules_count].after_init) {
-			task_new_thread(module_list[modules_count].after_init, module_list[modules_count].name);
-		}
-
-		if (ret.irq != 0) {
-			if (ret.irq_handler != 0) {
-				LOG("Установлен обработчик прерывания [%u] по адресу 0x%x в модуле %s\n", ret.irq, ret.irq_handler,
-				    ret.name);
-				idt_set_int(ret.irq, ret.irq_handler);
-			}
-		}
-
+		uint64_t id = task_new_thread((void (*)(void *))module_init, module_list[i].name, main_env);
+		module_list[modules_count].env = (void *)main_env;
+		module_list[modules_count].name = 0;
+		module_list[modules_count].message = 0;
+		module_list[modules_count].data_size = 0;
+		module_list[modules_count].data = 0;
+		module_list[modules_count].get_func = 0;
+		module_list[modules_count].after_init = 0;
 		modules_count++;
 	}
 	LOG("Модулей обработано: %u\n", modules_count);
