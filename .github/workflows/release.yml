@@ -64,7 +64,6 @@ jobs:
         draft: true
         files: |
           ${{ github.workspace }}/rel/kernel.elf
-          ${{ github.workspace }}/rel/bmosp.hdd
           ${{ github.workspace }}/rel/bmosp.iso
           ${{ github.workspace }}/rel/LICENSE
 
