@@ -107,26 +107,40 @@ void *elf_parse(elf64_header_t *head) {
 	}
 
 	if (symtab_section && string_table) {
+#ifdef DEBUG_ELF
 		LOG("\nТаблица символов:\n");
 		LOG("%s %s %s %s\n", "Индекс", "Значение", "Размер", "Наименование");
+#endif
 
 		int num_symbols = symtab_section->sh_size / symtab_section->sh_entsize;
 		for (int i = 0; i < num_symbols; i++) {
 			elf64_sym_t *sym = elf64_get_symval(head, symtab_section - elf64_sheader(head), i);
 			if (sym) {
+#ifdef DEBUG_ELF
 				LOG("%6u %8x %6x %18s ", i, sym->st_value, sym->st_size, string_table + sym->st_name);
+#endif
 				switch (ELF64_ST_TYPE(sym->st_info)) {
-					case STT_NOTYPE: log_printf("без типа\n"); break;
+					case STT_NOTYPE:
+
+#ifdef DEBUG_ELF
+						log_printf("без типа\n");
+#endif
+						break;
 					case STT_OBJECT:
+#ifdef DEBUG_ELF
 						log_printf("объект данных\n");
+#endif
 						if (!(string_table + sym->st_name)) { break; }
 						// log_printf("%u\n", tool_strcmp(string_table + sym->st_name, "import_test"));
 						if (tool_strcmp(string_table + sym->st_name, "import_test") == 0) {
+#ifdef DEBUG_ELF
 							log_printf("0x%x\n", head + sym->st_value);
+#endif
 							// void (*imp)( ) = (void *)head + sym->st_value;
 							//  imp = &import_test;
 						}
 						break;
+#ifdef DEBUG_ELF
 					case STT_FUNC: log_printf("объект кода\n"); break;
 					case STT_SECTION: log_printf("символ раздела\n"); break;
 					case STT_FILE: log_printf("имя файла\n"); break;
@@ -134,7 +148,12 @@ void *elf_parse(elf64_header_t *head) {
 					case STT_TLS: log_printf("объект данных локального потока\n"); break;
 					case STT_NUM: log_printf("количество определенных типов\n"); break;
 					case STT_GNU_IFUNC: log_printf("объект непрямого кода\n"); break;
-					default: log_printf("???\n"); break;
+#endif
+					default:
+#ifdef DEBUG_ELF
+						log_printf("???\n");
+#endif
+						break;
 				}
 			}
 		}

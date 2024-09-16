@@ -121,9 +121,11 @@ void task_del_current( ) {
 	prev->next = next;
 	next->last = prev;
 
+	LOG("Очистка потока ID: %u, %s\n", current_task->id, current_task->id_str);
 	mem_free(current_task->stack);
 	mem_free(current_task);
 
+	LOG("Смена ID: %u, %s\n", next->id, next->id_str);
 	current_task = next;
 	if (full_init) { task_switch( ); }
 }

@@ -14,6 +14,7 @@
 #include <tool.h>
 
 static bool acpi_msrs_support = false;
+static char fxsave_region[512] __attribute__((aligned(16)));
 
 static void cpuid(uint32_t leaf, uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
 	asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "a"(leaf));
@@ -143,16 +144,12 @@ void cpu_init( ) {
 
 	brandname( );
 
-	
-	uint32_t eax, ebx, ecx, edx;
 	cpuid(1, &eax, &ebx, &ecx, &edx);
 
 	if ((edx >> 0) & 1) {
 		asm volatile("finit");
 		LOG("FPU(x87) поддерживается!\n");
 	}
-
-	if ((edx >> 23) & 1) { LOG("MMX поддерживается!\n"); }
 
 	if ((edx >> 25) & 1) {
 		LOG("SSE2 поддерживается!\n");

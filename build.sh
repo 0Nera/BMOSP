@@ -2,6 +2,8 @@
 
 dos2unix *.sh
 
+python3 scripts/pbuild.py
+
 cd modlib/lib/
 dos2unix build.sh
 chmod +x build.sh
@@ -22,5 +24,3 @@ for dir in */; do
 done
 
 cd ..
-
-python3 scripts/pbuild.py

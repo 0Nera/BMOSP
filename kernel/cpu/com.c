@@ -12,7 +12,7 @@ static inline int com_is_transmit_empty(uint16_t com) {
 	return inb(com + 5) & 0x20;
 }
 
-void com_write_byte(uint8_t byte) {
+void com_write_byte(char byte) {
 	while (!com_is_transmit_empty(0x3F8)) {}
 
 	outb(0x3F8, byte);

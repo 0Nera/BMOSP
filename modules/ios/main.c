@@ -98,18 +98,19 @@ static void main( ) {
 	for (;;) { asm volatile("hlt"); }
 }
 
-module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+void __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
-	return (module_info_t){ .name = (char *)"[IOS]",
-		                    .message = (char *)"IOS (input-output shell) - оболочка ввода-вывода.",
-		                    .type = 0,
-		                    .data_size = 0,
-		                    .data = (void *)0,
-		                    .err_code = 0,
-		                    .module_id = 0,
-		                    .irq = 0,
-		                    .irq_handler = 0,
-		                    .get_func = 0,
-		                    .after_init = main };
+	env->ret = &((module_info_t){ .name = (char *)"[IOS]",
+	                              .message = (char *)"IOS (input-output shell) - оболочка ввода-вывода.",
+	                              .type = 0,
+	                              .data_size = 0,
+	                              .data = (void *)0,
+	                              .err_code = 0,
+	                              .module_id = 0,
+	                              .irq = 0,
+	                              .irq_handler = 0,
+	                              .get_func = 0,
+	                              .after_init = main });
+	delete_thread( );
 }

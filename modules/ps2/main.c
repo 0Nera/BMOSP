@@ -145,20 +145,21 @@ static void handler( ) {
 	after_interrupt( );
 }
 
-module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+void __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	current_state = NORMAL_STATE;
 	keyboard_buffer.ctrl_pressed = 0;
 	keyboard_buffer.shift_pressed = 0;
 
-	return (module_info_t){ .name = (char *)"[KEYBOARD]",
-		                    .message = (char *)"PS/2 драйвер",
-		                    .type = 0,
-		                    .data_size = 0,
-		                    .data = (void *)0,
-		                    .err_code = 0,
-		                    .module_id = 0,
-		                    .irq = 33,
-		                    .irq_handler = &handler,
-		                    .get_func = __get_func };
+	env->ret = &((module_info_t){ .name = (char *)"[KEYBOARD]",
+	                              .message = (char *)"PS/2 драйвер",
+	                              .type = 0,
+	                              .data_size = 0,
+	                              .data = (void *)0,
+	                              .err_code = 0,
+	                              .module_id = 0,
+	                              .irq = 33,
+	                              .irq_handler = &handler,
+	                              .get_func = __get_func });
+	delete_thread( );
 }

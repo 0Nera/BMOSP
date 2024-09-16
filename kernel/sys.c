@@ -60,9 +60,10 @@ env_t *sys_install(env_t *module) {
 	module->get_info = &sys_get_info;
 	module->get_module = &sys_get_module;
 	module->mod_list_get = &mod_list_get;
-	module->new_thread = &task_new_thread;
+	module->new_thread = task_new_thread;
 	module->delete_thread = &task_del_current;
 	module->get_time = &rtc_get_time;
+	module->ret = NULL;
 
 	return module;
 }

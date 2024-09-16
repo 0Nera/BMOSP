@@ -142,7 +142,7 @@ void print_folder_contents(folder_t *folder, size_t depth) {
 	}
 }
 
-module_info_t __attribute__((section(".minit"))) init(env_t *env) {
+void __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 	create_folder("", NULL);
 
@@ -154,17 +154,17 @@ module_info_t __attribute__((section(".minit"))) init(env_t *env) {
 	file_t *readme = create_file("readme", "txt", root_folder);
 	write_file(readme, "БМПОС 2023-2024", 21);
 
-	return (module_info_t){
-		.name = (char *)"[FS][IMFS]",
-		.message = (char *)"IMFS (in memory filesystem) - файловая система работающая исключительно в ОЗУ.",
-		.type = 0,
-		.data_size = 0,
-		.data = (void *)0,
-		.err_code = 0,
-		.module_id = 0,
-		.irq = 0,
-		.irq_handler = 0,
-		.get_func = 0,
-		.after_init = 0
-	};
+	env->ret = &((module_info_t){
+	    .name = (char *)"[FS][IMFS]",
+	    .message = (char *)"IMFS (in memory filesystem) - файловая система работающая исключительно в ОЗУ.",
+	    .type = 0,
+	    .data_size = 0,
+	    .data = (void *)0,
+	    .err_code = 0,
+	    .module_id = 0,
+	    .irq = 0,
+	    .irq_handler = 0,
+	    .get_func = 0,
+	    .after_init = 0 });
+	delete_thread( );
 }
