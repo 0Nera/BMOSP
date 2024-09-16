@@ -8,7 +8,7 @@
 
 #include <mod.h>
 #include <stdint.h>
-
+#include <tool.h>
 
 elf64_header_t *elf64_get_header(void *data) {
 	return (elf64_header_t *)(data);
@@ -53,7 +53,7 @@ unsigned long elf64_hash(unsigned char *name) {
 	while (*name) {
 		h = (h << 4) + *name++;
 		// Проверка на overflow
-		if (g = h & 0xf0000000) h ^= g >> 24;
+		if (g = (h & 0xf0000000)) h ^= g >> 24;
 		// Ограничение хэша
 		h &= 0xffffffff;
 	}
@@ -84,7 +84,7 @@ void import_test( ) {
 }
 
 void *elf_parse(elf64_header_t *head) {
-	elf64_section_header_t *symtab = NULL;
+	// elf64_section_header_t *symtab = NULL;
 
 	if (head->e_ident[0] != ELFMAG0 || head->e_ident[1] != ELFMAG1 || head->e_ident[2] != ELFMAG2 ||
 	    head->e_ident[3] != ELFMAG3) {
@@ -123,8 +123,8 @@ void *elf_parse(elf64_header_t *head) {
 						// log_printf("%u\n", tool_strcmp(string_table + sym->st_name, "import_test"));
 						if (tool_strcmp(string_table + sym->st_name, "import_test") == 0) {
 							log_printf("0x%x\n", head + sym->st_value);
-							void (*imp)( ) = (void *)head + sym->st_value;
-							// imp = &import_test;
+							// void (*imp)( ) = (void *)head + sym->st_value;
+							//  imp = &import_test;
 						}
 						break;
 					case STT_FUNC: log_printf("объект кода\n"); break;

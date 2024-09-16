@@ -120,6 +120,7 @@ typedef struct {
 	uint64_t (*new_thread)(void (*func)(void *), char *name);
 	void (*delete_thread)( );
 	time_t (*get_time)( );
+	module_info_t *ret;
 } __attribute__((packed)) env_t;
 
 #endif // types.h

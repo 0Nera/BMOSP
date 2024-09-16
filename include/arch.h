@@ -66,7 +66,7 @@ void arch_init( );
 void task_init( );
 void task_after_init( );
 void task_switch( );
-uint64_t task_new_thread(void (*func)(void *), char *name);
+uint64_t task_new_thread(void (*func)(void *), char *name, void *arg);
 void task_del_current( );
 void task_del(uint64_t id);
 void cpu_init( );

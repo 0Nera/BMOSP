@@ -44,7 +44,7 @@ void task_switch( ) {
 	task_switch_asm(last, next);
 }
 
-uint64_t task_new_thread(void (*func)(void *), char *name) {
+uint64_t task_new_thread(void (*func)(void *), char *name, void *arg) {
 	LOG("Выделение потока\n");
 
 	uint64_t cr3;
@@ -64,6 +64,7 @@ uint64_t task_new_thread(void (*func)(void *), char *name) {
 	stack[--stack_top] = (uint64_t)0;
 
 	new_task->rsp = (uint64_t)new_task->stack + sizeof(uint64_t) * stack_top;
+	new_task->rdi = (uint64_t)arg;
 	new_task->cpu_time = 500;
 	new_task->cpu_time_expired = new_task->cpu_time;
 	new_task->id = next_thread_id++;
