@@ -41,6 +41,7 @@ static inline void pause( ) {
 
 void tool_memcpy(void *dest, void *src, uint64_t n);
 void *tool_memset(void *ptr, uint8_t n, uint64_t size);
+void tool_memmove(void *dest, void *src, uint64_t n);
 uint64_t tool_strlen(const char *str);
 void tool_strcpy(char *dest, char *src);
 int tool_strcmp(const char *s1, const char *s2);

@@ -23,6 +23,17 @@ void *tool_memset(void *ptr, uint8_t n, uint64_t size) {
 	return ptr;
 }
 
+void tool_memmove(void *dest, void *src, uint64_t n) {
+	unsigned char *cdest = (unsigned char *)dest;
+	unsigned char *csrc = (unsigned char *)src;
+
+	if (cdest < csrc) {
+		for (uint64_t i = 0; i < n; i++) { cdest[i] = csrc[i]; }
+	} else {
+		for (uint64_t i = n; i > 0; i--) { cdest[i - 1] = csrc[i - 1]; }
+	}
+}
+
 uint64_t tool_strlen(const char *str) {
 	uint64_t length = 0;
 	while (*str) {

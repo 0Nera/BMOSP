@@ -77,7 +77,7 @@ void idt_set_int(uint8_t vector, int_entry_t handler);
 uint64_t arch_get_tick_b( );
 uint64_t arch_get_tick_l( );
 uint64_t arch_get_tick( );
-void com_write_byte(uint8_t byte);
+void com_write_byte(char byte);
 void com_write_bytes(char *c, uint64_t n);
 time_t rtc_get_time( );
 
@@ -103,6 +103,26 @@ static inline uint16_t inw(uint16_t port) {
 
 static inline void io_wait( ) {
 	outb(0x80, 0);
+}
+
+static inline void *hal_memset(void *s, char c, int64_t count) {
+	int64_t d0, d1;
+	asm volatile("rep\n\t"
+	             "stosb"
+	             : "=&c"(d0), "=&D"(d1)
+	             : "a"(c), "1"(s), "0"(count)
+	             : "memory");
+	return s;
+}
+
+static inline void *hal_memset_32(void *s, uint32_t c, int64_t count) {
+	int64_t d0, d1;
+	asm volatile("rep\n\t"
+	             "stosl"
+	             : "=&c"(d0), "=&D"(d1)
+	             : "a"(c), "1"(s), "0"(count)
+	             : "memory");
+	return s;
 }
 
 #define GET_TICK_BIG arch_get_tick_b( )
