@@ -161,6 +161,8 @@ void __attribute__((section(".minit"))) init(env_t *env) {
 	                              .irq = 33,
 	                              .irq_handler = &handler,
 	                              .get_func = __get_func });
+	log_printf("Драйвер PS/2 клавиатуры установлен\n");
+	set_int(33, handler);
 	mod_update_info(env);
 	delete_thread( );
 }

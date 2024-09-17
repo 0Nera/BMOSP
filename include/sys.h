@@ -81,6 +81,7 @@ typedef struct env_t_s {
 	module_info_t *(*mod_list_get)(uint64_t *count);
 	uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 	void (*delete_thread)( );
+	void (*task_switch)( );
 	time_t (*get_time)( );
 	void (*set_int)(uint8_t vector, void (*handler)(void *));
 	void (*mod_update_info)(struct env_t_s *ret);

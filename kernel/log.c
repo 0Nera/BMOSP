@@ -118,7 +118,7 @@ void log_init_mem( ) {
 	tool_memcpy(log_buffer, start_buffer, buf_max);
 	buf_max = ((SCREEN_WIDTH - 4) / FONT_WIDTH) * (SCREEN_HEIGHT / FONT_HEIGHT);
 	LOG("Размер буффера: %u символов\n", buf_max);
-	LOG("%ux%u\n", width, height);
+	LOG("%ux%u %u\n", width, height, bpp);
 	redraw_screen( );
 	lock_release(log_lock);
 }

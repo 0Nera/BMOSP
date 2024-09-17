@@ -21,7 +21,6 @@
 void log_init( );
 void log_init_mem( );
 void log_printf(char *str, ...);
-char *utf8cp(char *str);
 
 #ifndef NO_DEBUG
 #define LOG(...)                                                                                                       \

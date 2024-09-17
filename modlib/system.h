@@ -24,6 +24,7 @@ extern int (*get_error)( );
 extern sys_info_t *(*get_info)( );
 extern uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 extern void (*delete_thread)( );
+extern void (*task_switch)( );
 extern time_t (*get_time)( );
 extern void (*mod_update_info)(env_t *ret);
 extern void (*set_int)(uint8_t vector, void (*func)(void *));

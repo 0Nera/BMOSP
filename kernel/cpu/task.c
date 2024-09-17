@@ -78,7 +78,7 @@ uint64_t task_new_thread(void (*func)(void *), char *name, void *arg) {
 	current_task->next->last = new_task;
 	current_task->next = new_task;
 
-	LOG("Создан новый поток с ID: %u\n", new_task->id);
+	LOG("Создан новый поток с ID: %u (%s)\n", new_task->id, name);
 
 	if (full_init == 0) { current_task = new_task; }
 

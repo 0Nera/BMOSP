@@ -21,6 +21,7 @@ int (*get_error)( );
 sys_info_t *(*get_info)( );
 uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 void (*delete_thread)( );
+void (*task_switch)( );
 time_t (*get_time)( );
 void (*mod_update_info)(env_t *ret);
 void (*set_int)(uint8_t vector, void (*func)(void *));
@@ -43,6 +44,7 @@ void init_env(env_t *loader_env) {
 	get_info = loader_env->get_info;
 	new_thread = loader_env->new_thread;
 	delete_thread = loader_env->delete_thread;
+	task_switch = loader_env->task_switch;
 	get_time = loader_env->get_time;
 	mod_update_info = loader_env->mod_update_info;
 	set_int = loader_env->set_int;
