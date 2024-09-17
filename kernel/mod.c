@@ -32,14 +32,14 @@ uint64_t bootpng_size;
 // Вывод списка модулей в отладчик
 void mod_list_show( ) {
 	for (uint64_t i = 0; i < modules_count; i++) {
-		LOG("Имя: %s\n", module_list[i].name);
-		LOG("Описание модуля: %s\n", module_list[i].message);
+		LOG("Имя: %s\n", module_list[i].name ? module_list[i].name : "(NULL)");
+		LOG("Описание модуля: %s\n", module_list[i].message ? module_list[i].message : "(NULL)");
 		LOG("Тип модуля: %u\n", module_list[i].type);
 		LOG("Код ошибки модуля: %u\n", module_list[i].err_code);
 
 		if (module_list[i].data_size) {
 			LOG("Размер данных: %u\n", module_list[i].data_size);
-			LOG("Адрес данных: 0x%x\n", module_list[i].data);
+			LOG("Адрес данных: 0x%x\n", module_list[i].data ? module_list[i].data : 0);
 		}
 	}
 }
@@ -63,7 +63,9 @@ module_info_t *mod_list_get(uint64_t *count) {
 // Поиск модуля по тегу
 module_info_t *mod_find(char *tag) {
 	for (uint64_t i = 0; i < modules_count; i++) {
-		if (tool_str_contains(module_list[i].name, tag)) { return &module_list[i]; }
+		if (module_list[i].name) {
+			if (tool_str_contains(module_list[i].name, tag)) { return &module_list[i]; }
+		}
 	}
 
 	return (module_info_t *)NULL;
@@ -128,7 +130,7 @@ void mod_init( ) {
 		main_env = (env_t *)mem_alloc(sizeof(env_t));
 		tool_memset(main_env, 0, sizeof(env_t));
 		main_env->offset = (uint64_t)module_ptr->address;
-
+		main_env->id = modules_count;
 		sys_install(main_env);
 
 		uint64_t id = task_new_thread((void (*)(void *))module_init, module_list[i].name, main_env);
@@ -142,6 +144,17 @@ void mod_init( ) {
 		modules_count++;
 	}
 	LOG("Модулей обработано: %u\n", modules_count);
+}
+
+void mod_update_info(env_t *env) {
+	module_list[env->id].name = env->ret->name;
+	module_list[env->id].message = env->ret->message;
+	module_list[env->id].data_size = env->ret->data_size;
+	module_list[env->id].data = env->ret->data;
+	module_list[env->id].get_func = env->ret->get_func;
+	module_list[env->id].after_init = env->ret->after_init;
+	module_list[env->id].irq = env->ret->irq;
+	module_list[env->id].irq_handler = env->ret->irq_handler;
 }
 
 // Добавление модуля

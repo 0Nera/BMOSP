@@ -82,6 +82,8 @@ static void exception_handler(struct frame state) {
 		stk = stk->rbp;
 	}
 
+	mod_list_show( );
+
 	asm volatile("cli");
 	asm volatile("hlt");
 }

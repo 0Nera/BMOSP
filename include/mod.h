@@ -126,6 +126,7 @@ void mod_after_init( );
 void mod_list_show( );
 module_info_t *mod_find(char *tag);
 module_info_t *mod_list_get(uint64_t *count);
+void mod_update_info(env_t *ret);
 
 void *elf_entry(void *module_bin);
 void *elf_parse(elf64_header_t *head);

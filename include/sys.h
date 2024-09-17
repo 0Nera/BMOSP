@@ -10,6 +10,7 @@
 #ifndef SYS_H
 #define SYS_H
 
+#include <arch.h>
 #include <stdint.h>
 
 typedef struct {
@@ -65,8 +66,9 @@ typedef struct {
 	void *env; // env_t
 } __attribute__((packed)) module_info_t;
 
-typedef struct {
+typedef struct env_t_s {
 	uint64_t offset;
+	uint64_t id;
 	void (*log_printf)(char *str, ...); // Временная функция
 	framebuffer_t (*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
@@ -80,6 +82,8 @@ typedef struct {
 	uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 	void (*delete_thread)( );
 	time_t (*get_time)( );
+	void (*set_int)(uint8_t vector, void (*handler)(void *));
+	void (*mod_update_info)(struct env_t_s *ret);
 	module_info_t *ret;
 } __attribute__((packed)) env_t;
 

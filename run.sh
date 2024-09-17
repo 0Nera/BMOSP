@@ -1,5 +1,5 @@
 #!/bin/sh
-qemu-system-x86_64 -name "БМПОС" -cpu max -m 64M -smp 1         \
+qemu-system-x86_64 -name "БМПОС" -cpu max -m 128M -smp 1         \
  -serial file:serial.log                                        \
  -drive file=bmosp.iso,if=none,id=sata_drive -device ahci       \
  -device virtio-blk-pci,drive=sata_drive                        \
