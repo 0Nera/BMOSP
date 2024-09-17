@@ -28,7 +28,8 @@ jobs:
     - name: build
       run: |
         dos2unix *.sh
-        chmod +x build.sh
+        chmod +x *.sh
+        ./build_mods.sh
         ./build.sh
 
     - name: check root dir
