@@ -3,8 +3,6 @@ name: CI BUILD
 on:
   push:
     branches-ignore: [ "pages" ]
-  pull_request:
-    branches-ignore: [ "pages" ]
 
 jobs:
   build:
@@ -28,7 +26,8 @@ jobs:
     - name: build
       run: |
         dos2unix *.sh
-        chmod +x build.sh
+        chmod +x *.sh
+        ./build_mods.sh
         ./build.sh
 
     - name: check root dir

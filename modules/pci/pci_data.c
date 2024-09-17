@@ -59,33 +59,32 @@ static void print_vendors(uint64_t num_vendors, vendor_t **vendor_list) {
 	}
 }
 
-module_info_t mod = { .name = "[PCI][ADAPTER]",
-	                  .message = "PCI данные",
-	                  .type = 0,
-	                  .data_size = 0,
-	                  .data = 0,
-	                  .err_code = 0,
-	                  .module_id = 0,
-	                  .irq = 0,
-	                  .irq_handler = 0,
-	                  .get_func = 0,
-	                  .after_init = 0 };
-
 void __attribute__((section(".minit"))) init(env_t *env) {
 	init_env(env);
 
 	module_info_t *pci_data = get_module("[PCI][DATA][VENDORS]");
 
-	if (pci_data == NULL) { log_printf("База PCI не найдена!\n"); }
+	if (pci_data == NULL) {
+		log_printf("[PCI][DATA]База PCI не найдена!\n");
+		delete_thread( );
+	}
 
 	uint64_t num_vendors = count_chars(pci_data->data, ';');
-	log_printf("Количество вендоров: %u\n", num_vendors);
+	log_printf("[PCI][DATA]Количество вендоров: %u\n", num_vendors);
 
 	vendor_t **vendor_list = parse_file(pci_data->data, num_vendors, pci_data->data_size);
 	// print_vendors(num_vendors, vendor_list);
-	mod.data_size = num_vendors;
-	mod.data = vendor_list;
-	env->ret = &mod;
+	env->ret = &((module_info_t){ .name = "[PCI][ADAPTER]",
+	                              .message = "PCI данные",
+	                              .type = 0,
+	                              .data_size = num_vendors,
+	                              .data = vendor_list,
+	                              .err_code = 0,
+	                              .module_id = 0,
+	                              .irq = 0,
+	                              .irq_handler = 0,
+	                              .get_func = 0,
+	                              .after_init = 0 });
 	log_printf("Готово %x\n", vendor_list);
 	mod_update_info(env);
 	delete_thread( );

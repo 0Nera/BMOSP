@@ -25,3 +25,23 @@ task_switch_asm:
 	popfq
 	sti
 	retq
+
+.global fpu_initialize
+fpu_initialize:
+    clts
+    mov %cr0, %rax
+    and $0xFFFD, %ax
+    or $0x10, %ax
+    mov %rax, %cr0
+    fninit
+    mov %cr0, %rax
+    and $0xfffb, %ax
+    or $0x0002, %ax
+    mov %rax, %cr0
+    mov %cr4, %rax
+    or $0x600, %rax
+    mov %rax, %cr4
+    pushq $0x1F80
+    ldmxcsr (%rsp)
+    addq $8, %rsp
+    ret

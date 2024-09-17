@@ -127,6 +127,26 @@ static inline void *hal_memset_32(void *s, uint32_t c, int64_t count) {
 	return s;
 }
 
+static inline void *hal_memcpy(void *dest, const void *src, int64_t count) {
+	int64_t d0, d1;
+	asm volatile("rep\n\t"
+	             "movsb"
+	             : "=&c"(d0), "=&D"(d1)
+	             : "S"(src), "0"(count), "1"(dest)
+	             : "memory");
+	return dest;
+}
+
+static inline void *hal_memcpy32(void *dest, const void *src, int64_t count) {
+	int64_t d0, d1;
+	asm volatile("rep\n\t"
+	             "movsl"
+	             : "=&c"(d0), "=&D"(d1)
+	             : "S"(src), "0"(count), "1"(dest)
+	             : "memory");
+	return dest;
+}
+
 #define GET_TICK_BIG arch_get_tick_b( )
 #define GET_TICK_lOW arch_get_tick_l( )
 

@@ -13,9 +13,7 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches-ignore: [ "pages" ]
   schedule:
     - cron: '28 15 * * 1'
 
@@ -40,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'c-cpp', 'python' ]
+        language: [ 'c-cpp']
         # CodeQL supports [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
         # Use only 'java-kotlin' to analyze code written in Java, Kotlin or both
         # Use only 'javascript-typescript' to analyze code written in JavaScript, TypeScript or both
@@ -71,7 +69,9 @@ jobs:
         sudo apt upgrade
         sudo apt install clang-format python3 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
         sudo apt install libc6
-        chmod +x build.sh
+        dos2unix *.sh
+        chmod +x *.sh
+        ./build_mods.sh
         ./build.sh
 
     - name: Perform CodeQL Analysis
