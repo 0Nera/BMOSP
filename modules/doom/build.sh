@@ -9,8 +9,12 @@ if [ -d "../../sdk" ]; then
 	CC="../../sdk/bin/x86_64-elf-gcc"
 fi
 
-wget https://github.com/Daivuk/PureDOOM/raw/refs/heads/master/PureDOOM.h
-wget https://github.com/Daivuk/PureDOOM/raw/refs/heads/master/doom1.wad
+if [ ! -f "PureDOOM.h" ]; then
+	wget https://github.com/Daivuk/PureDOOM/raw/refs/heads/master/PureDOOM.h
+fi
+if [ ! -f "doom1.wad" ]; then
+	wget https://github.com/Daivuk/PureDOOM/raw/refs/heads/master/doom1.wad
+fi
 
 $CC $ARCH_FLAGS -I../../modlib -finput-charset=UTF-8 -fexec-charset=cp1251 -c main.c -o doom.o
 $CC $ARCH_FLAGS -Wl,--entry=init,--build-id=none -T ../link.ld doom.o -L../../modlib/lib/ -lmod -o doom.ko
