@@ -62,6 +62,7 @@ env_t *sys_install(env_t *module) {
 	module->mod_list_get = &mod_list_get;
 	module->new_thread = &task_new_thread;
 	module->delete_thread = &task_del_current;
+	module->task_switch = &task_switch;
 	module->get_time = &rtc_get_time;
 	module->set_int = &idt_set_int;
 	module->mod_update_info = &mod_update_info;

@@ -31,6 +31,7 @@ extern int fb_init_status;
 extern uint32_t *fb_addr;
 extern uint64_t width;
 extern uint64_t height;
+extern uint16_t bpp;
 
 #define SCREEN_WIDTH width
 #define SCREEN_HEIGHT height

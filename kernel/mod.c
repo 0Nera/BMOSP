@@ -31,8 +31,9 @@ uint64_t bootpng_size;
 
 // Вывод списка модулей в отладчик
 void mod_list_show( ) {
+	LOG("Список модулей:\n");
 	for (uint64_t i = 0; i < modules_count; i++) {
-		LOG("Имя: %s\n", module_list[i].name ? module_list[i].name : "(NULL)");
+		LOG("Имя: %s | ID: %u \n", module_list[i].name ? module_list[i].name : "(NULL)", i);
 		LOG("Описание модуля: %s\n", module_list[i].message ? module_list[i].message : "(NULL)");
 		LOG("Тип модуля: %u\n", module_list[i].type);
 		LOG("Код ошибки модуля: %u\n", module_list[i].err_code);
@@ -40,16 +41,6 @@ void mod_list_show( ) {
 		if (module_list[i].data_size) {
 			LOG("Размер данных: %u\n", module_list[i].data_size);
 			LOG("Адрес данных: 0x%x\n", module_list[i].data ? module_list[i].data : 0);
-		}
-	}
-}
-
-// Запуск модулей имеющих дополнительную точку входа
-void mod_after_init( ) {
-	for (uint64_t i = 0; i < modules_count; i++) {
-		if (module_list[i].after_init != 0) {
-			LOG("%s.after_init( );\n", module_list[i].name);
-			task_new_thread(module_list[i].after_init, module_list[i].name, NULL);
 		}
 	}
 }
@@ -133,7 +124,7 @@ void mod_init( ) {
 		main_env->id = modules_count;
 		sys_install(main_env);
 
-		uint64_t id = task_new_thread((void (*)(void *))module_init, module_list[i].name, main_env);
+		task_new_thread((void (*)(void *))module_init, module_list[i].name, main_env);
 		module_list[modules_count].env = (void *)main_env;
 		module_list[modules_count].name = 0;
 		module_list[modules_count].message = 0;

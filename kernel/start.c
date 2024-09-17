@@ -43,29 +43,27 @@ void _start( ) {
 	full_init = 1;
 
 	task_after_init( );
+	mem_get_stat( );
 
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	asm volatile("sti");
-
 	for (;;) {
 		task_t *task = current_task;
-
-		// Поиск задачи по ID
 		do {
 			task = task->next;
 			if (task->status == 0) {
-				LOG("УДАЛЕНИЕ %u(%s)\n", task->id, task->id_str);
+				// LOG("УДАЛЕНИЕ %u(%s)\n", task->id, task->id_str);
 				task_t *prev = task->last;
 				task_t *next = task->next;
 
-				// Обновляем связи в двусвязном списке
 				prev->next = next;
 				next->last = prev;
 
-				// Освобождаем память, выделенную под стек и структуру текущего потока
 				mem_free(task->stack);
 				mem_free(task);
 			}
 		} while (task->id != 0);
+
+		task_switch( );
 	}
 }
