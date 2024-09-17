@@ -59,8 +59,8 @@ static void print_vendors(uint64_t num_vendors, vendor_t **vendor_list) {
 	}
 }
 
-module_info_t mod = { .name = (char *)"[PCI][ADAPTER]",
-	                  .message = (char *)"PCI данные",
+module_info_t mod = { .name = "[PCI][ADAPTER]",
+	                  .message = "PCI данные",
 	                  .type = 0,
 	                  .data_size = 0,
 	                  .data = 0,
@@ -86,6 +86,7 @@ void __attribute__((section(".minit"))) init(env_t *env) {
 	mod.data_size = num_vendors;
 	mod.data = vendor_list;
 	env->ret = &mod;
-	log_printf("Готово22\n");
+	log_printf("Готово %x\n", vendor_list);
+	mod_update_info(env);
 	delete_thread( );
 }

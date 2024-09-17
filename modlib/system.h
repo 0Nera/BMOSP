@@ -22,9 +22,11 @@ extern void (*free_framebuffer)(framebuffer_t *frame);
 extern void (*exit)(int code);
 extern int (*get_error)( );
 extern sys_info_t *(*get_info)( );
-extern uint64_t (*new_thread)(void (*func)(void *), char *name);
+extern uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 extern void (*delete_thread)( );
 extern time_t (*get_time)( );
+extern void (*mod_update_info)(env_t *ret);
+extern void (*set_int)(uint8_t vector, void (*func)(void *));
 extern uint64_t offset;
 
 void init_env(env_t *loader_env);

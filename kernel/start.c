@@ -47,5 +47,25 @@ void _start( ) {
 	LOG("Готово! Для выхода из симуляции удерживайте: ESCAPE\n");
 	asm volatile("sti");
 
-	for (;;) { asm volatile("hlt"); }
+	for (;;) {
+		task_t *task = current_task;
+
+		// Поиск задачи по ID
+		do {
+			task = task->next;
+			if (task->status == 0) {
+				LOG("УДАЛЕНИЕ %u(%s)\n", task->id, task->id_str);
+				task_t *prev = task->last;
+				task_t *next = task->next;
+
+				// Обновляем связи в двусвязном списке
+				prev->next = next;
+				next->last = prev;
+
+				// Освобождаем память, выделенную под стек и структуру текущего потока
+				mem_free(task->stack);
+				mem_free(task);
+			}
+		} while (task->id != 0);
+	}
 }

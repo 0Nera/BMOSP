@@ -5,6 +5,7 @@ static uint64_t *mod_count = NULL;
 static uint64_t app_count = 0;
 static module_info_t *app_list = NULL;
 static char (*getc)( ) = NULL;
+env_t *env;
 
 static inline int is_digit(char c) {
 	if (c >= '0' && c <= '9') { return 1; }
@@ -44,6 +45,7 @@ void ios_main( ) {
 
 		if (select == app_count + 1) {
 			log_printf("Выход\n");
+			mod_update_info(env);
 			delete_thread( );
 			for (;;) { asm volatile("hlt"); }
 		}
@@ -70,6 +72,7 @@ static void main( ) {
 	if (app_list == NULL) {
 		log_printf("Ошибка выделения памяти для app_list!\n");
 		delete_thread( );
+		mod_update_info(env);
 		for (;;) { asm volatile("hlt"); }
 	}
 
@@ -89,6 +92,7 @@ static void main( ) {
 		log_printf("Модулей-программ не обнаружено!\n");
 		free(app_list);
 		delete_thread( );
+		mod_update_info(env);
 	} else {
 		app_list = realloc(app_list, app_count * sizeof(module_info_t));
 		ios_main( );
@@ -98,7 +102,8 @@ static void main( ) {
 	for (;;) { asm volatile("hlt"); }
 }
 
-void __attribute__((section(".minit"))) init(env_t *env) {
+void __attribute__((section(".minit"))) init(env_t *envm) {
+	env = envm;
 	init_env(env);
 
 	env->ret = &((module_info_t){ .name = (char *)"[IOS]",
@@ -112,5 +117,6 @@ void __attribute__((section(".minit"))) init(env_t *env) {
 	                              .irq_handler = 0,
 	                              .get_func = 0,
 	                              .after_init = main });
+	mod_update_info(env);
 	delete_thread( );
 }

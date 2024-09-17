@@ -144,5 +144,6 @@ void __attribute__((section(".minit"))) init(env_t *env) {
 
 	scan( );
 	env->ret = &mod;
+	mod_update_info(env);
 	delete_thread( );
 }

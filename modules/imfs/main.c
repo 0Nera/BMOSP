@@ -166,5 +166,6 @@ void __attribute__((section(".minit"))) init(env_t *env) {
 	    .irq_handler = 0,
 	    .get_func = 0,
 	    .after_init = 0 });
+	mod_update_info(env);
 	delete_thread( );
 }

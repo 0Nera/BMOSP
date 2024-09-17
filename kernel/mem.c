@@ -51,11 +51,9 @@ static uint64_t mmmap_count = 0;
 extern task_t *current_task;
 extern uint64_t full_init;
 
-#ifdef DEBUG_MEM
 static const char memory_types[8][82] = { "Доступно",      "Зарезервировано", "ACPI, можно освободить",
 	                                      "ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
 	                                      "Ядро и модули", "Буфер кадра" };
-#endif
 
 static struct limine_memmap_response *memmap_response;
 
@@ -65,15 +63,13 @@ void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
 	while (curr) {
-#ifdef DEBUG_MEM
 		if (curr->next) {
-			LOG("->0x%x | %u мегабайт | %s | 0x%x | поток %u\n", &curr->data, (curr->size) / 1024 / 1024,
+			LOG("->0x%x | %u килобайт | %s | 0x%x | поток %u\n", &curr->data, (curr->size) / 1024,
 			    curr->free ? memory_types[0] : memory_types[1], curr->next, curr->task_id);
 		} else {
-			LOG("->0x%x | %u мегабайт | %s | поток %u | Это последний блок\n", &curr->data, (curr->size) / 1024 / 1024,
+			LOG("->0x%x | %u килобайт | %s | поток %u | Это последний блок\n", &curr->data, (curr->size) / 1024,
 			    curr->free ? memory_types[0] : memory_types[1], curr->task_id);
 		}
-#endif
 		curr = curr->next;
 	}
 }

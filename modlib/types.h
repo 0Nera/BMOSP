@@ -99,14 +99,16 @@ typedef struct {
 	void *data;
 	int64_t err_code;
 	uint64_t module_id;
-	uint8_t irq;
-	int_entry_t irq_handler;
+	uint8_t irq;       // Номер прерывания
+	void *irq_handler; // Адрес обработчика прерываний
 	void *(*get_func)(uint64_t id);
 	void (*after_init)( );
+	void *env; // env_t
 } __attribute__((packed)) module_info_t;
 
-typedef struct {
+typedef struct env_t_s {
 	uint64_t offset;
+	uint64_t id;
 	void (*log_printf)(char *str, ...); // Временная функция
 	framebuffer_t (*alloc_framebuffer)( );
 	void (*free_framebuffer)(framebuffer_t *frame);
@@ -117,10 +119,11 @@ typedef struct {
 	sys_info_t *(*get_info)( );
 	module_info_t *(*get_module)(char *module_id);
 	module_info_t *(*mod_list_get)(uint64_t *count);
-	uint64_t (*new_thread)(void (*func)(void *), char *name);
+	uint64_t (*new_thread)(void (*func)(void *), char *name, void *arg);
 	void (*delete_thread)( );
 	time_t (*get_time)( );
+	void (*set_int)(uint8_t vector, int_entry_t handler);
+	void (*mod_update_info)(struct env_t_s *ret);
 	module_info_t *ret;
 } __attribute__((packed)) env_t;
-
 #endif // types.h
