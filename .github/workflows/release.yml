@@ -25,7 +25,8 @@ jobs:
     - name: build
       run: |
         dos2unix *.sh
-        chmod +x build.sh
+        chmod +x *.sh
+        ./build_mods.sh
         ./build.sh
 
     - name: save
@@ -35,11 +36,6 @@ jobs:
         cp ${{ github.workspace }}/bmosp.hdd ${{ github.workspace }}/rel/
         cp ${{ github.workspace }}/bmosp.iso ${{ github.workspace }}/rel/
         cp ${{ github.workspace }}/LICENSE ${{ github.workspace }}/rel/
-
-    - uses: actions/upload-artifact@v3
-      with:
-        name: bmosp.hdd
-        path: ${{ github.workspace }}/bmosp.hdd
 
     - uses: actions/upload-artifact@v3
       with:

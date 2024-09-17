@@ -71,7 +71,9 @@ jobs:
         sudo apt upgrade
         sudo apt install clang-format python3 unzip git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso
         sudo apt install libc6
-        chmod +x build.sh
+        dos2unix *.sh
+        chmod +x *.sh
+        ./build_mods.sh
         ./build.sh
 
     - name: Perform CodeQL Analysis
