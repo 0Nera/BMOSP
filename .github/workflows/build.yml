@@ -3,8 +3,6 @@ name: CI BUILD
 on:
   push:
     branches-ignore: [ "pages" ]
-  pull_request:
-    branches-ignore: [ "pages" ]
 
 jobs:
   build:
