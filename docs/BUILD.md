@@ -16,7 +16,8 @@ sudo apt install unzip
 sudo apt install clang-format python3 git qemu-system-x86 qemu-system-gui gdisk dos2unix xorriso libc6 gcc make curl mtools
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
-chmod +x build.sh
+chmod +x *.sh
+./build_mods.sh
 ./build.sh
 ```
 
@@ -29,7 +30,9 @@ chmod +x build.sh
 sudo apt install clang-format python3.7 git qemu-system-x86 gdisk dos2unix xorriso libc6 gcc make curl mtools
 git clone https://git.synapseos.ru/Aren/BMOSP.git
 cd BMOSP/
-python3.7 pbuild.py
+chmod +x *.sh
+./build_mods.sh
+./build.sh
 ```
 
 ## Запуск
