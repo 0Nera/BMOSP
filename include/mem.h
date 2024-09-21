@@ -16,9 +16,15 @@
 #define BLOCK_SIZE 4096
 #define HHDM_OFFSET (hhdm_request.response->offset)
 
+// Вывод данных о каждом выделенном блоке памяти
 void mem_dump_memory( );
+
+// Вывод размеров занятой и освобожденной памяти
 void mem_get_stat( );
+
+// Инициализация менеджера памяти
 void mem_init( );
+
 void *mem_alloc(size_t size);
 void mem_add_block(void *addr, size_t size);
 void mem_free(void *addr);

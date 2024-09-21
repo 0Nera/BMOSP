@@ -14,18 +14,29 @@
 #include <stdbool.h>
 #include <tool.h>
 
+// Запрос к загрузчику Limine о состоянии памяти
 static volatile struct limine_memmap_request memmap_request = { .id = LIMINE_MEMMAP_REQUEST,
 	                                                            .revision = 0,
 	                                                            .response = (struct limine_memmap_response *)0 };
+
+// Запрос к загрузчику Limine о виртуальном адресе Higher Half
 static volatile struct limine_hhdm_request hhdm_request = { .id = LIMINE_HHDM_REQUEST,
 	                                                        .revision = 0,
 	                                                        .response = (struct limine_hhdm_response *)0 };
 
+// Менеджер памяти выделяет память отдельными участками (блоками). Информация обо
+// всех выделенных блоках хранится в виде односвязного списка структур mem_entry_t.
+// Каждая mem_entry_t содержит информацию об отдельном выделенном блоке памяти
 struct mem_entry {
+	// Ссылка на следующий элемент списка
 	struct mem_entry *next;
+	// Флаг, помечающий память как освобожденную
 	bool free;
+	// Поток, владеющий памятью
 	uint64_t task_id;
+	// Размер блока
 	uint64_t size;
+	// Адрес блока
 	uint8_t data[0];
 };
 
@@ -55,13 +66,16 @@ static const char memory_types[8][82] = { "Доступно",      "Зарезе
 	                                      "ACPI NVS",      "Плохая память",   "Загрузчик, можно освободить",
 	                                      "Ядро и модули", "Буфер кадра" };
 
+// Ответ от загрузчика Limine о состоянии памяти
 static struct limine_memmap_response *memmap_response;
 
+// Описание перого выделенного блока памяти - начало списка с данными о памяти
 static mem_entry_t *first_node;
 
 void mem_dump_memory( ) {
 	mem_entry_t *curr = first_node;
 
+	// Проход по всему списку записей о выделенных блоках памяти
 	while (curr) {
 		if (curr->next) {
 			LOG("->0x%x | %u килобайт | %s | 0x%x | поток %u\n", &curr->data, (curr->size) / 1024,
