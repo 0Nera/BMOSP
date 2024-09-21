@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <tool.h>
 
-// Запрос к загрузчику Limine о состоянии памяти
+// Запрос карты памяти от загрузчика
 static volatile struct limine_memmap_request memmap_request = { .id = LIMINE_MEMMAP_REQUEST,
 	                                                            .revision = 0,
 	                                                            .response = (struct limine_memmap_response *)0 };
