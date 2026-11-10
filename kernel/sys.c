@@ -12,7 +12,6 @@
 #include <stdint.h>
 #include <sys.h>
 
-module_info_t *current_module;
 extern uint32_t *fb_addr;
 extern uint32_t text_color;
 extern uint32_t background;
@@ -33,12 +32,19 @@ static void sys_free_framebuffer(framebuffer_t *frame) {
 	frame->reserved = 0;
 }
 
+static module_info_t *sys_current_module( ) {
+	if (current_task == NULL || current_task->module == NULL) { return NULL; }
+	return (module_info_t *)current_task->module;
+}
+
 static void sys_exit(int code) {
-	current_module->err_code = code;
+	module_info_t *module = sys_current_module( );
+	if (module != NULL) { module->err_code = code; }
 }
 
 static int sys_get_error( ) {
-	return current_module->err_code;
+	module_info_t *module = sys_current_module( );
+	return module != NULL ? (int)module->err_code : 0;
 }
 
 static sys_info_t *sys_get_info( ) {

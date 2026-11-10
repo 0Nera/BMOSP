@@ -32,8 +32,7 @@ time_t rtc_get_time( ) {
 	uint8_t last_second, last_minute, last_hour, last_day, last_month, last_year;
 	time_t rtc_time;
 
-	while (get_update_in_progress_flag( ))
-		;
+	while (get_update_in_progress_flag( ));
 
 	rtc_time.second = read_cmos(0x00);
 	rtc_time.minutes = read_cmos(0x02);
@@ -52,8 +51,7 @@ time_t rtc_get_time( ) {
 		last_month = rtc_time.month;
 		last_year = rtc_time.year;
 
-		while (get_update_in_progress_flag( ))
-			;
+		while (get_update_in_progress_flag( ));
 
 		rtc_time.second = read_cmos(0x00);
 		rtc_time.minutes = read_cmos(0x02);

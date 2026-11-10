@@ -19,6 +19,7 @@ uint32_t *test_buf = NULL;
 extern uint64_t full_init;
 uint64_t task_f_init = 0;
 lock_t task_lock;
+static void *task_module_context = NULL;
 
 void task_switch_asm(task_t *, task_t *);
 
@@ -58,6 +59,8 @@ uint64_t task_new_thread(void (*func)(void *), char *name, void *arg) {
 
 	new_task->stack = stack;
 	new_task->entry = func;
+	new_task->module =
+	    task_module_context != NULL ? task_module_context : (current_task != NULL ? current_task->module : NULL);
 	new_task->status = 1;
 
 	uint64_t stack_top = STACK_SIZE / sizeof(uint64_t);
@@ -83,6 +86,10 @@ uint64_t task_new_thread(void (*func)(void *), char *name, void *arg) {
 	if (full_init == 0) { current_task = new_task; }
 
 	return new_task->id;
+}
+
+void task_set_module_context(void *module) {
+	task_module_context = module;
 }
 
 void task_del(uint64_t id) {

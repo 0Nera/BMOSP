@@ -57,9 +57,9 @@ static void exception_handler(struct frame *state) {
 	    "\tRIP=%x  RFLAGS=%x\n"
 	    "\tCS=%x SS=%x\n"
 	    "\tERR=%x  INT=%u\n",
-	    state->rax, state->rbx, state->rcx, state->rdx, state->rsi, state->rdi, state->rbp, state->rsp, state->r8, state->r9,
-	    state->r10, state->r11, state->r12, state->r13, state->r14, state->r15, state->rip, state->rflags, state->cs, state->ss,
-	    state->err, state->int_number);
+	    state->rax, state->rbx, state->rcx, state->rdx, state->rsi, state->rdi, state->rbp, state->rsp, state->r8,
+	    state->r9, state->r10, state->r11, state->r12, state->r13, state->r14, state->r15, state->rip, state->rflags,
+	    state->cs, state->ss, state->err, state->int_number);
 	LOG("\tCR3=%x\n", cr3);
 
 	mem_dump_memory( );

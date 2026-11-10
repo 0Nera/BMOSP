@@ -25,8 +25,6 @@ module_info_t *module_list = NULL;
 static char *graphics_module_message = "Графический модуль-объект";
 static char *other_module_message = "Неизвестный тип модуля";
 
-static env_t *main_env = NULL;
-
 void *bootpng_ptr;
 uint64_t bootpng_size;
 
@@ -85,6 +83,7 @@ void mod_init( ) {
 			LOG("Ошибка выделения памяти для массива module_list\n");
 			return;
 		}
+		tool_memset(module_list, 0, module_count * sizeof(module_info_t));
 		LOG("module_list = 0x%x\n", module_list);
 	}
 
@@ -135,24 +134,20 @@ void mod_init( ) {
 			LOG("Ошибка выделения памяти для env модуля %s\n", module_ptr->string);
 			continue;
 		}
-		main_env = (env_t *)env_mem;
+		env_t *env = (env_t *)env_mem;
 		module_start_t *start = (module_start_t *)(env_mem + env_alloc_size);
 		tool_memset(env_mem, 0, env_alloc_size + sizeof(module_start_t));
-		main_env->offset = (uint64_t)module_ptr->address;
-		main_env->id = modules_count;
-		sys_install(main_env);
+		env->offset = (uint64_t)module_ptr->address;
+		env->id = modules_count;
+		sys_install(env);
 
 		start->entry = module_init;
-		start->env = main_env;
+		start->env = env;
 
+		module_list[modules_count].env = (void *)env;
+		task_set_module_context(&module_list[modules_count]);
 		task_new_thread(module_start, module_ptr->string, start);
-		module_list[modules_count].env = (void *)main_env;
-		module_list[modules_count].name = 0;
-		module_list[modules_count].message = 0;
-		module_list[modules_count].data_size = 0;
-		module_list[modules_count].data = 0;
-		module_list[modules_count].get_func = 0;
-		module_list[modules_count].after_init = 0;
+		task_set_module_context(NULL);
 		modules_count++;
 	}
 	LOG("Модулей обработано: %u\n", modules_count);
@@ -164,8 +159,7 @@ void mod_update_info(env_t *env) {
 		return;
 	}
 
-	if (env->abi_magic != BMOSP_ABI_MAGIC || env->abi_version != BMOSP_ABI_VERSION ||
-	    env->abi_size != sizeof(env_t)) {
+	if (env->abi_magic != BMOSP_ABI_MAGIC || env->abi_version != BMOSP_ABI_VERSION || env->abi_size != sizeof(env_t)) {
 		LOG("mod_update_info: несовместимый ABI env\n");
 		return;
 	}
@@ -180,14 +174,20 @@ void mod_update_info(env_t *env) {
 		return;
 	}
 
-	module_list[env->id].name = env->ret->name;
-	module_list[env->id].message = env->ret->message;
-	module_list[env->id].data_size = env->ret->data_size;
-	module_list[env->id].data = env->ret->data;
-	module_list[env->id].get_func = env->ret->get_func;
-	module_list[env->id].after_init = env->ret->after_init;
-	module_list[env->id].irq = env->ret->irq;
-	module_list[env->id].irq_handler = env->ret->irq_handler;
+	module_info_t *info = env->ret;
+	module_info_t *module = &module_list[env->id];
+	module->name = info->name;
+	module->message = info->message;
+	module->type = info->type;
+	module->data_size = info->data_size;
+	module->data = info->data;
+	module->err_code = info->err_code;
+	module->module_id = env->id;
+	module->irq = info->irq;
+	module->irq_handler = info->irq_handler;
+	module->get_func = info->get_func;
+	module->after_init = info->after_init;
+	module->env = env;
 }
 
 // Добавление модуля

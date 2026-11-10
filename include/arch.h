@@ -27,6 +27,7 @@ typedef struct task {
 	char *id_str;
 	void *stack;
 	void *entry;
+	void *module;
 	uint64_t status; // 0 - на удаление 1 - работает
 
 	struct task *last;
@@ -42,6 +43,7 @@ void task_init( );
 void task_after_init( );
 void task_switch( );
 uint64_t task_new_thread(void (*func)(void *), char *name, void *arg);
+void task_set_module_context(void *module);
 void task_del_current( );
 void task_del(uint64_t id);
 void fpu_initialize( );

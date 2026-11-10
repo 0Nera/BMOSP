@@ -3,7 +3,7 @@
 
 #define NONS (0x98)
 #define SKIP_OR_NOT (dest != NONS)
-#define M(W40, W45, W201) ((((W40)-0x80) << 10) | (((W45) - (W40)) << 5) | ((W201)-0x80))
+#define M(W40, W45, W201) ((((W40) - 0x80) << 10) | (((W45) - (W40)) << 5) | ((W201) - 0x80))
 
 unsigned int utf8_2_win1251(const char *utf8, char *win) {
 	unsigned int dest, p, l1, l2, l3, inc, i, j, b1, b2, b3;
@@ -21,7 +21,7 @@ unsigned int utf8_2_win1251(const char *utf8, char *win) {
 
 		// Utf8 переводим в Unicode.
 		inc = (0xE5000000u >> (((b1) >> 4) << 1)) & 0x3;
-		p = ((((b1) << 12) + (((b2)&0x3F) << 6) + ((b3)&0x3F)) & (0x7FFFF >> inc)) >>
+		p = ((((b1) << 12) + (((b2) & 0x3F) << 6) + ((b3) & 0x3F)) & (0x7FFFF >> inc)) >>
 		    (((0xC5FFAAAAu >> (((b1) >> 4) << 1)) & 0x3) * 6);
 
 		// Добавляем все остающиеся на месте.
