@@ -17,7 +17,7 @@
 #include <tool.h>
 
 static volatile struct limine_framebuffer_request framebuffer_request = {
-	.id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0, .response = (struct limine_framebuffer_response *)0
+	.id = LIMINE_FRAMEBUFFER_REQUEST_ID, .revision = 0, .response = (struct limine_framebuffer_response *)0
 };
 
 static struct limine_framebuffer_response *framebuffer_response;

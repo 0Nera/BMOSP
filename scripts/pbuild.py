@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from multiprocessing import Pool
 
@@ -19,6 +20,21 @@ PROTECT_FLAGS += " -mno-mmx -mno-3dnow -mno-avx -ffunction-sections -fdata-secti
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251" #""
 LIBS_FLAGS = "-Ilimine -Iinclude -Imodlib"
 FORMAT_CMD = """find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file"""
+
+LIMINE_VERSION = "12.9.6"
+LIMINE_RELEASE_URL = f"https://github.com/Limine-Bootloader/Limine/releases/download/v{LIMINE_VERSION}"
+LIMINE_MARKER = os.path.join("limine", ".bmosp-limine-version")
+LIMINE_REQUIRED_FILES = [
+	"limine/limine.h",
+	"limine/limine",
+	"limine/limine.c",
+	"limine/Makefile",
+	"limine/limine-bios.sys",
+	"limine/limine-bios-cd.bin",
+	"limine/limine-uefi-cd.bin",
+	"limine/BOOTX64.EFI",
+	"limine/BOOTIA32.EFI",
+]
 
 def version_build():
 	with open("include/version.h", "r") as file:
@@ -89,22 +105,51 @@ def compile_all():
 	os.system(cmd)
 
 
+def limine_is_current():
+	try:
+		with open(LIMINE_MARKER, "r") as file:
+			if file.read().strip() != LIMINE_VERSION: return False
+	except OSError:
+		return False
+	return all(os.path.isfile(path) for path in LIMINE_REQUIRED_FILES)
+
+
+def download_file(url, path):
+	subprocess.run(["curl", "-fL", "--retry", "2", "-o", path, url], check=True)
+
+
 def check_limine():
-	if not os.path.isdir("limine"):
-		subprocess.run(["git", "clone", "https://git.synapseos.ru/mirrors/limine.git", "--branch=v5.x-branch-binary", "--depth=1"])
-	else:
-		os.chdir("limine")
-		subprocess.run(["git", "pull"])
-		os.chdir("..")
-	os.chdir("limine")
-	subprocess.run(["make"])
-	os.chdir("..")
+	if limine_is_current():
+		print(f"Limine {LIMINE_VERSION} уже установлен")
+		return
+
+	print(f"Установка Limine {LIMINE_VERSION}")
+	temp_dir = tempfile.mkdtemp(prefix="bmosp-limine-")
+	try:
+		binary_archive = os.path.join(temp_dir, "limine-binary.tar.gz")
+		source_archive = os.path.join(temp_dir, f"limine-{LIMINE_VERSION}.tar.gz")
+		download_file(f"{LIMINE_RELEASE_URL}/limine-binary.tar.gz", binary_archive)
+		download_file(f"{LIMINE_RELEASE_URL}/limine-{LIMINE_VERSION}.tar.gz", source_archive)
+		subprocess.run(["tar", "-xzf", binary_archive, "-C", temp_dir], check=True)
+		subprocess.run(["tar", "-xzf", source_archive, "-C", temp_dir], check=True)
+
+		if os.path.isdir("limine"): shutil.rmtree("limine")
+		os.makedirs("limine")
+		shutil.copytree(os.path.join(temp_dir, "limine-binary"), "limine", dirs_exist_ok=True)
+		shutil.copyfile(
+			os.path.join(temp_dir, f"limine-{LIMINE_VERSION}", "limine-protocol", "include", "limine.h"),
+			os.path.join("limine", "limine.h")
+		)
+		with open(LIMINE_MARKER, "w") as file: file.write(LIMINE_VERSION + "\n")
+		subprocess.run(["make", "-C", "limine"], check=True)
+	finally:
+		shutil.rmtree(temp_dir, ignore_errors=True)
 
 def create_iso(IMAGE_NAME):
 	os.system(f"rm -f {IMAGE_NAME}.iso")
 	os.system(f"rm -rf iso_root")
 	os.system(f"mkdir -p iso_root")
-	os.system(f"cp -v kernel.elf configs/limine.cfg limine/limine-bios.sys limine/limine-bios-cd.bin" \
+	os.system(f"cp -v kernel.elf configs/limine.conf limine/limine-bios.sys limine/limine-bios-cd.bin" \
 		   " limine/limine-uefi-cd.bin iso_root/")
 	os.system(f"mkdir -p iso_root/EFI/BOOT")
 	shutil.copytree("modules/bin", "iso_root/mod")
@@ -140,9 +185,7 @@ if __name__ == "__main__":
 		os.chdir("..")
 
 
-	if not os.path.isdir("limine"):
-		print("Установка Limine")
-		check_limine()
+	check_limine()
 
 	major, minor, build = version_build()
 	

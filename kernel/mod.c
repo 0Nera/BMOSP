@@ -15,7 +15,7 @@
 #include <sys.h>
 #include <tool.h>
 
-static volatile struct limine_module_request module_request = { .id = LIMINE_MODULE_REQUEST,
+static volatile struct limine_module_request module_request = { .id = LIMINE_MODULE_REQUEST_ID,
 	                                                            .revision = 0,
 	                                                            .response = (struct limine_module_response *)0 };
 
@@ -91,7 +91,7 @@ void mod_init( ) {
 	for (uint64_t i = 0; i < module_count; i++) {
 		module_ptr = module_response->modules[i];
 
-		LOG("[%u] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path, module_ptr->cmdline, module_ptr->address,
+		LOG("[%u] %s [%s] 0x%x Размер: %u\n", i, module_ptr->path, module_ptr->string, module_ptr->address,
 		    module_ptr->size);
 
 		if (modules_count >= module_count) {
@@ -99,10 +99,10 @@ void mod_init( ) {
 			break;
 		}
 
-		module_list[modules_count].name = module_ptr->cmdline;
+		module_list[modules_count].name = module_ptr->string;
 		module_list[modules_count].message = other_module_message;
 
-		if (tool_starts_with(module_ptr->cmdline, "[BOOTIMG]")) {
+		if (tool_starts_with(module_ptr->string, "[BOOTIMG]")) {
 			module_list[modules_count].data_size = module_ptr->size;
 			module_list[modules_count].data = module_ptr->address;
 			bootpng_ptr = module_ptr->address;
@@ -113,7 +113,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		if (!tool_starts_with(module_ptr->cmdline, "[MOD]")) {
+		if (!tool_starts_with(module_ptr->string, "[MOD]")) {
 			module_list[modules_count].data_size = module_ptr->size;
 			module_list[modules_count].data = module_ptr->address;
 			module_list[modules_count].type = 255; // Неизвестный тип модуля
@@ -124,7 +124,7 @@ void mod_init( ) {
 		module_entry_t module_init = (module_entry_t)elf_entry(module_ptr->address);
 
 		if (module_init == NULL) {
-			LOG("Модуль %s неисправен\n", module_ptr->cmdline);
+			LOG("Модуль %s неисправен\n", module_ptr->string);
 			continue;
 		}
 
@@ -132,7 +132,7 @@ void mod_init( ) {
 		uint64_t env_alloc_size = ALIGN_UP(sizeof(env_t), sizeof(uint64_t));
 		uint8_t *env_mem = (uint8_t *)mem_alloc(env_alloc_size + sizeof(module_start_t));
 		if (env_mem == NULL) {
-			LOG("Ошибка выделения памяти для env модуля %s\n", module_ptr->cmdline);
+			LOG("Ошибка выделения памяти для env модуля %s\n", module_ptr->string);
 			continue;
 		}
 		main_env = (env_t *)env_mem;
@@ -145,7 +145,7 @@ void mod_init( ) {
 		start->entry = module_init;
 		start->env = main_env;
 
-		task_new_thread(module_start, module_ptr->cmdline, start);
+		task_new_thread(module_start, module_ptr->string, start);
 		module_list[modules_count].env = (void *)main_env;
 		module_list[modules_count].name = 0;
 		module_list[modules_count].message = 0;
