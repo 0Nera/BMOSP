@@ -24,13 +24,22 @@ void (*delete_thread)( );
 void (*task_switch)( );
 time_t (*get_time)( );
 void (*mod_update_info)(env_t *ret);
-void (*set_int)(uint8_t vector, void (*func)(void *));
+void (*set_int)(uint8_t vector, int_entry_t handler);
 uint64_t offset;
 
+static int abi_check_env(env_t *loader_env) {
+	if (loader_env == NULL) { return 0; }
+	if (loader_env->abi_magic != BMOSP_ABI_MAGIC) { return 0; }
+	if (loader_env->abi_version != BMOSP_ABI_VERSION) { return 0; }
+	if (loader_env->abi_size != sizeof(env_t)) { return 0; }
+	return 1;
+}
+
 void init_env(env_t *loader_env) {
-	if (loader_env == NULL) {
+	if (!abi_check_env(loader_env)) {
 		for (;;) {}
 	}
+	loader_env->module_info_size = sizeof(module_info_t);
 	offset = loader_env->offset;
 	log_printf = loader_env->log_printf;
 	alloc = loader_env->alloc;

@@ -27,7 +27,7 @@ extern void (*delete_thread)( );
 extern void (*task_switch)( );
 extern time_t (*get_time)( );
 extern void (*mod_update_info)(env_t *ret);
-extern void (*set_int)(uint8_t vector, void (*func)(void *));
+extern void (*set_int)(uint8_t vector, int_entry_t handler);
 extern uint64_t offset;
 
 void init_env(env_t *loader_env);

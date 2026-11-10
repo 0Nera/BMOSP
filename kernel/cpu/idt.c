@@ -10,6 +10,7 @@
 #include <arch.h>
 #include <fb.h>
 #include <log.h>
+#include <mod.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <tool.h>
@@ -39,8 +40,8 @@ static void encode_idt_entry(uint8_t vector, void *handler, uint8_t flags) {
 	idt[vector].reserved = 0;
 }
 
-static void exception_handler(struct frame state) {
-	LOG("\nПОЛУЧЕНО ИСКЛЮЧЕНИЕ: %s\n", exception_names[state.int_number]);
+static void exception_handler(struct frame *state) {
+	LOG("\nПОЛУЧЕНО ИСКЛЮЧЕНИЕ: %s\n", exception_names[state->int_number]);
 
 	uint64_t cr3;
 	asm volatile("mov %%cr3, %0" : "=r"(cr3));
@@ -56,9 +57,9 @@ static void exception_handler(struct frame state) {
 	    "\tRIP=%x  RFLAGS=%x\n"
 	    "\tCS=%x SS=%x\n"
 	    "\tERR=%x  INT=%u\n",
-	    state.rax, state.rbx, state.rcx, state.rdx, state.rsi, state.rdi, state.rbp, state.rsp, state.r8, state.r9,
-	    state.r10, state.r11, state.r12, state.r13, state.r14, state.r15, state.rip, state.rflags, state.cs, state.ss,
-	    state.err, state.int_number);
+	    state->rax, state->rbx, state->rcx, state->rdx, state->rsi, state->rdi, state->rbp, state->rsp, state->r8, state->r9,
+	    state->r10, state->r11, state->r12, state->r13, state->r14, state->r15, state->rip, state->rflags, state->cs, state->ss,
+	    state->err, state->int_number);
 	LOG("\tCR3=%x\n", cr3);
 
 	mem_dump_memory( );
@@ -73,7 +74,7 @@ static void exception_handler(struct frame state) {
 	}
 
 	stack_frame_t *stk;
-	stk = (stack_frame_t *)state.rbp;
+	stk = (stack_frame_t *)state->rbp;
 
 	LOG("Трассировка стека:\n");
 
@@ -88,17 +89,17 @@ static void exception_handler(struct frame state) {
 	asm volatile("hlt");
 }
 
-void isr_generic(struct frame state) {
-	if (state.int_number > 255) { return; }
+void isr_generic(struct frame *state) {
+	if (state->int_number > 255) { return; }
 
-	// if (state.int_number != 32) { LOG("Обработка прерывания %u\n", state.int_number); }
+	// if (state->int_number != 32) { LOG("Обработка прерывания %u\n", state->int_number); }
 
-	if (state.int_number < 32) {
+	if (state->int_number < 32) {
 		exception_handler(state);
 	} else {
-		if (isr[state.int_number]) { isr[state.int_number](&state); }
+		if (isr[state->int_number]) { isr[state->int_number](state); }
 
-		if (state.int_number >= 39) { outb(0xA0, 0x20); }
+		if (state->int_number >= 39) { outb(0xA0, 0x20); }
 		outb(0x20, 0x20);
 	}
 }
@@ -111,10 +112,9 @@ void idt_init( ) {
 	for (uint64_t i = 0; i < 256; i++) {
 		if (i < 32) {
 			encode_idt_entry(i, isr_stubs[i], 0x8E);
-			isr[i] = (void *)exception_handler;
+			isr[i] = exception_handler;
 		} else {
 			encode_idt_entry(i, isr_stubs[i], 0x8F);
-			isr[i] = (void *)isr_generic;
 		}
 	}
 

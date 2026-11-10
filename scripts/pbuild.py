@@ -17,7 +17,7 @@ STANDART_FLAGS = f"-std=gnu11 -DKERNEL_GIT_TAG=\\\"{__VERSION}\\\"" # -DNO_DEBUG
 PROTECT_FLAGS = "-O0 -pipe -ffreestanding -fno-stack-protector -fdata-sections -fno-lto -fno-stack-check -fno-PIC -fno-PIE"
 PROTECT_FLAGS += " -mno-mmx -mno-3dnow -mno-avx -ffunction-sections -fdata-sections"
 CHARSET_FLAGS = "-finput-charset=UTF-8 -fexec-charset=cp1251" #""
-LIBS_FLAGS = "-Ilimine -Iinclude"
+LIBS_FLAGS = "-Ilimine -Iinclude -Imodlib"
 FORMAT_CMD = """find . \( -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.hpp" \) -print0 | xargs -0 clang-format -i -style=file"""
 
 def version_build():

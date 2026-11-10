@@ -10,6 +10,7 @@
 #include <fb.h>
 #include <limine.h>
 #include <log.h>
+#include <mem.h>
 #include <mod.h>
 #include <sys.h>
 #include <tool.h>
@@ -28,6 +29,16 @@ static env_t *main_env = NULL;
 
 void *bootpng_ptr;
 uint64_t bootpng_size;
+
+typedef struct {
+	module_entry_t entry;
+	env_t *env;
+} module_start_t;
+
+static void module_start(void *arg) {
+	module_start_t *start = (module_start_t *)arg;
+	start->entry(start->env);
+}
 
 // Вывод списка модулей в отладчик
 void mod_list_show( ) {
@@ -110,7 +121,7 @@ void mod_init( ) {
 			continue;
 		}
 
-		module_info_t (*module_init)(env_t * env) = (module_info_t(*)(env_t * env)) elf_entry(module_ptr->address);
+		module_entry_t module_init = (module_entry_t)elf_entry(module_ptr->address);
 
 		if (module_init == NULL) {
 			LOG("Модуль %s неисправен\n", module_ptr->cmdline);
@@ -118,13 +129,23 @@ void mod_init( ) {
 		}
 
 		// LOG("\t->Точка входа: 0x%x\n", module_init);
-		main_env = (env_t *)mem_alloc(sizeof(env_t));
-		tool_memset(main_env, 0, sizeof(env_t));
+		uint64_t env_alloc_size = ALIGN_UP(sizeof(env_t), sizeof(uint64_t));
+		uint8_t *env_mem = (uint8_t *)mem_alloc(env_alloc_size + sizeof(module_start_t));
+		if (env_mem == NULL) {
+			LOG("Ошибка выделения памяти для env модуля %s\n", module_ptr->cmdline);
+			continue;
+		}
+		main_env = (env_t *)env_mem;
+		module_start_t *start = (module_start_t *)(env_mem + env_alloc_size);
+		tool_memset(env_mem, 0, env_alloc_size + sizeof(module_start_t));
 		main_env->offset = (uint64_t)module_ptr->address;
 		main_env->id = modules_count;
 		sys_install(main_env);
 
-		task_new_thread((void (*)(void *))module_init, module_list[i].name, main_env);
+		start->entry = module_init;
+		start->env = main_env;
+
+		task_new_thread(module_start, module_ptr->cmdline, start);
 		module_list[modules_count].env = (void *)main_env;
 		module_list[modules_count].name = 0;
 		module_list[modules_count].message = 0;
@@ -138,6 +159,27 @@ void mod_init( ) {
 }
 
 void mod_update_info(env_t *env) {
+	if (env == NULL || env->ret == NULL) {
+		LOG("mod_update_info: пустой env или ret\n");
+		return;
+	}
+
+	if (env->abi_magic != BMOSP_ABI_MAGIC || env->abi_version != BMOSP_ABI_VERSION ||
+	    env->abi_size != sizeof(env_t)) {
+		LOG("mod_update_info: несовместимый ABI env\n");
+		return;
+	}
+
+	if (env->module_info_size != sizeof(module_info_t)) {
+		LOG("mod_update_info: несовместимый ABI module_info\n");
+		return;
+	}
+
+	if (env->id >= modules_count) {
+		LOG("mod_update_info: неверный ID модуля %u\n", env->id);
+		return;
+	}
+
 	module_list[env->id].name = env->ret->name;
 	module_list[env->id].message = env->ret->message;
 	module_list[env->id].data_size = env->ret->data_size;

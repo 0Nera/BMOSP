@@ -60,7 +60,7 @@ uint64_t task_new_thread(void (*func)(void *), char *name, void *arg) {
 	new_task->entry = func;
 	new_task->status = 1;
 
-	uint64_t stack_top = STACK_SIZE;
+	uint64_t stack_top = STACK_SIZE / sizeof(uint64_t);
 	stack[--stack_top] = (uint64_t)stack;
 	stack[--stack_top] = (uint64_t)func;
 	stack[--stack_top] = (uint64_t)0;

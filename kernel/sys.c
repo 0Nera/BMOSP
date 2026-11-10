@@ -50,6 +50,13 @@ static module_info_t *sys_get_module(char *module_id) {
 }
 
 env_t *sys_install(env_t *module) {
+	if (module == NULL) { return NULL; }
+
+	module->abi_magic = BMOSP_ABI_MAGIC;
+	module->abi_version = BMOSP_ABI_VERSION;
+	module->abi_flags = BMOSP_ABI_FLAGS;
+	module->abi_size = sizeof(env_t);
+	module->module_info_size = 0;
 	module->log_printf = &log_printf;
 	module->alloc_framebuffer = &sys_alloc_framebuffer;
 	module->free_framebuffer = &sys_free_framebuffer;
